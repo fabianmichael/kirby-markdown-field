@@ -1,0 +1,16 @@
+{
+    "name": "community/markdown-field",
+    "description": "Enhanced markdown editor for Kirby 3",
+    "type": "kirby-plugin",
+    "license": "MIT",
+    "autoload": {
+        "files": ["config.php"]
+    },
+    "authors": [
+        {
+            "name": "Sylvain Julé",
+            "email": "contact@sylvain-jule.fr"
+        }
+    ],
+    "minimum-stability": "beta"
+}

@@ -1,0 +1,38 @@
+/* Colors
+---------------------------------*/
+
+$color-white: #fff;
+$color-light: #efefef;
+$color-light-grey: #999;
+$color-dark: #16171a;
+$color-dark-grey: #777;
+$color-background: $color-light;
+$color-border: #ccc;
+$color-focus: #4271ae;
+$color-focus-border: $color-focus;
+
+
+/* Pattern
+---------------------------------*/
+
+$pattern: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXR0ZXJuIGlkPSJhIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxwYXRoIGZpbGw9InJnYmEoMCwgMCwgMCwgMC4yKSIgZD0iTTAgMGgxMHYxMEgwem0xMCAxMGgxMHYxMEgxMHoiLz48L3BhdHRlcm4+PHJlY3QgZmlsbD0idXJsKCNhKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIvPjwvc3ZnPg==";
+
+
+/* Breakpoint
+---------------------------------*/
+
+$breakpoint-medium: 65em;
+
+
+/* Input size
+---------------------------------*/
+
+$field-input-padding: .5rem;
+$field-input-height: 2.25rem;
+$field-input-line-height: 1.25rem;
+
+
+/* Font size
+---------------------------------*/
+
+$font-size-small: 0.875rem;

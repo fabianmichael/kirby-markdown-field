@@ -1,0 +1,53 @@
+.CodeMirror {
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+    padding: .25rem .5rem;
+    line-height: 1.5rem;
+    height: auto;
+
+    .cm-header {
+	    color: #000;
+	}
+	.cm-header-1 {
+	    font-size: 24px;
+	}
+	.cm-header-2 {
+	    font-size: 18px;
+	}
+	.cm-header-3 {
+	    font-size: 14px;
+	}
+	.cm-comment {
+		background: darken(#fafafa, 2%);
+		color: black;
+		font-family: monospace;
+	}
+	.cm-formatting-quote {
+		display: none;
+		&+ .cm-quote {
+			border-left: 2px solid $color-light-grey;
+			color: $color-light-grey;
+			padding-left: 15px;
+		}
+	}
+	.cm-formatting-list {
+		display: none;
+		&+ .cm-variable-2 {
+			color: black;
+			&:before {
+				margin-left: 15px;
+				content: " ";
+				display: inline-block;
+				vertical-align: middle;
+				width: 6px;
+				height: 6px;
+				transform: translateY(-2px);
+				margin-right: 10px;
+				background: black;
+				border-radius: 50%;
+			}
+		}
+	}
+}
+.CodeMirror-scroll {
+	overflow: auto;
+}
