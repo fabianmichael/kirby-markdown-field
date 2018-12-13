@@ -34,7 +34,6 @@ export default {
                     },
                     lineNumbers: false,
                     lineWrapping: true,
-                    viewportMargin: Infinity,
                 }
             }
         },
