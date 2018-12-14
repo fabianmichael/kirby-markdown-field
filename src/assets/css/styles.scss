@@ -3,38 +3,58 @@
 @import '_codemirror-custom.scss';
 
 .k-markdown-input-wrapper {
-    position: relative;
-    transform: translate3d(0, 0, 0);
-    .k-markdown-input-native {
-	    resize: none;
-	    border: 0;
-	    width: 100%;
-	    background: none;
-	    font: inherit;
-	    line-height: 1.5em;
-	    color: inherit;
-	    &::placeholder {
-		    color: $color-light-grey;
+
+  // General setup
+
+  position: relative;
+  transform: translate3d(0, 0, 0);
+  
+  .k-markdown-input-native {
+      resize: none;
+      border: 0;
+      width: 100%;
+      background: none;
+      font: inherit;
+      line-height: 1.5em;
+      color: inherit;
+      &::placeholder {
+        color: $color-light-grey;
+    }
+    &:focus {
+       outline: 0;
+    }
+    &:invalid {
+        box-shadow: none;
+        outline: 0;
+    }
+  }
+
+  // Sizes
+
+  &[data-size="small"] {
+    .cm-s-default,
+    .CodeMirror-scroll {
+      min-height: 7.5rem;
+    }
+  }
+  &[data-size="medium"] {
+    .cm-s-default,
+    .CodeMirror-scroll {
+      min-height: 15rem;
+    }
+  }
+
+  &[data-size="large"] {
+	  .cm-s-default,
+	  .CodeMirror-scroll {
+		  min-height: 30rem;
 		}
-		&:focus {
-		 	outline: 0;
-		}
-		&:invalid {
-		  	box-shadow: none;
-		  	outline: 0;
-		}
-	}
-	// Sizes
-	&[data-size="small"] {
-	    .cm-s-default, .CodeMirror-scroll { min-height: 7.5rem; }
-	}
-	&[data-size="medium"] {
-	    .cm-s-default, .CodeMirror-scroll { min-height: 15rem; }
-	}
-	&[data-size="large"] {
-	    .cm-s-default, .CodeMirror-scroll { min-height: 30rem; }
-	}
-	&[data-size="huge"] {
-	    .cm-s-default, .CodeMirror-scroll { min-height: 45rem; }
-	}
+  }
+
+  &[data-size="huge"] {
+    .cm-s-default,
+    .CodeMirror-scroll {
+      min-height: 45rem;
+    }
+  }
 }

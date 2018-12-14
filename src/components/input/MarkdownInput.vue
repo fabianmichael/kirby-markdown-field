@@ -22,7 +22,7 @@ export default {
         size: String,
         value: {
             type: String,
-            default: ''
+            default: '',
         },
         options: {
             type: Object,
@@ -34,12 +34,14 @@ export default {
                     },
                     lineNumbers: false,
                     lineWrapping: true,
-                }
-            }
+                };
+            },
         },
     },
     mounted() {
-        let _this = this
+        let _this = this;
+
+        console.log("pp", this);
 
         this.editor = CodeMirror.fromTextArea(this.$refs.input, this.options)
         this.editor.setValue(this.value)

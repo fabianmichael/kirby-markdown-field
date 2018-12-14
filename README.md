@@ -59,3 +59,11 @@ npm run build
 - [src/assets/css/_codemirror-default.scss](/src/assets/css/_codemirror-default.scss) sets the default codemirror styling.
 - [src/assets/css/_codemirror-custom.scss](/src/assets/css/_codemirror-custom.scss) sets some custom codemirror styling.
 - [src/assets/css/styles.scss](/src/assets/css/styles.scss) imports them in this order, + sets a few styling for the field.
+
+
+### Available Options
+
+
+| Option | Type | Required | Default | Description |
+|:-------|:-----|:---------|:--------|:------------|
+| font | String | false | monospace | Sets the font of the Markdown field. Available options: monospace, sans-serif
