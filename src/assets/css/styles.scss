@@ -20,9 +20,11 @@
       &::placeholder {
         color: $color-light-grey;
     }
+
     &:focus {
        outline: 0;
     }
+    
     &:invalid {
         box-shadow: none;
         outline: 0;

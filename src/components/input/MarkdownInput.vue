@@ -41,20 +41,19 @@ export default {
     mounted() {
         let _this = this;
 
-        console.log("pp", this);
+        this.editor = CodeMirror.fromTextArea(this.$refs.input, this.options);
+        this.editor.setValue(this.value);
 
-        this.editor = CodeMirror.fromTextArea(this.$refs.input, this.options)
-        this.editor.setValue(this.value)
         this.editor.on('change', function(_editor) {
             // if the change is triggered by the watched value
             if (_this.skipNextChangeEvent) {
-                _this.skipNextChangeEvent = false
+                _this.skipNextChangeEvent = false;
                 return
             }
 
-            _this.value = _editor.getValue()
-            _this.$emit('input', _this.value)
-        })
+            _this.value = _editor.getValue();
+            _this.$emit('input', _this.value);
+        });
     },
     watch: {
         value(newVal, oldVal) {
