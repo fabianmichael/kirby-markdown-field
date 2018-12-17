@@ -24,10 +24,7 @@ export default {
         autofocus: Boolean,
         placeholder: String,
         size: String,
-        value: {
-            type: String,
-            default: '',
-        },
+        value: String,
         options: {
             type: Object,
             default: function () {
