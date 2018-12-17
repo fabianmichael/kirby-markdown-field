@@ -12,6 +12,13 @@
     color: inherit; /* 1 */
   }
 
+  /**
+   * Set placeholder color
+   */
+  &-placeholder {
+    color: #999999;
+  }
+
   .cm-comment {
     background: darken(#fafafa, 2%);
     color: black;

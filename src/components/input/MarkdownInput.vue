@@ -2,7 +2,8 @@
     <div :data-theme="theme" class="k-markdown-input">
         <div class="k-markdown-input-wrapper" :data-size="size">
             <textarea ref="input"
-                      class="k-markdown-input-native">
+                      class="k-markdown-input-native"
+                      :placeholder="placeholder">
             </textarea>
         </div>
     </div>
@@ -11,6 +12,7 @@
 <script>
 import CodeMirror from 'codemirror'
 import 'codemirror/mode/markdown/markdown.js'
+import 'codemirror/addon/display/placeholder.js'
 
 export default {
     data() {
@@ -19,6 +21,7 @@ export default {
         }
     },
     props: {
+        placeholder: String,
         size: String,
         value: {
             type: String,
