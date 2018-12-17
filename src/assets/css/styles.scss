@@ -2,6 +2,11 @@
 @import '_codemirror-default.scss';
 @import '_codemirror-custom.scss';
 
+// disabled option
+.k-input[data-theme=field][data-disabled] .CodeMirror {
+  background: #efefef;
+}
+
 .k-markdown-input-wrapper {
 
   // General setup
@@ -31,8 +36,7 @@
     }
   }
 
-  // Sizes
-
+  // size option
   &[data-size="small"] {
     .cm-s-default,
     .CodeMirror-scroll {
