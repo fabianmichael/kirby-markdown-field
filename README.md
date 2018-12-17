@@ -2,6 +2,9 @@
 
 Enhanced markdown editor for Kirby 3
 
+> ⚠️This field is a work in progress, we advise no to use it in your installations yet. Any help is most welcome, and will allow us to release it sooner.
+
+
 <br/>
 
 ## 1. Installation
