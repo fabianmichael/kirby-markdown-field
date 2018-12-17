@@ -38,7 +38,6 @@ export default {
                     },
                     lineNumbers: false,
                     lineWrapping: true,
-                    autofocus: this.autofocus,
                 };
             },
         },
@@ -48,6 +47,12 @@ export default {
 
         this.editor = CodeMirror.fromTextArea(this.$refs.input, this.options);
         this.editor.setValue(this.value);
+
+        // Custom autofocus: place the cursor at the end of current value
+        if(this.autofocus) {
+            this.editor.focus();
+            this.editor.setCursor(this.editor.lineCount(), 0);
+        }
 
         this.editor.on('change', function(_editor) {
             // if the change is triggered by the watched value
