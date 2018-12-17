@@ -21,6 +21,7 @@ export default {
         }
     },
     props: {
+        autofocus: Boolean,
         placeholder: String,
         size: String,
         value: {
@@ -37,6 +38,7 @@ export default {
                     },
                     lineNumbers: false,
                     lineWrapping: true,
+                    autofocus: this.autofocus,
                 };
             },
         },
