@@ -5,7 +5,7 @@ export default {
 	extends: BaseButton,
 	data() {
 		return {
-			label: 'Blockquote',
+			label: this.$t('markdown.toolbar.button.blockquote'),
             icon: 'quote',
 		}
 	},
