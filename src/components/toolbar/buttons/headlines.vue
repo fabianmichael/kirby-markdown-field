@@ -6,7 +6,8 @@
                   class="k-toolbar-button k-markdown-button"
                   @click="$refs['headlines-' + buttonIndex + '-dropdown'].toggle()" />
         <k-dropdown-content :ref="'headlines-' + buttonIndex + '-dropdown'">
-            <k-dropdown-item v-for="(item, itemIndex) in dropdown"
+            <k-dropdown-item v-for="(item, itemKey, itemIndex) in dropdown"
+                             v-if="displayHeadline(itemKey)"
                              :key="itemIndex"
                              :icon="item.icon"
                              @click="action(item.args)">
@@ -50,6 +51,10 @@ export default {
             this.editor.getDoc().replaceSelection(args + ' ' + this.editor.getDoc().getSelection())
             // bring the focus back to the editor
             this.editor.focus()
+        },
+        displayHeadline(key) {
+            // if the button is an object, check if the buttons subarray contains the current key
+            return typeof this.button == 'object' ? this.button.buttons.includes(key) : true
         }
     }
 };

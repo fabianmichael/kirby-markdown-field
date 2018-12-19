@@ -1,5 +1,5 @@
 <template>
-	<k-button :icon="icon"
+    <k-button :icon="icon"
               :tooltip="label"
               tabindex="-1"
               class="k-toolbar-button k-markdown-button"
@@ -8,16 +8,17 @@
 
 <script>
 export default {
-	props: {
+    props: {
+        button: [String, Object],
         buttonIndex: String,
-		editor: Object,
-	},
-	watch: {
-		editor(val) {
+        editor: Object,
+    },
+    watch: {
+        editor(val) {
             if(typeof val !== 'undefined' && this.shortcut) {
-            	this.$root.$emit('registerShortcut', this.shortcut, this.action)
+                this.$root.$emit('registerShortcut', this.shortcut, this.action)
             }
         },
-	}
+    }
 };
 </script>
