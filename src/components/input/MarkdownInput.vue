@@ -81,7 +81,6 @@ export default {
 
         // Open dialogs
         this.$root.$on('openDialog', (dialog) => {
-            console.log(this.$refs[dialog + "Dialog"])
             if(this.$refs[dialog + "Dialog"]) {
                 this.$refs[dialog + "Dialog"].open();
             } else {
