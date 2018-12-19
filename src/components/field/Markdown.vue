@@ -8,12 +8,9 @@
 export default {
     extends: 'k-textarea-field',
     props: {
-        font: {
-            type: String,
-            default: 'monospace',
-        },
+        font: String,
     }
-}
+};
 </script>
 
 <style lang="scss">
