@@ -6,6 +6,7 @@ import Button        from './components/toolbar/buttons/button.vue'
 import Bold          from './components/toolbar/buttons/bold.vue'
 import Italic        from './components/toolbar/buttons/italic.vue'
 import Code          from './components/toolbar/buttons/code.vue'
+import Link          from './components/toolbar/buttons/link.vue'
 import Ul            from './components/toolbar/buttons/ul.vue'
 import Ol            from './components/toolbar/buttons/ol.vue'
 import Divider       from './components/toolbar/buttons/divider.vue'
@@ -21,6 +22,7 @@ panel.plugin('community/markdown-field', {
     	'k-markdown-button-bold': Bold,
     	'k-markdown-button-italic': Italic,
     	'k-markdown-button-code': Code,
+    	'k-markdown-button-link': Link,
     	'k-markdown-button-divider': Divider,
     	'k-markdown-button-ul': Ul,
     	'k-markdown-button-ol': Ol,

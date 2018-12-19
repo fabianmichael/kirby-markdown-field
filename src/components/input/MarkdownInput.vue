@@ -10,6 +10,8 @@
                       :placeholder="placeholder">
             </textarea>
         </div>
+
+        <k-markdown-link-dialog ref="linkDialog" :editor="editor" @cancel="cancel" @submit="insert"/>
     </div>
 </template>
 
@@ -19,10 +21,12 @@ import 'codemirror/mode/markdown/markdown.js'
 import 'codemirror/addon/display/placeholder.js'
 
 import Toolbar from '../toolbar/MarkdownToolbar.vue'
+import LinkDialog from '../toolbar/dialogs/link-dialog.vue'
 
 export default {
     components: {
         'k-markdown-toolbar': Toolbar,
+        'k-markdown-link-dialog': LinkDialog,
     },
     data() {
         return {
@@ -72,6 +76,17 @@ export default {
             this.editor.addKeyMap(map)
         })
 
+        // Open dialogs
+        this.$root.$on('openDialog', (dialog) => {
+            console.log(this.$refs[dialog + "Dialog"])
+            if(this.$refs[dialog + "Dialog"]) {
+                this.$refs[dialog + "Dialog"].open();
+            } else {
+                throw "Invalid toolbar dialog";
+            }
+        })
+
+        // Emit changed value
         this.editor.on('change', function(_editor) {
             // if the change is triggered by the watched value
             if (_this.skipNextChangeEvent) {
@@ -94,5 +109,19 @@ export default {
             }
         },
     },
+    methods: {
+        cancel() {
+            this.$refs.input.focus();
+        },
+        insert(text) {
+            // wrap selection with **
+            this.editor.getDoc().replaceSelection(text)
+            // move caret before the second wrapper: (tag: text[caret])
+            let pos = this.editor.getCursor()
+            this.editor.setCursor({line: pos.line, ch: pos.ch - 1})
+            // bring the focus back to the editor
+            this.editor.focus()
+        }
+    }
 }
 </script>
