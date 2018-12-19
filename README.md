@@ -64,8 +64,6 @@ npm run build
 
 > You **must** run the build process before pushing the repo, else the hot-reload code will prevent it to work in any install.
 
-<br/>
-
 ### 4.1. Content structure
 
 > May be outdated
