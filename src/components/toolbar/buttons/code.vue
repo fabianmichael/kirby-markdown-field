@@ -11,11 +11,20 @@ export default {
 	},
 	methods: {
 		action() {
-			// wrap selection with **
-			this.editor.getDoc().replaceSelection('`' + this.editor.getDoc().getSelection() + '`')
-			// move caret before the second wrapper: `my code[caret]`
-			let pos = this.editor.getCursor()
-			this.editor.setCursor({line: pos.line, ch: pos.ch - 1})
+			let selection = this.editor.getDoc().getSelection()
+
+			// multiple lines: wrap with ```
+			if(selection.includes('\n')) {
+				this.editor.getDoc().replaceSelection('```\n' + selection + '\n```')
+			}
+			// single line: wrap with `
+			else {
+				this.editor.getDoc().replaceSelection('`' + selection + '`')
+				// move caret before the second wrapper: `my code[caret]`
+				let pos = this.editor.getCursor()
+				this.editor.setCursor({line: pos.line, ch: pos.ch - 1})
+			}
+			
 			// bring the focus back to the editor
     		this.editor.focus()
 		}
