@@ -11,6 +11,7 @@ import Email         from './components/toolbar/buttons/email.vue'
 import Ul            from './components/toolbar/buttons/ul.vue'
 import Ol            from './components/toolbar/buttons/ol.vue'
 import Divider       from './components/toolbar/buttons/divider.vue'
+import Blockquote    from './components/toolbar/buttons/blockquote.vue'
 
 panel.plugin('community/markdown-field', {
     fields: {
@@ -25,8 +26,9 @@ panel.plugin('community/markdown-field', {
         'k-markdown-button-code': Code,
         'k-markdown-button-link': Link,
         'k-markdown-button-email': Email,
-        'k-markdown-button-divider': Divider,
         'k-markdown-button-ul': Ul,
         'k-markdown-button-ol': Ol,
+        'k-markdown-button-divider': Divider,
+        'k-markdown-button-blockquote': Blockquote,
     }
 });
