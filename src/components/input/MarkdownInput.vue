@@ -65,6 +65,13 @@ export default {
             this.editor.setCursor(this.editor.lineCount(), 0);
         }
 
+        // Register shortcuts
+        this.$root.$on('registerShortcut', (shortcut, fn) => {
+            let map = {}
+                map[shortcut] = fn
+            this.editor.addKeyMap(map)
+        })
+
         this.editor.on('change', function(_editor) {
             // if the change is triggered by the watched value
             if (_this.skipNextChangeEvent) {
@@ -86,6 +93,6 @@ export default {
                 this.editor.scrollTo(scrollInfo.left, scrollInfo.top)
             }
         },
-    }
+    },
 }
 </script>

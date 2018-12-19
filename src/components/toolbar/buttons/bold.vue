@@ -7,18 +7,18 @@ export default {
 		return {
 			label: this.$t('toolbar.button.bold'),
             icon: 'bold',
-            shortcut: 'b'
+            shortcut: 'Cmd-B'
 		}
 	},
 	methods: {
-		action() {
+		action(editor = this.editor) {
 			// wrap selection with **
-			this.editor.getDoc().replaceSelection('**' + this.editor.getDoc().getSelection() + '**')
+			editor.getDoc().replaceSelection('**' + editor.getDoc().getSelection() + '**')
 			// move caret before the second wrapper: **my text[caret]**
 			let pos = this.editor.getCursor()
-			this.editor.setCursor({line: pos.line, ch: pos.ch - 2})
+			editor.setCursor({line: pos.line, ch: pos.ch - 2})
 			// bring the focus back to the editor
-    		this.editor.focus()
+    		editor.focus()
 		}
 	}
 };

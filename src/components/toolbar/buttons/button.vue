@@ -12,5 +12,12 @@ export default {
         buttonIndex: String,
 		editor: Object,
 	},
+	watch: {
+		editor(val) {
+            if(typeof val !== 'undefined' && this.shortcut) {
+            	this.$root.$emit('registerShortcut', this.shortcut, this.action)
+            }
+        },
+	}
 };
 </script>
