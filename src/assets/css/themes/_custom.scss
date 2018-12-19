@@ -62,7 +62,7 @@
 /* -----  Monospace font  --------------------------------------------------- */
 
 .k-markdown-input[font="monospace"] .CodeMirror {
-  font-family: $font-stack-monospace;
+  font-family: $font-family-mono;
 
   .cm-header {
     font: inherit;
@@ -73,12 +73,11 @@
 /* -----  Sans-serif font  -------------------------------------------------- */
 
 .k-markdown-input[font="sans-serif"] .CodeMirror {
-  font-family: $font-stack-sans-serif;
+  font-family: $font-family-sans;
 
   .cm-header-1 {
     font-size: 24px;
   }
-
   .cm-header-2 {
     font-size: 18px;
   }
