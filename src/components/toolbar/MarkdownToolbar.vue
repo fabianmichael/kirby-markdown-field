@@ -22,7 +22,7 @@ export default {
                     // if it has a subarray
                     if(Array.isArray(button)) {
                         // if it's a headlines array
-                        if(button.some(el => ['h1', 'h2', 'h3'].includes(el))) {
+                        if(button.some(el => ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(el))) {
                             return {
                                 name: 'headlines',
                                 buttons: button

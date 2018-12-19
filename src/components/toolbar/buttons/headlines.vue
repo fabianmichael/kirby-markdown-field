@@ -7,7 +7,7 @@
                   @click="$refs['headlines-' + buttonIndex + '-dropdown'].toggle()" />
         <k-dropdown-content :ref="'headlines-' + buttonIndex + '-dropdown'">
             <k-dropdown-item v-for="(item, itemKey, itemIndex) in dropdown"
-                             v-if="displayHeadline(itemKey)"
+                             v-if="headlinesArray.includes(itemKey)"
                              :key="itemIndex"
                              :icon="item.icon"
                              @click="action(item.args)">
@@ -41,8 +41,28 @@ export default {
                     label: this.$t("toolbar.button.heading.3"),
                     icon: "title",
                     args: "###"
+                },
+                h4: {
+                    label: this.$t("markdown.toolbar.button.heading.4"),
+                    icon: "title",
+                    args: "####"
+                },
+                h5: {
+                    label: this.$t("markdown.toolbar.button.heading.5"),
+                    icon: "title",
+                    args: "#####"
+                },
+                h6: {
+                    label: this.$t("markdown.toolbar.button.heading.6"),
+                    icon: "title",
+                    args: "######"
                 }
             }
+        }
+    },
+    computed: {
+        headlinesArray() {
+            return typeof this.button == 'string' ? ['h1', 'h2', 'h3'] : this.button.buttons
         }
     },
     methods: {
@@ -52,10 +72,6 @@ export default {
             // bring the focus back to the editor
             this.editor.focus()
         },
-        displayHeadline(key) {
-            // if the button is an object, check if the buttons subarray contains the current key
-            return typeof this.button == 'object' ? this.button.buttons.includes(key) : true
-        }
     }
 };
 </script>
