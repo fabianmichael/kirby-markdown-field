@@ -1,6 +1,10 @@
 <template>
     <div :data-theme="theme" class="k-markdown-input">
         <div class="k-markdown-input-wrapper" :data-size="size">
+            <k-markdown-toolbar v-if="buttons"
+                       ref="toolbar"
+                       :editor="editor"
+                       :buttons="buttons"/>
             <textarea ref="input"
                       class="k-markdown-input-native"
                       :placeholder="placeholder">
@@ -14,14 +18,24 @@ import CodeMirror from 'codemirror'
 import 'codemirror/mode/markdown/markdown.js'
 import 'codemirror/addon/display/placeholder.js'
 
+import Toolbar from '../toolbar/MarkdownToolbar.vue'
+
 export default {
+    components: {
+        'k-markdown-toolbar': Toolbar,
+    },
     data() {
         return {
+            editor: Object,
             skipNextChangeEvent: false
         }
     },
     props: {
         autofocus: Boolean,
+        buttons: {
+          type: [Boolean, Array],
+          default: true
+        },
         placeholder: String,
         size: String,
         value: String,
