@@ -15,15 +15,13 @@ export default {
     data() {
         return {
             value: {
-                url: null,
+                email: null,
                 text: null
             },
             fields: {
-                url: {
-                    label: this.$t("link"),
-                    type: 'text',
-                    placeholder: this.$t("url.placeholder"),
-                    icon: 'url'
+                email: {
+                    label: this.$t("email"),
+                    type: 'email'
                 },
                 text: {
                     label: this.$t("link.text"),
@@ -50,23 +48,23 @@ export default {
         },
         createKirbytext() {
             if (this.value.text.length > 0) {
-                return '(link: '+ this.value.url +' text: '+ this.value.text +')'
+                return '(email: '+ this.value.email +' text: '+ this.value.text +')'
             } else {
-                return '(link: '+ this.value.url +')'
+                return '(email: '+ this.value.email +')'
             }
         },
         createMarkdown() {
             if (this.value.text.length > 0) {
-                return '['+ this.value.text +']('+ this.value.url +')'
+                return '['+ this.value.text +'](mailto:'+ this.value.email +')'
             } else {
-                return '<'+ this.value.url +'>'
+                return '<'+ this.value.email +'>'
             }
         },
         submit() {
-            let link = this.kirbytext ? this.createKirbytext() : this.createMarkdown()
+            let email = this.kirbytext ? this.createKirbytext() : this.createMarkdown()
 
-            // submit the formatted link
-            this.$emit('submit', link)
+            // submit the formatted email
+            this.$emit('submit', email)
             // reset the form
             this.value = {url: null, text: null}
             // close the modal

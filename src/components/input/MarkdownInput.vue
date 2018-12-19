@@ -12,6 +12,7 @@
         </div>
 
         <k-markdown-link-dialog ref="linkDialog" :editor="editor" @cancel="cancel" @submit="insert"/>
+        <k-markdown-email-dialog ref="emailDialog" :editor="editor" @cancel="cancel" @submit="insert"/>
     </div>
 </template>
 
@@ -22,11 +23,13 @@ import 'codemirror/addon/display/placeholder.js'
 
 import Toolbar from '../toolbar/MarkdownToolbar.vue'
 import LinkDialog from '../toolbar/dialogs/link-dialog.vue'
+import EmailDialog from '../toolbar/dialogs/email-dialog.vue'
 
 export default {
     components: {
         'k-markdown-toolbar': Toolbar,
         'k-markdown-link-dialog': LinkDialog,
+        'k-markdown-email-dialog': EmailDialog,
     },
     data() {
         return {
