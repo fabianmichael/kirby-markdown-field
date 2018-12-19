@@ -29,32 +29,32 @@ export default {
             dropdown: {
                 h1: {
                     label: this.$t("toolbar.button.heading.1"),
-                    icon: "title",
+                    icon: "h1",
                     args: "#"
                 },
                 h2: {
                     label: this.$t("toolbar.button.heading.2"),
-                    icon: "title",
+                    icon: "h2",
                     args: "##"
                 },
                 h3: {
                     label: this.$t("toolbar.button.heading.3"),
-                    icon: "title",
+                    icon: "h3",
                     args: "###"
                 },
                 h4: {
                     label: this.$t("markdown.toolbar.button.heading.4"),
-                    icon: "title",
+                    icon: "h4",
                     args: "####"
                 },
                 h5: {
                     label: this.$t("markdown.toolbar.button.heading.5"),
-                    icon: "title",
+                    icon: "h5",
                     args: "#####"
                 },
                 h6: {
                     label: this.$t("markdown.toolbar.button.heading.6"),
-                    icon: "title",
+                    icon: "h6",
                     args: "######"
                 }
             }

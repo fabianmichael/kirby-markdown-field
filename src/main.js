@@ -28,6 +28,14 @@ panel.plugin('community/markdown-field', {
     fields: {
         markdown: Markdown,
     },
+    sections: {
+    	'k-files-section': {
+    		extends: 'k-files-section',
+    		created() {
+    			console.log('works !')
+    		}
+    	}
+    },
     components: {
         'k-markdown-input': MarkdownInput,
         'k-markdown-button': Button,
