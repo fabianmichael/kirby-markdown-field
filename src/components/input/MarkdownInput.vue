@@ -119,13 +119,18 @@ export default {
             this.$refs.input.focus();
         },
         insert(text) {
+            let _this = this
+
             // wrap selection with **
             this.editor.getDoc().replaceSelection(text)
             // move caret before the second wrapper: (tag: text[caret])
             let pos = this.editor.getCursor()
             this.editor.setCursor({line: pos.line, ch: pos.ch - 1})
             // bring the focus back to the editor
-            this.editor.focus()
+            setTimeout(() => {
+                _this.$refs.input.focus()
+                _this.editor.focus()
+            })
         }
     }
 }
