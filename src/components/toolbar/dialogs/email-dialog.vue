@@ -40,11 +40,25 @@ export default {
     },
     methods: {
         open() {
-            this.value.text = this.editor.getDoc().getSelection();
+            // make sure we're starting with an empty form
+            this.resetValue()
+
+            // figure out if the selection is a link
+            let selection = this.editor.getDoc().getSelection()
+            if (this.isEmail(selection)) {
+                this.value.email = selection
+            } else {
+                this.value.text = selection
+            }
+
             this.$refs.dialog.open();
         },
         cancel() {
             this.$emit("cancel");
+        },
+        isEmail(str) {
+            // https://emailregex.com/
+            return str.match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
         },
         createKirbytext() {
             if (this.value.text.length > 0) {
@@ -66,9 +80,12 @@ export default {
             // submit the formatted email
             this.$emit('submit', email)
             // reset the form
-            this.value = {url: null, text: null}
+            this.resetValue()
             // close the modal
             this.$refs.dialog.close()
+        },
+        resetValue() {
+            this.value = {url: null, text: null}
         }
     }
 };
