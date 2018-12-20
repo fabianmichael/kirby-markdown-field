@@ -40,7 +40,7 @@ export default {
     },
     props: {
         autofocus: Boolean,
-        modals: Boolean,
+        modals: Boolean, 
         blank: Boolean,
         buttons: {
           type: [Boolean, Array],
