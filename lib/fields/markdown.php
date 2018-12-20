@@ -14,6 +14,12 @@ $options = array_merge_recursive($options, [
         'font' => function($font = 'monospace') {
             return $font;
         },
+        /**
+         * Whether link / email buttons should open a modal. Boolean.
+         */
+        'modals' => function($modals = true) {
+            return $modals;
+        },
     ],
 ]);
 

@@ -3,6 +3,7 @@
         <div class="k-markdown-input-wrapper" :data-size="size">
             <k-markdown-toolbar v-if="buttons"
                        ref="toolbar"
+                       :modals="modals"
                        :editor="editor"
                        :buttons="buttons"/>
             <textarea ref="input"
@@ -39,6 +40,7 @@ export default {
     },
     props: {
         autofocus: Boolean,
+        modals: Boolean,
         buttons: {
           type: [Boolean, Array],
           default: true

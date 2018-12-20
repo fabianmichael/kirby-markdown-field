@@ -9,6 +9,7 @@ export default {
     extends: 'k-textarea-field',
     props: {
         font: String,
+        modals: Boolean,
     }
 };
 </script>

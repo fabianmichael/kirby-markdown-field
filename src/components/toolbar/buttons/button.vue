@@ -12,6 +12,7 @@ export default {
         button: [String, Object],
         buttonIndex: String,
         editor: Object,
+        modals: Boolean,
     },
     watch: {
         editor(val) {

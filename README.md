@@ -46,6 +46,7 @@ You have access to the very same options as [the textarea field](https://nnnnext
 | Option | Type | Required | Default | Description |
 |:-------|:-----|:---------|:--------|:------------|
 | font | String | false | monospace | Sets the font of the Markdown field. Available options: monospace, sans-serif |
+| modals | Boolean | false | true | If set to `false`, link and email tags will be added without opening a modal |
 
 One small difference with the textarea options, `headlines` goes from h1 to h6 and accepts a sub-array:
 
