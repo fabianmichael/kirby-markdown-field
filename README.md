@@ -4,6 +4,8 @@ Enhanced markdown editor for Kirby 3
 
 > ⚠️This field is a work in progress, we advise not to use it in your installations yet. Any help is most welcome, and will allow us to release it sooner.
 
+> README will need to be re-written properly
+
 [screenshot once published]
 
 <br/>
@@ -27,7 +29,7 @@ Alternatively, you can install it with composer: ```composer require community/m
 
 ## 2. Setup
 
-This field can replace any `textarea` field you have set up, and work out of the box with as little config as:
+This field can replace any `textarea` field you have set up, and works out of the box with as little config as:
 
 ```yaml
 editor:
@@ -43,7 +45,16 @@ You have access to the very same options as [the textarea field](https://nnnnext
 
 | Option | Type | Required | Default | Description |
 |:-------|:-----|:---------|:--------|:------------|
-| font | String | false | monospace | Sets the font of the Markdown field. Available options: monospace, sans-serif
+| font | String | false | monospace | Sets the font of the Markdown field. Available options: monospace, sans-serif |
+
+One small difference with the textarea options, `headlines` goes from h1 to h6 and accepts a sub-array:
+
+```yaml
+buttons:
+  - headlines
+    - h2
+    - h3
+```
 
 <br/>
 

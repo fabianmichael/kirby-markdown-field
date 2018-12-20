@@ -43,7 +43,7 @@ export default {
             // make sure we're starting with an empty form
             this.resetValue()
 
-            // figure out if the selection is a link
+            // figure out if the selection is an email
             let selection = this.editor.getDoc().getSelection()
             if (this.isEmail(selection)) {
                 this.value.email = selection
