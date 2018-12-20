@@ -16,6 +16,7 @@ Enhanced markdown editor for Kirby 3
 - [2. Setup](#2-setup)
 - [3. Available options](#3-available-options)
 - [4. Development](#4-development)
+- [5. License](#5-license)
 
 <br/>
 
@@ -79,3 +80,8 @@ npm run build
 
 
 
+<br/>
+
+## 5. License
+
+MIT
