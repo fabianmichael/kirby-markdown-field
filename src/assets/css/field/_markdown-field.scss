@@ -1,6 +1,6 @@
 // disabled option
 .k-input[data-theme=field][data-disabled] .CodeMirror {
-    background: #efefef;
+  background: #efefef;
 }
 
 .k-markdown-input-wrapper {
@@ -10,21 +10,19 @@
   transform: translate3d(0, 0, 0);
 
   .k-markdown-input-native {
-      resize: none;
-      border: 0;
-      width: 100%;
-      background: none;
-      font: inherit;
-      line-height: 1.5em;
-      color: inherit;
-      &::placeholder {
-        color: $color-light-grey;
+    resize: none;
+    border: 0;
+    width: 100%;
+    background: none;
+    font: inherit;
+    line-height: 1.5em;
+    color: inherit;
+    &::placeholder {
+      color: $color-light-grey;
     }
-
     &:focus {
        outline: 0;
     }
-    
     &:invalid {
         box-shadow: none;
         outline: 0;
@@ -46,10 +44,10 @@
   }
 
   &[data-size="large"] {
-	  .cm-s-default,
-	  .CodeMirror-scroll {
-		  min-height: 30rem;
-		}
+    .cm-s-default,
+    .CodeMirror-scroll {
+      min-height: 30rem;
+    }
   }
 
   &[data-size="huge"] {
@@ -61,14 +59,14 @@
 }
 
 .k-markdown-input:focus-within .k-toolbar {
-	position: -webkit-sticky;
-	position: sticky;
-	top: 0;
-	right: 0;
-	left: 0;
-	z-index: 3;
-	-webkit-box-shadow: rgba(0, 0, 0, 0.05) 0 2px 5px;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-	color: #000;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 3;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.05) 0 2px 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  color: #000;
 }

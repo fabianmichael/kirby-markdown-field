@@ -2,29 +2,29 @@
 import BaseButton from './button.vue'
 
 export default {
-	extends: BaseButton,
-	data() {
-		return {
-			label: this.$t('markdown.toolbar.button.blockquote'),
+    extends: BaseButton,
+    data() {
+        return {
+            label: this.$t('markdown.toolbar.button.blockquote'),
             icon: 'quote',
-		}
-	},
-	methods: {
-		action() {
-			let selection         = this.editor.getDoc().getSelection()
-			let replacedSelection = []
+        }
+    },
+    methods: {
+        action() {
+            let selection         = this.editor.getDoc().getSelection()
+            let replacedSelection = []
 
-			selection.split("\n").forEach((line, index) => {
-      			replacedSelection.push('> ' + line);
-    		});
+            selection.split("\n").forEach((line, index) => {
+                replacedSelection.push('> ' + line);
+            });
 
-    		replacedSelection = replacedSelection.join("\n");
+            replacedSelection = replacedSelection.join("\n");
 
-			// replace current selection
-			this.editor.getDoc().replaceSelection(replacedSelection)
-			// bring the focus back to the editor
-    		this.editor.focus()
-		}
-	}
+            // replace current selection
+            this.editor.getDoc().replaceSelection(replacedSelection)
+            // bring the focus back to the editor
+            this.editor.focus()
+        }
+    }
 };
 </script>

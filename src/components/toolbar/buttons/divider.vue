@@ -1,3 +1,3 @@
 <template>
-	<span class="k-toolbar-divider" />
+    <span class="k-toolbar-divider" />
 </template>
