@@ -9,4 +9,5 @@ return array(
 	'markdown.toolbar.button.heading.4'       => 'Heading 4',
 	'markdown.toolbar.button.heading.5'       => 'Heading 5',
 	'markdown.toolbar.button.heading.6'       => 'Heading 6',
+	'markdown.toolbar.button.invisibles'      => 'Show hidden characters',
 );

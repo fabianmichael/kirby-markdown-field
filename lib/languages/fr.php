@@ -9,4 +9,5 @@ return array(
 	'markdown.toolbar.button.heading.4'       => 'Titre 4',
 	'markdown.toolbar.button.heading.5'       => 'Titre 5',
 	'markdown.toolbar.button.heading.6'       => 'Titre 6',
+	'markdown.toolbar.button.invisibles'      => 'Afficher les caractères masqués',
 );
