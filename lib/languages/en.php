@@ -1,6 +1,9 @@
 <?php
 
 return array(
+	'markdown.yes'                            => 'Yes',
+	'markdown.no'                             => 'No',
+	'markdown.dialog.blank'                   => 'Open in a new tab?',
 	'markdown.toolbar.button.blockquote'      => 'Blockquote',
 	'markdown.toolbar.button.horizontal-rule' => 'Horizontal rule',
 	'markdown.toolbar.button.heading.4'       => 'Heading 4',

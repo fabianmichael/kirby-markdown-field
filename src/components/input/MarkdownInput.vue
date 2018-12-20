@@ -12,7 +12,7 @@
             </textarea>
         </div>
 
-        <k-markdown-link-dialog ref="linkDialog" :editor="editor" @cancel="cancel" @submit="insert"/>
+        <k-markdown-link-dialog ref="linkDialog" :editor="editor" :blank="blank" @cancel="cancel" @submit="insert"/>
         <k-markdown-email-dialog ref="emailDialog" :editor="editor" @cancel="cancel" @submit="insert"/>
     </div>
 </template>
@@ -41,6 +41,7 @@ export default {
     props: {
         autofocus: Boolean,
         modals: Boolean,
+        blank: Boolean,
         buttons: {
           type: [Boolean, Array],
           default: true

@@ -20,6 +20,12 @@ $options = array_merge_recursive($options, [
         'modals' => function($modals = true) {
             return $modals;
         },
+        /**
+         * Whether link dialogs enable editors to easily set a target="_blank". Boolean.
+         */
+        'blank' => function($blank = false) {
+            return $blank;
+        },
     ],
 ]);
 

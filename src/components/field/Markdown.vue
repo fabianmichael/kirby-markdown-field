@@ -10,6 +10,7 @@ export default {
     props: {
         font: String,
         modals: Boolean,
+        blank: Boolean,
     }
 };
 </script>

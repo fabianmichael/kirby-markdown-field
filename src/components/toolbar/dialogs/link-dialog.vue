@@ -4,7 +4,7 @@
               @close="cancel"
               @submit="$refs.form.submit()">
         <k-form ref="form"
-                :fields="fields"
+                :fields="displayedFields"
                 v-model="value"
                 @submit="submit"/>
     </k-dialog>
@@ -16,7 +16,8 @@ export default {
         return {
             value: {
                 url: null,
-                text: null
+                text: null,
+                blank: false,
             },
             fields: {
                 url: {
@@ -29,15 +30,26 @@ export default {
                     label: this.$t("link.text"),
                     type: 'text'
                 }
+            },
+            blankField: {
+                blank: {
+                    label: this.$t("markdown.dialog.blank"),
+                    type: 'toggle',
+                    text: [this.$t("markdown.no"), this.$t("markdown.yes")]
+                }
             }
         }
     },
     props: {
         editor: Object,
+        blank: Boolean,
     },
     computed: {
         kirbytext() {
             return this.$store.state.system.info.kirbytext;
+        },
+        displayedFields() {
+            return this.blank ? Object.assign(this.fields, this.blankField) : this.fields
         }
     },
     methods: {
@@ -63,10 +75,12 @@ export default {
             return str.match(/^https?:\/\//) && !str.match(/\s/)
         },
         createKirbytext() {
+            let blank = this.blank && this.value.blank ? ' target: _blank' : ''
+
             if (this.value.text.length > 0) {
-                return '(link: '+ this.value.url +' text: '+ this.value.text +')'
+                return '(link: '+ this.value.url +' text: '+ this.value.text + blank +')'
             } else {
-                return '(link: '+ this.value.url +')'
+                return '(link: '+ this.value.url + blank +')'
             }
         },
         createMarkdown() {
