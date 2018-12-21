@@ -4,8 +4,8 @@
                   :tooltip="label"
                   tabindex="-1"
                   class="k-toolbar-button k-markdown-button"
-                  @click="$refs['headlines-' + buttonIndex + '-dropdown'].toggle()" />
-        <k-dropdown-content :ref="'headlines-' + buttonIndex + '-dropdown'">
+                  @click="$refs[name +'-' + buttonIndex + '-dropdown'].toggle()" />
+        <k-dropdown-content :ref="name +'-'+ buttonIndex + '-dropdown'">
             <k-dropdown-item v-for="(item, itemKey, itemIndex) in dropdown"
                              v-if="headlinesArray.includes(itemKey)"
                              :key="itemIndex"

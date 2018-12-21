@@ -1,7 +1,7 @@
 <template>
     <nav class="k-toolbar k-markdown-toolbar">
         <div class="k-toolbar-buttons">
-            <component v-for="(button, index) in layout" :is="'k-markdown-button-' + buttonName(button)" :key="index" :button="button" :buttonIndex="index" :editor="editor" :modals="modals" :blank="blank"/>
+            <component v-for="(button, index) in layout" :is="'k-markdown-button-' + buttonName(button)" :key="index" :button="button" :name="buttonName(button)" :buttonIndex="index" :editor="editor" :modals="modals"/>
         </div>
   </nav>
 </template>

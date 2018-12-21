@@ -35,7 +35,7 @@ export default {
     data() {
         return {
             editor: Object,
-            skipNextChangeEvent: false
+            skipNextChangeEvent: false,
         }
     },
     props: {
@@ -95,7 +95,7 @@ export default {
         })
 
         // Emit changed value
-        this.editor.on('change', function(_editor) {
+        this.editor.on('change', (_editor) => {
             // if the change is triggered by the watched value
             if (_this.skipNextChangeEvent) {
                 _this.skipNextChangeEvent = false;
@@ -104,7 +104,8 @@ export default {
 
             _this.value = _editor.getValue();
             _this.$emit('input', _this.value);
-        });
+        })
+
     },
     watch: {
         value(newVal, oldVal) {

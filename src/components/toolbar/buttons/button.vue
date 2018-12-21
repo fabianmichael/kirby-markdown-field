@@ -11,6 +11,7 @@ export default {
     props: {
         button: [String, Object],
         buttonIndex: String,
+        name: String,
         editor: Object,
         modals: Boolean,
     },
