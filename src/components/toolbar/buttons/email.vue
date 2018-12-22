@@ -14,7 +14,7 @@ export default {
         action() {
             // open a modal if allowed
             if(this.modals) {
-                this.$root.$emit('openDialog', 'email')
+                this.$root.$emit('md-openDialog', 'email')
             }
             // else, insert an inline tag
             else {

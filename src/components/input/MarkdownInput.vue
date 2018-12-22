@@ -79,14 +79,14 @@ export default {
         }
 
         // Register shortcuts
-        this.$root.$on('registerShortcut', (shortcut, fn) => {
+        this.$root.$on('md-registerShortcut', (shortcut, fn) => {
             let map = {}
                 map[shortcut] = fn
             this.editor.addKeyMap(map)
         })
 
         // Open dialogs
-        this.$root.$on('openDialog', (dialog) => {
+        this.$root.$on('md-openDialog', (dialog) => {
             if(this.$refs[dialog + "Dialog"]) {
                 this.$refs[dialog + "Dialog"].open();
             } else {
@@ -104,6 +104,11 @@ export default {
 
             _this.value = _editor.getValue();
             _this.$emit('input', _this.value);
+        })
+
+        // Emit changed value
+        this.editor.on('focus', (_editor) => {
+            this.$root.$emit('md-closeDropdowns')
         })
 
     },

@@ -4,8 +4,8 @@
                   :tooltip="label"
                   tabindex="-1"
                   class="k-toolbar-button k-markdown-button"
-                  @click="$refs[name +'-' + buttonIndex + '-dropdown'].toggle()" />
-        <k-dropdown-content :ref="name +'-'+ buttonIndex + '-dropdown'">
+                  @click="dropdownEl.toggle()"/>
+        <k-dropdown-content :ref="dropdownName">
             <k-dropdown-item v-for="(item, itemKey, itemIndex) in dropdown"
                              v-if="headlinesArray.includes(itemKey)"
                              :key="itemIndex"
@@ -60,10 +60,15 @@ export default {
             }
         }
     },
+    created() {
+        this.$root.$on('md-closeDropdowns', () => {
+            this.close()
+        })
+    },
     computed: {
         headlinesArray() {
             return typeof this.button == 'string' ? ['h1', 'h2', 'h3'] : this.button.buttons
-        }
+        },
     },
     methods: {
         action(args) {
@@ -72,6 +77,9 @@ export default {
             // bring the focus back to the editor
             this.editor.focus()
         },
-    }
+        close() {
+            this.dropdownEl.close()
+        }
+    },
 };
 </script>

@@ -15,12 +15,20 @@ export default {
         editor: Object,
         modals: Boolean,
     },
+    computed: {
+        dropdownName() {
+            return this.name +'-' + this.buttonIndex + '-dropdown'
+        },
+        dropdownEl() {
+            return this.$refs[this.dropdownName]
+        }   
+    },
     watch: {
         editor(val) {
             if(typeof val !== 'undefined' && this.shortcut) {
-                this.$root.$emit('registerShortcut', this.shortcut, this.action)
+                this.$root.$emit('md-registerShortcut', this.shortcut, this.action)
             }
         },
-    }
+    },
 };
 </script>
