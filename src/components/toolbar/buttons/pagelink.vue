@@ -5,14 +5,13 @@ export default {
 	extends: BaseButton,
 	data() {
 		return {
-			label: this.$t('toolbar.button.link'),
-            icon: 'url',
-            shortcut: 'Cmd-P'
+			label: this.$t('markdown.toolbar.button.pagelink'),
+            icon: 'pagelink',
 		}
 	},
 	methods: {
 		action() {
-			this.$root.$emit('openDialog', 'pages')
+			this.$root.$emit('md-openDialog', 'pages')
 		}
 	}
 };

@@ -27,6 +27,54 @@ $options = array_merge_recursive($options, [
             return $blank;
         },
     ],
+    'methods' => [
+        'pageResponse' => function($page) {
+            $thumb = ['width'  => 100, 'height' => 100];
+            $image = $page->panelImage($this->image, $thumb);
+            $model = $this->model();
+
+            return [
+                'text'        => $page->toString('{{ page.title }}'),
+                'link'        => $page->panelUrl(true),
+                'id'          => $page->id(),
+                'info'        => false,
+                'image'       => $image,
+                'icon'        => $page->panelIcon($image),
+                'hasChildren' => $page->hasChildren(),
+            ];
+        },
+    ],
+    'api' => function() {
+        return [
+            [
+                'pattern' => '/',
+                'action' => function () {
+                    $field = $this->field();
+
+                    if (!$parent = $this->site()->find($this->requestQuery('parent'))) {
+                        $parent = $this->site();
+                    }
+                    
+                    $pages = $parent->children();
+                    $model = [
+                        'id'    => $parent->id() == '' ? null : $parent->id(),
+                        'title' => $parent->title()->value()
+                    ];
+
+                    $children = [];
+                    foreach ($pages as $index => $page) {
+                        if ($page->isReadable() === true) {
+                            $children[] = $field->pageResponse($page);
+                        }
+                    }
+                    return [
+                        'model' => $model,
+                        'pages' => $children
+                    ];
+                }
+            ]
+        ];
+    },
 ]);
 
 // return the updated options

@@ -10,4 +10,5 @@ return array(
     'markdown.toolbar.button.heading.5'       => 'Titre 5',
     'markdown.toolbar.button.heading.6'       => 'Titre 6',
     'markdown.toolbar.button.invisibles'      => 'Afficher les caractères masqués',
+    'markdown.toolbar.button.pagelink'        => 'Lien vers une page du site',
 );

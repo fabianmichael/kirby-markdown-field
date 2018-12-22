@@ -14,6 +14,7 @@
 
         <k-markdown-link-dialog ref="linkDialog" :editor="editor" :blank="blank" @cancel="cancel" @submit="insert"/>
         <k-markdown-email-dialog ref="emailDialog" :editor="editor" @cancel="cancel" @submit="insert"/>
+        <k-pages-dialog ref="pagesDialog" :options="pagesOptions" @cancel="cancel" @submit="insertPageLink" />
     </div>
 </template>
 
@@ -46,6 +47,7 @@ export default {
           type: [Boolean, Array],
           default: true
         },
+        endpoints: Object,
         placeholder: String,
         size: String,
         value: String,
@@ -88,7 +90,18 @@ export default {
         // Open dialogs
         this.$root.$on('md-openDialog', (dialog) => {
             if(this.$refs[dialog + "Dialog"]) {
-                this.$refs[dialog + "Dialog"].open();
+                // open the pages dialog with the correct options
+                if(dialog == 'pages') {
+                    this.$refs[dialog + "Dialog"].open({
+                        endpoint: this.endpoints.field,
+                        multiple: false,
+                        selected: []
+                    })
+                }
+                // open every other dialog without additional params
+                else {
+                    this.$refs[dialog + "Dialog"].open();
+                }
             } else {
                 throw "Invalid toolbar dialog";
             }
@@ -110,7 +123,6 @@ export default {
         this.editor.on('focus', (_editor) => {
             this.$root.$emit('md-closeDropdowns')
         })
-
     },
     watch: {
         value(newVal, oldVal) {
@@ -125,17 +137,34 @@ export default {
     },
     methods: {
         cancel() {
-            this.$refs.input.focus();
+            this.editorFocus()
         },
         insert(text) {
-            let _this = this
-
             // wrap selection with **
             this.editor.getDoc().replaceSelection(text)
             // move caret before the second wrapper: (tag: text[caret])
             let pos = this.editor.getCursor()
             this.editor.setCursor({line: pos.line, ch: pos.ch - 1})
             // bring the focus back to the editor
+            this.editorFocus()
+        },
+        insertPageLink(selected) {
+            let page      = selected[0]
+            let doc       = this.editor.getDoc()
+            let selection = doc.getSelection()
+            let text      = selection.length > 0 ? selection : page.text
+            let tag       = '(link: '+ page.id +' text: '+ text +')'
+
+            // insert the tag
+            doc.replaceSelection(tag)
+            // move caret before the second wrapper: (link: page/id text: Page title[caret])
+            let pos = this.editor.getCursor()
+            this.editor.setCursor({line: pos.line, ch: pos.ch - 1})
+            // bring the focus back to the editor
+            this.editorFocus()
+        },
+        editorFocus() {
+            let _this = this
             setTimeout(() => {
                 _this.$refs.input.focus()
                 _this.editor.focus()

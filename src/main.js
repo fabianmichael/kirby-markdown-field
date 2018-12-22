@@ -16,6 +16,7 @@ import Bold           from './components/toolbar/buttons/bold.vue'
 import Italic         from './components/toolbar/buttons/italic.vue'
 import Code           from './components/toolbar/buttons/code.vue'
 import Link           from './components/toolbar/buttons/link.vue'
+import PageLink       from './components/toolbar/buttons/pagelink.vue'
 import Email          from './components/toolbar/buttons/email.vue'
 import Ul             from './components/toolbar/buttons/ul.vue'
 import Ol             from './components/toolbar/buttons/ol.vue'
@@ -37,6 +38,7 @@ panel.plugin('community/markdown-field', {
         'k-markdown-button-italic': Italic,
         'k-markdown-button-code': Code,
         'k-markdown-button-link': Link,
+        'k-markdown-button-pagelink': PageLink,
         'k-markdown-button-email': Email,
         'k-markdown-button-ul': Ul,
         'k-markdown-button-ol': Ol,
