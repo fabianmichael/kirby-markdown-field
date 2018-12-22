@@ -78,7 +78,7 @@ export default {
             this.editor.focus()
         },
         close() {
-            this.dropdownEl.close()
+            if(this.dropdownEl) this.dropdownEl.close()
         }
     },
 };

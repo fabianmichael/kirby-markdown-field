@@ -14,7 +14,8 @@
 
         <k-markdown-link-dialog ref="linkDialog" :editor="editor" :blank="blank" @cancel="cancel" @submit="insert"/>
         <k-markdown-email-dialog ref="emailDialog" :editor="editor" @cancel="cancel" @submit="insert"/>
-        <k-pages-dialog ref="pagesDialog" :options="pagesOptions" @cancel="cancel" @submit="insertPageLink" />
+        <k-pages-dialog ref="pagesDialog" @cancel="cancel" @submit="insertPageLink" />
+        <k-files-dialog ref="imagesDialog" @cancel="cancel" @submit="insertImageTag" />
     </div>
 </template>
 
@@ -92,11 +93,11 @@ export default {
             if(this.$refs[dialog + "Dialog"]) {
                 // open the pages dialog with the correct options
                 if(dialog == 'pages') {
-                    this.$refs[dialog + "Dialog"].open({
-                        endpoint: this.endpoints.field,
-                        multiple: false,
-                        selected: []
-                    })
+                    this.openPagesDialog()
+                }
+                // open the files dialog with the correct options
+                else if(dialog == 'images') {
+                    this.openFilesDialog()
                 }
                 // open every other dialog without additional params
                 else {
@@ -139,6 +140,39 @@ export default {
         cancel() {
             this.editorFocus()
         },
+        openPagesDialog() {
+            this.$refs['pagesDialog'].open({
+                endpoint: this.endpoints.field + '/get-pages',
+                multiple: false,
+                selected: []
+            })
+        },
+        openFilesDialog() {
+            this.$api
+                .get(this.endpoints.field + '/get-images')
+                .then(files => {
+                    if(files.length) {
+                        files = files.map(file => {
+                            file.selected = false
+                            file.thumb = []
+                            file.thumb.url = false;
+                            if(file.thumbs && file.thumbs.tiny) {
+                                file.thumb.url = file.thumbs.medium;
+                            }
+                            return file;
+                        })
+                        this.$refs['imagesDialog'].open(files, {
+                            multiple: false
+                        })
+                    }
+                    else {
+                        this.$store.dispatch('notification/error', 'The page has no image')
+                    }
+                })
+                .catch((error) => {
+                    this.$store.dispatch('notification/error', 'The files query does not seem to be correct')
+                })
+        },
         insert(text) {
             // wrap selection with **
             this.editor.getDoc().replaceSelection(text)
@@ -160,6 +194,15 @@ export default {
             // move caret before the second wrapper: (link: page/id text: Page title[caret])
             let pos = this.editor.getCursor()
             this.editor.setCursor({line: pos.line, ch: pos.ch - 1})
+            // bring the focus back to the editor
+            this.editorFocus()
+        },
+        insertImageTag(selected) {
+            let image = selected[0]
+            let tag   = '(image: '+ image.uuid +')'
+
+            // insert the tag
+            this.editor.getDoc().replaceSelection(tag)
             // bring the focus back to the editor
             this.editorFocus()
         },

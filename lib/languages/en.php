@@ -11,4 +11,5 @@ return array(
     'markdown.toolbar.button.heading.6'       => 'Heading 6',
     'markdown.toolbar.button.invisibles'      => 'Show hidden characters',
     'markdown.toolbar.button.pagelink'        => 'Link to a page of the website',
+    'markdown.toolbar.button.image'           => 'Insert an image',
 );
