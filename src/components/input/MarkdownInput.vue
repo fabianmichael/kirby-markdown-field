@@ -207,10 +207,9 @@ export default {
             this.editorFocus()
         },
         editorFocus() {
-            let _this = this
-            setTimeout(() => {
-                _this.$refs.input.focus()
-                _this.editor.focus()
+            this.$nextTick(() => {
+                this.$refs.input.focus()
+                this.editor.focus()
             })
         }
     }
