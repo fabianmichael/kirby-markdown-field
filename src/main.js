@@ -25,6 +25,7 @@ import Blockquote     from './components/toolbar/buttons/blockquote.vue'
 import HorizontalRule from './components/toolbar/buttons/horizontal-rule.vue'
 import Invisibles     from './components/toolbar/buttons/invisibles.vue'
 import Image          from './components/toolbar/buttons/image.vue'
+import File           from './components/toolbar/buttons/file.vue'
 
 
 panel.plugin('community/markdown-field', {
@@ -48,5 +49,6 @@ panel.plugin('community/markdown-field', {
         'k-markdown-button-horizontal-rule': HorizontalRule,
         'k-markdown-button-invisibles': Invisibles,
         'k-markdown-button-image': Image,
+        'k-markdown-button-file': File,
     }
 });

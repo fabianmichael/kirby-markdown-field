@@ -103,6 +103,19 @@ $options = array_merge_recursive($options, [
                     }
                     return $data;
                 }
+            ],
+            [
+                'pattern' => 'get-files',
+                'method'  => 'GET',
+                'action'  => function () {
+                    $field = $this->field();
+                    $files = $field->model()->query('page.files.filterBy("type", "!=", "image")', 'Kirby\Cms\Files');
+                    $data  = [];
+                    foreach ($files as $index => $file) {
+                        $data[] = $field->fileResponse($file);
+                    }
+                    return $data;
+                }
             ]
         ];
     },

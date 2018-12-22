@@ -15,7 +15,7 @@
         <k-markdown-link-dialog ref="linkDialog" :editor="editor" :blank="blank" @cancel="cancel" @submit="insert"/>
         <k-markdown-email-dialog ref="emailDialog" :editor="editor" @cancel="cancel" @submit="insert"/>
         <k-pages-dialog ref="pagesDialog" @cancel="cancel" @submit="insertPageLink" />
-        <k-files-dialog ref="imagesDialog" @cancel="cancel" @submit="insertImageTag" />
+        <k-files-dialog ref="filesDialog" @cancel="cancel" @submit="insertFileTag" />
     </div>
 </template>
 
@@ -38,6 +38,7 @@ export default {
         return {
             editor: Object,
             skipNextChangeEvent: false,
+            currentDialog: null,
         }
     },
     props: {
@@ -90,18 +91,22 @@ export default {
 
         // Open dialogs
         this.$root.$on('md-openDialog', (dialog) => {
-            if(this.$refs[dialog + "Dialog"]) {
+            let dialogName = dialog == 'images' ? 'files' : dialog
+
+            if(this.$refs[dialogName + "Dialog"]) {
+                this.currentDialog = dialog
+
                 // open the pages dialog with the correct options
                 if(dialog == 'pages') {
                     this.openPagesDialog()
                 }
                 // open the files dialog with the correct options
-                else if(dialog == 'images') {
-                    this.openFilesDialog()
+                else if(dialog == 'images' || dialog == 'files') {
+                    this.openFilesDialog(dialog)
                 }
                 // open every other dialog without additional params
                 else {
-                    this.$refs[dialog + "Dialog"].open();
+                    this.$refs[dialogName + "Dialog"].open();
                 }
             } else {
                 throw "Invalid toolbar dialog";
@@ -139,6 +144,7 @@ export default {
     methods: {
         cancel() {
             this.editorFocus()
+            this.currentDialog = null
         },
         openPagesDialog() {
             this.$refs['pagesDialog'].open({
@@ -147,9 +153,9 @@ export default {
                 selected: []
             })
         },
-        openFilesDialog() {
+        openFilesDialog(dialog) {
             this.$api
-                .get(this.endpoints.field + '/get-images')
+                .get(this.endpoints.field + '/get-'+ dialog)
                 .then(files => {
                     if(files.length) {
                         files = files.map(file => {
@@ -157,16 +163,16 @@ export default {
                             file.thumb = []
                             file.thumb.url = false;
                             if(file.thumbs && file.thumbs.tiny) {
-                                file.thumb.url = file.thumbs.medium;
+                                file.thumb.url = file.thumbs.tiny;
                             }
                             return file;
                         })
-                        this.$refs['imagesDialog'].open(files, {
+                        this.$refs['filesDialog'].open(files, {
                             multiple: false
                         })
                     }
                     else {
-                        this.$store.dispatch('notification/error', 'The page has no image')
+                        this.$store.dispatch('notification/error', 'The page has no '+ dialog)
                     }
                 })
                 .catch((error) => {
@@ -197,14 +203,32 @@ export default {
             // bring the focus back to the editor
             this.editorFocus()
         },
-        insertImageTag(selected) {
-            let image = selected[0]
-            let tag   = '(image: '+ image.uuid +')'
+        insertFileTag(selected) {
+            let file = selected[0]
+            let doc  = this.editor.getDoc()
 
-            // insert the tag
-            this.editor.getDoc().replaceSelection(tag)
+            if(this.currentDialog == 'images') {
+                let tag = '(image: '+ file.uuid +')'
+                // insert the tag
+                doc.replaceSelection(tag)
+            } 
+            else {
+                let selection = doc.getSelection()
+                let suffix    = selection.length > 0 ? ' text: '+ selection : ''
+                let incr      = selection.length > 0 ? 1 : 0
+
+                // insert the tag
+                doc.replaceSelection('(file: '+ file.uuid + suffix +')')
+                // move caret 
+                // -> after the tag if there is no selected text: (file: filename.pdf)[caret]
+                // -> before the second wrapper if there is a selected text: (file: filename.pdf text: Text[caret])
+                let pos = this.editor.getCursor()
+                this.editor.setCursor({line: pos.line, ch: pos.ch - incr})
+            }
+            
             // bring the focus back to the editor
             this.editorFocus()
+            this.currentDialog = null
         },
         editorFocus() {
             let _this = this

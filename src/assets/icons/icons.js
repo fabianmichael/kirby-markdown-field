@@ -23,4 +23,7 @@ document.querySelector('svg defs').innerHTML += `
     <symbol id="icon-pagelink" viewbox="0 0 64 64">
         <path class="c3b91c6e-40d9-4649-aa7a-fb4ca736556e" d="M60,60V20L40,0H8A3.78,3.78,0,0,0,4,4V60a3.78,3.78,0,0,0,4,4H56A3.78,3.78,0,0,0,60,60ZM12,8H36V24H52V56H12Z"/>
     </symbol>
+    <symbol id="icon-attachment" viewbox="0 0 64 64">
+        <path d="M19.62,20V36a11.79,11.79,0,0,0,12,12,11.79,11.79,0,0,0,12-12V18a18,18,0,0,0-36,0V40a24,24,0,0,0,48,0V16h-8V40a16,16,0,0,1-32,0V18a10,10,0,0,1,20,0V36a3.78,3.78,0,0,1-4,4,3.78,3.78,0,0,1-4-4V20Z"/>
+    </symbol>
 `;

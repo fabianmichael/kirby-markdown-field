@@ -12,4 +12,5 @@ return array(
     'markdown.toolbar.button.invisibles'      => 'Afficher les caractères masqués',
     'markdown.toolbar.button.pagelink'        => 'Lien vers une page du site',
     'markdown.toolbar.button.image'           => 'Insérer une image',
+    'markdown.toolbar.button.file'            => 'Insérer un fichier téléchargeable',
 );
