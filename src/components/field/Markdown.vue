@@ -11,6 +11,7 @@ export default {
         font: String,
         modals: Boolean,
         blank: Boolean,
+        invisibles: Boolean,
     }
 };
 </script>

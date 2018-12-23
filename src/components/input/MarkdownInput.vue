@@ -5,6 +5,7 @@
                        ref="toolbar"
                        :modals="modals"
                        :editor="editor"
+                       :invisibles="invisibles"
                        :buttons="buttons"/>
             <textarea ref="input"
                       class="k-markdown-input-native"
@@ -45,6 +46,7 @@ export default {
         autofocus: Boolean,
         modals: Boolean, 
         blank: Boolean,
+        invisibles: Boolean,
         buttons: {
           type: [Boolean, Array],
           default: true

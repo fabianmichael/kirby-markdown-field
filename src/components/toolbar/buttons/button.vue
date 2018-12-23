@@ -2,7 +2,7 @@
     <k-button :icon="icon"
               :tooltip="label"
               tabindex="-1"
-              class="k-toolbar-button k-markdown-button"
+              :class="['k-toolbar-button', 'k-markdown-button', 'k-markdown-button-'+ name]"
               @click="action" />
 </template>
 

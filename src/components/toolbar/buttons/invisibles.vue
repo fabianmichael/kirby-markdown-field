@@ -1,3 +1,11 @@
+<template>
+    <k-button :icon="icon"
+              :tooltip="label"
+              tabindex="-1"
+              :class="['k-toolbar-button', 'k-markdown-button', 'k-markdown-button-'+ name, {active: active}]"
+              @click="action" />
+</template>
+
 <script>
 import BaseButton from './button.vue'
 
@@ -6,7 +14,8 @@ export default {
     data() {
         return {
             label: this.$t('markdown.toolbar.button.invisibles'),
-            icon: 'smile',
+            icon: 'preview',
+            active: false,
         }
     },
     computed: {
@@ -24,20 +33,17 @@ export default {
     },
     methods: {
         action() {
-            if(this.overlayExists('invisibles')) {
+            if(this.active) {
                 this.editor.removeOverlay(this.invisibleOverlay)
+                this.active = false
             }
             else {
                 this.editor.addOverlay(this.invisibleOverlay)
+                this.active = true
             }
             // bring the focus back to the editor
             this.editor.focus()
         },
-        overlayExists(name) {
-            return this.editor.state.overlays.find(el => {
-                return el.mode.name == 'invisibles'
-            })
-        }
     }
 };
 </script>

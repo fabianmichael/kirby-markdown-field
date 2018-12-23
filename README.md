@@ -49,6 +49,7 @@ You have access to the very same options as [the textarea field](https://nnnnext
 | font | String | false | monospace | Sets the font of the Markdown field. Available options: monospace, sans-serif |
 | modals | Boolean | false | true | If set to `false`, link and email tags will be added without opening a modal |
 | blank | Boolean | false | false | If set to `true`, editors will be presented an option to add the `target: _blank` option to link tags |
+| invisibles | Boolean | false | false | If set to `true`, the *invisibles* button will be displayed in the toolbar, allowing you to show / hide hidden characters and whitespaces |
 
 One small difference with the textarea options, `headlines` goes from h1 to h6 and accepts a sub-array:
 
@@ -57,6 +58,17 @@ buttons:
   - headlines
     - h2
     - h3
+```
+
+New buttons to document:
+
+```
+buttons:
+  - blockquote
+  - horizontal-rule
+  - pagelink
+  - image
+  - file
 ```
 
 <br/>

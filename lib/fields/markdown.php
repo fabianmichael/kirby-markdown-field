@@ -26,6 +26,12 @@ $options = array_merge_recursive($options, [
         'blank' => function($blank = false) {
             return $blank;
         },
+        /**
+         * Whether the 'invisibles' button should be displayed. Boolean.
+         */
+        'invisibles' => function($invisibles = false) {
+            return $invisibles;
+        },
     ],
     'methods' => [
         'pageResponse' => function($page) {
