@@ -13,4 +13,5 @@ return array(
     'markdown.toolbar.button.pagelink'        => 'Link to a page of the website',
     'markdown.toolbar.button.image'           => 'Insert an image',
     'markdown.toolbar.button.file'            => 'Insert a downloadable file',
+    'markdown.toolbar.button.strikethrough'   => 'Strikethrough',
 );

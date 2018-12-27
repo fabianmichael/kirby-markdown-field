@@ -66,6 +66,7 @@ New buttons to document:
 buttons:
   - blockquote
   - horizontal-rule
+  - strikethrough
   - pagelink
   - image
   - file

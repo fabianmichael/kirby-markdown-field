@@ -26,6 +26,7 @@ import HorizontalRule from './components/toolbar/buttons/horizontal-rule.vue'
 import Invisibles     from './components/toolbar/buttons/invisibles.vue'
 import Image          from './components/toolbar/buttons/image.vue'
 import File           from './components/toolbar/buttons/file.vue'
+import Strikethrough  from './components/toolbar/buttons/strikethrough.vue'
 
 
 panel.plugin('community/markdown-field', {
@@ -50,5 +51,6 @@ panel.plugin('community/markdown-field', {
         'k-markdown-button-invisibles': Invisibles,
         'k-markdown-button-image': Image,
         'k-markdown-button-file': File,
+        'k-markdown-button-strikethrough': Strikethrough,
     }
 });
