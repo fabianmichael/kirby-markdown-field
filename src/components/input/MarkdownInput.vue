@@ -138,9 +138,15 @@ export default {
             if (newVal !== editorValue) {
                 this.skipNextChangeEvent = true
                 let scrollInfo = this.editor.getScrollInfo()
+                // set the new value as the editor's content
                 this.editor.setValue(newVal)
+                // restore scroll position
                 this.editor.scrollTo(scrollInfo.left, scrollInfo.top)
             }
+            // force refresh
+            this.$nextTick(() => {
+                this.editor.refresh() 
+            })
         },
     },
     methods: {
