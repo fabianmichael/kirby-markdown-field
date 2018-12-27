@@ -1,5 +1,5 @@
 <template>
-    <div :data-theme="theme" class="k-markdown-input">
+    <div :data-theme="theme" class="k-markdown-input" :font="font">
         <div class="k-markdown-input-wrapper" :data-size="size">
             <k-markdown-toolbar v-if="buttons"
                        ref="toolbar"
@@ -21,9 +21,11 @@
 </template>
 
 <script>
-import CodeMirror from 'codemirror'
-import 'codemirror/mode/markdown/markdown.js'
-import 'codemirror/addon/display/placeholder.js'
+import CodeMirror from 'codemirror';
+import '../../modes/kirbytext';
+import 'codemirror/addon/edit/continuelist';
+import 'codemirror/addon/display/placeholder';
+import 'codemirror/addon/selection/mark-selection';
 
 import Toolbar from '../toolbar/MarkdownToolbar.vue'
 import LinkDialog from '../toolbar/dialogs/link-dialog.vue'
@@ -55,16 +57,24 @@ export default {
         placeholder: String,
         size: String,
         value: String,
+        font: String,
+        kirbytags: Array,
         options: {
             type: Object,
             default: function () {
                 return {
                     mode: {
-                        name: "markdown",
-                        highlightFormatting: true
+                        name: 'kirbytext',
+                        highlightFormatting: true,
+                        kirbytags: this.kirbytags,
+                        // fencedCodeBlockHighlighting: false,
                     },
                     lineNumbers: false,
                     lineWrapping: true,
+                    extraKeys: {
+                        'Enter': 'newlineAndIndentContinueMarkdownList',
+                    },
+                    font: this.font,
                 };
             },
         },
@@ -131,6 +141,9 @@ export default {
         this.editor.on('focus', (_editor) => {
             this.$root.$emit('md-closeDropdowns')
         })
+
+        // Additional styling
+        this.editor.on('renderLine', this.renderLine.bind(this));
     },
     watch: {
         value(newVal, oldVal) {
@@ -148,6 +161,7 @@ export default {
             this.editorFocus()
             this.currentDialog = null
         },
+
         openPagesDialog() {
             this.$refs['pagesDialog'].open({
                 endpoint: this.endpoints.field + '/get-pages',
@@ -155,6 +169,7 @@ export default {
                 selected: []
             })
         },
+
         openFilesDialog(dialog) {
             this.$api
                 .get(this.endpoints.field + '/get-'+ dialog)
@@ -181,6 +196,7 @@ export default {
                     this.$store.dispatch('notification/error', 'The files query does not seem to be correct')
                 })
         },
+
         insert(text) {
             // wrap selection with **
             this.editor.getDoc().replaceSelection(text)
@@ -190,6 +206,7 @@ export default {
             // bring the focus back to the editor
             this.editorFocus()
         },
+
         insertPageLink(selected) {
             let page      = selected[0]
             let doc       = this.editor.getDoc()
@@ -205,6 +222,7 @@ export default {
             // bring the focus back to the editor
             this.editorFocus()
         },
+
         insertFileTag(selected) {
             let file = selected[0]
             let doc  = this.editor.getDoc()
@@ -232,13 +250,170 @@ export default {
             this.editorFocus()
             this.currentDialog = null
         },
+
         editorFocus() {
             let _this = this
             setTimeout(() => {
                 _this.$refs.input.focus()
                 _this.editor.focus()
             })
-        }
+        },
+
+        /**
+         * Apply special styles when a line gets rendered
+         */
+        renderLine(cm, line, el) {
+            if (cm.getOption('font') === 'monospace') {
+                this.renderBlockStylesMonospace(cm, line, el);
+            } else {
+                this.renderBlockStylesProportional(cm, line, el);
+            }
+        },
+
+        /**
+         * Maybe apply hanging quote styles to a line for proportional font
+         */
+        renderBlockStylesProportional(cm, line, el) {
+
+            const content = el.firstChild;
+            const parts = Array.prototype.slice.call(content.children).filter((el) => el.tagName === 'SPAN');
+
+            if (parts.length === 0) {
+                // Empty line, nothing to do here
+                return;
+            }
+
+            const formatting = parts[0]; // First <span> always has to be a formatting element, e.g. `#` or `>`
+
+            if (formatting.classList.contains('cm-formatting-quote')) {
+                // Blockquote
+                let part = parts[0];
+                let indent = 0;
+
+                for (let i = 0, l = parts.length; i < l; i++) {
+                    if (!parts[i].classList.contains('cm-formatting-quote')) {
+                        break;
+                    }
+
+                    indent +=  this.getActualFormattingWidth(cm, parts[i]);
+                }
+                
+                el.style.setProperty('--cm-block-indent', indent);
+
+            } else if (formatting.classList.contains('cm-formatting-header')) {
+                // Header
+                const indent = this.getActualFormattingWidth(cm, content.children[0]);
+                el.style.setProperty('--cm-block-indent', indent);
+
+            } else if (content.querySelector('.cm-formatting-list')) {
+                // List item
+                const nodes = content.childNodes; // We need all text nodes as well
+                let indent = 0;
+
+                for (let i = 0, l = nodes.length; i < l; i++) {
+                    const node = nodes[i];
+                    indent += this.getActualFormattingWidth(cm, node);
+
+                    if (node.nodeType === Node.ELEMENT_NODE && node.classList.contains('cm-formatting-list')) {
+                        break;
+                    }
+                }
+
+                el.style.setProperty('--cm-block-indent', indent);
+
+            }
+        },
+
+        /**
+         * Maybe apply hanging quote styles to a line for monospace font
+         */
+        renderBlockStylesMonospace(cm, line, el) {
+
+            const content = el.firstChild;
+            const parts = Array.prototype.slice.call(content.children).filter((el) => el.tagName === 'SPAN');
+
+            if (parts.length === 0) {
+                // Empty line, nothing to do here
+                return;
+            }
+
+            const formatting = parts[0]; // First <span> always has to be a formatting element, e.g. `#` or `>`
+
+            if (formatting.classList.contains('cm-formatting-quote')) {
+                // Blockquote
+                let part = parts[0];
+                let indent = 0;
+
+                for (let i = 0, l = parts.length; i < l; i++) {
+                    if (!parts[i].classList.contains('cm-formatting-quote')) {
+                        break;
+                    }
+
+                    indent += parts[i].textContent.length;
+                }
+                
+                el.style.setProperty('--cm-block-indent', indent);
+
+            } else if (formatting.classList.contains('cm-formatting-header')) {
+                // Header
+                const regex = new RegExp('cm-formatting-header-([1-6])');
+                const level = parseInt(regex.exec(content.children[0].className)[1], 10);
+            
+                el.style.setProperty('--cm-block-indent', level + 1);
+
+            } else if (content.querySelector('.cm-formatting-list')) {
+                // List item
+
+                const nodes = content.childNodes; // We need all text nodes as well
+                
+                let indent = 0;
+
+                for (let i = 0, l = nodes.length; i < l; i++) {
+                    
+                    const node = nodes[i];
+
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        indent += node.textContent.length;
+                    } else if (node.nodeType === Node.ELEMENT_NODE) {
+                        if (node.classList.contains('cm-tab')) {
+                            indent += cm.getOption('tabSize');
+                        } else if (node.classList.contains('cm-formatting-list')) {
+                            indent += node.textContent.length;
+                            break;
+                        }
+                    }
+                }
+
+                el.style.setProperty('--cm-block-indent', indent);
+            }
+        },
+
+        /**
+         * Gets the actual width of a text or element node in the editor.
+         */
+        getActualFormattingWidth(cm, target) {
+            
+            const wrapper = cm.getWrapperElement(); 
+            const extraStyles = 'position: absolute !important; top: -1000px !important; white-space: pre !important;';
+
+            let clone;
+            
+            if (target.nodeType === Node.TEXT_NODE) {
+                clone = document.createElement('span');
+                clone.setAttribute('style', window.getComputedStyle(target.parentNode, '').cssText + extraStyles);
+                clone.textContent = target.textContent;
+            } else {
+                clone = target.cloneNode(true);
+                clone.setAttribute('style', window.getComputedStyle(target, '').cssText + extraStyles);
+            }
+
+            wrapper.appendChild(clone);
+    
+            const width = clone.getBoundingClientRect().width;
+            clone.remove();
+            
+            return width;
+        },
     }
 }
 </script>

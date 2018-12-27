@@ -12,6 +12,7 @@ export default {
         modals: Boolean,
         blank: Boolean,
         invisibles: Boolean,
+        kirbytags: Array,
     }
 };
 </script>

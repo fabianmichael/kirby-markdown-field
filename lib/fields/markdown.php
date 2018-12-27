@@ -32,6 +32,15 @@ $options = array_merge_recursive($options, [
         'invisibles' => function($invisibles = false) {
             return $invisibles;
         },
+        /**
+         * Returns an array of known KirbyTags, used by the syntax highlighter.
+         * Highlighting only known KirbyTags decreases the chance of false
+         * positives.
+         */
+        'kirbytags' => function() {
+            $tags = array_keys(kirby()->extensions('tags'));
+            return $tags;
+        }
     ],
     'methods' => [
         'pageResponse' => function($page) {
