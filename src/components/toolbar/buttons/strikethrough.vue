@@ -5,14 +5,13 @@ export default {
     extends: BaseButton,    
     data() {
         return {
-            label: this.$t('toolbar.button.italic'),
-            icon: 'italic',
-            shortcut: 'Cmd-I'
+            label: this.$t('markdown.toolbar.button.strikethrough'),
+            icon: 'strikethrough',
         }
     },
     methods: {
         action() {
-            this.wrap('*')
+            this.wrap('~~')
         }
     }
 };

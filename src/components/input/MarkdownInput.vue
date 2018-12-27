@@ -80,8 +80,6 @@ export default {
         },
     },
     mounted() {
-        let _this = this;
-
         this.editor = CodeMirror.fromTextArea(this.$refs.input, this.options);
         this.editor.setValue(this.value);
 
@@ -102,7 +100,7 @@ export default {
         })
 
         // Open dialogs
-        this.$root.$on('md-openDialog', (dialog) => {
+        this.$root.$on('md-openDialog', dialog => {
             let dialogName = dialog == 'images' ? 'files' : dialog
 
             if(this.$refs[dialogName + "Dialog"]) {
@@ -126,19 +124,19 @@ export default {
         })
 
         // Emit changed value
-        this.editor.on('change', (_editor) => {
+        this.editor.on('change', _editor => {
             // if the change is triggered by the watched value
-            if (_this.skipNextChangeEvent) {
-                _this.skipNextChangeEvent = false;
+            if (this.skipNextChangeEvent) {
+                this.skipNextChangeEvent = false;
                 return
             }
 
-            _this.value = _editor.getValue();
-            _this.$emit('input', _this.value);
+            this.value = _editor.getValue();
+            this.$emit('input', this.value);
         })
 
         // Emit changed value
-        this.editor.on('focus', (_editor) => {
+        this.editor.on('focus', _editor => {
             this.$root.$emit('md-closeDropdowns')
         })
 
@@ -151,9 +149,13 @@ export default {
             if (newVal !== editorValue) {
                 this.skipNextChangeEvent = true
                 let scrollInfo = this.editor.getScrollInfo()
+                // set the new value as the editor's content
                 this.editor.setValue(newVal)
+                // restore scroll position
                 this.editor.scrollTo(scrollInfo.left, scrollInfo.top)
             }
+            // force refresh
+            this.$nextTick(() => this.editor.refresh())
         },
     },
     methods: {

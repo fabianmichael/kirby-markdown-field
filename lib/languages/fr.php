@@ -13,4 +13,5 @@ return array(
     'markdown.toolbar.button.pagelink'        => 'Lien vers une page du site',
     'markdown.toolbar.button.image'           => 'Insérer une image',
     'markdown.toolbar.button.file'            => 'Insérer un fichier téléchargeable',
+    'markdown.toolbar.button.strikethrough'   => 'Texte barré',
 );
