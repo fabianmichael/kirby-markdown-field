@@ -12,13 +12,7 @@ export default {
     },
     methods: {
         action() {
-            // wrap selection with **
-            this.editor.getDoc().replaceSelection('*' + this.editor.getDoc().getSelection() + '*')
-            // move caret before the second wrapper: *my text[caret]*
-            let pos = this.editor.getCursor()
-            this.editor.setCursor({line: pos.line, ch: pos.ch - 1})
-            // bring the focus back to the editor
-            this.editor.focus()
+            this.wrap('*')
         }
     }
 };
