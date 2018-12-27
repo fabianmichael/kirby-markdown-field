@@ -70,8 +70,6 @@ export default {
         },
     },
     mounted() {
-        let _this = this;
-
         this.editor = CodeMirror.fromTextArea(this.$refs.input, this.options);
         this.editor.setValue(this.value);
 
@@ -92,7 +90,7 @@ export default {
         })
 
         // Open dialogs
-        this.$root.$on('md-openDialog', (dialog) => {
+        this.$root.$on('md-openDialog', dialog => {
             let dialogName = dialog == 'images' ? 'files' : dialog
 
             if(this.$refs[dialogName + "Dialog"]) {
