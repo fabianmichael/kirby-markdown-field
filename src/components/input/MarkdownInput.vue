@@ -116,19 +116,19 @@ export default {
         })
 
         // Emit changed value
-        this.editor.on('change', (_editor) => {
+        this.editor.on('change', _editor => {
             // if the change is triggered by the watched value
-            if (_this.skipNextChangeEvent) {
-                _this.skipNextChangeEvent = false;
+            if (this.skipNextChangeEvent) {
+                this.skipNextChangeEvent = false;
                 return
             }
 
-            _this.value = _editor.getValue();
-            _this.$emit('input', _this.value);
+            this.value = _editor.getValue();
+            this.$emit('input', this.value);
         })
 
         // Emit changed value
-        this.editor.on('focus', (_editor) => {
+        this.editor.on('focus', _editor => {
             this.$root.$emit('md-closeDropdowns')
         })
     },
@@ -144,9 +144,7 @@ export default {
                 this.editor.scrollTo(scrollInfo.left, scrollInfo.top)
             }
             // force refresh
-            this.$nextTick(() => {
-                this.editor.refresh() 
-            })
+            this.$nextTick(() => this.editor.refresh())
         },
     },
     methods: {
