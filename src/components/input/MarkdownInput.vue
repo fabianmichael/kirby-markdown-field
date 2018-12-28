@@ -316,13 +316,23 @@ export default {
                 type.main      = 'headings'
                 type.secondary = tokenType.match(/header(\-[1-6])/gi)[0].replace('header', 'heading')
             }
-            // if empty or "formatting-list", determine whether it is an ordered or unordered list
+            // if empty or "formatting-list", determine whhat it really is
             else if (tokenType == '' || tokenType.endsWith('formatting-list')) {
                 let text = this.editor.getDoc().getLine(pos.line);
+                // is it an ordered list?
                 if(/^\s*\d+\.\s/.test(text)) {
                     type.main = 'ordered-list'
-                } else {
+                } 
+                // is it an unordered list?
+                else if(/^(\s*)(\*|\-|\+)\s+/.test(text)) {
                     type.main = 'unordered-list'
+                }
+                // is it a code block?
+                else {
+                    let token = this.editor.getTokenAt(pos)
+                    if(token.type.endsWith('blockcode')) {
+                        type.main = 'code'
+                    }
                 }
             }
 

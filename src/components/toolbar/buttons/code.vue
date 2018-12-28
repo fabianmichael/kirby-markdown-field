@@ -15,6 +15,7 @@ export default {
             let selection = this.selection
             // multiple lines: wrap with ```
             if(selection.includes('\n')) {
+                // TODO: find out how to toggleWrap code fences
                 this.editorDoc.replaceSelection('```\n' + this.selection + '\n```')
             }
             // single line: wrap with `
