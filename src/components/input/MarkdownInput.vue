@@ -78,7 +78,7 @@ export default {
                         'Enter': 'newlineAndIndentContinueMarkdownList',
                     },
                     font: this.font,
-                    showInvisibles: this.invisibles,
+                    showInvisibles: false,
                 };
             },
         },
