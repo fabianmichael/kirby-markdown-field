@@ -18,28 +18,15 @@ export default {
             active: false,
         }
     },
-    computed: {
-        invisibleOverlay() {
-            return {
-                name: 'invisibles',
-                token: (stream) => {
-                    if (stream.match('#')) return "invisibles-test"
-                    
-                    stream.match(/^\s*\S*/);
-                    return null;
-                }
-            }
-        }
-    },
     methods: {
         action() {
             if(this.active) {
-                this.editor.removeOverlay(this.invisibleOverlay)
-                this.active = false
+                this.editor.setOption('showInvisibles', false);
+                this.active = false;
             }
             else {
-                this.editor.addOverlay(this.invisibleOverlay)
-                this.active = true
+                this.editor.setOption('showInvisibles', true);
+                this.active = true;
             }
             // bring the focus back to the editor
             this.editor.focus()

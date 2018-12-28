@@ -23,6 +23,7 @@
 <script>
 import CodeMirror from 'codemirror';
 import '../../modes/kirbytext';
+import '../../addon/show-invisibles';
 import 'codemirror/addon/edit/continuelist';
 import 'codemirror/addon/display/placeholder';
 import 'codemirror/addon/selection/mark-selection';
@@ -67,7 +68,7 @@ export default {
                         name: 'kirbytext',
                         highlightFormatting: true,
                         kirbytags: this.kirbytags,
-                        // fencedCodeBlockHighlighting: false,
+                        fencedCodeBlockHighlighting: false, // needs to be disabled, because setting line styles for nested syntax does not work.
                     },
                     lineNumbers: false,
                     lineWrapping: true,
@@ -75,6 +76,7 @@ export default {
                         'Enter': 'newlineAndIndentContinueMarkdownList',
                     },
                     font: this.font,
+                    showInvisibles: this.invisibles,
                 };
             },
         },
@@ -273,7 +275,7 @@ export default {
         },
 
         /**
-         * Maybe apply hanging quote styles to a line for proportional font
+         * Maybe apply hanging quote styles to a line for proportional font.
          */
         renderBlockStylesProportional(cm, line, el) {
 
@@ -327,7 +329,10 @@ export default {
         },
 
         /**
-         * Maybe apply hanging quote styles to a line for monospace font
+         * Maybe apply hanging quote styles to a line for monospace font.
+         * In monospace, one character equals `1ch`, thus this algorithm
+         * can measure indentation by just counting chars, which is faster
+         * than measuring the actual width of an HTML element.
          */
         renderBlockStylesMonospace(cm, line, el) {
 
@@ -379,6 +384,8 @@ export default {
                     } else if (node.nodeType === Node.ELEMENT_NODE) {
                         if (node.classList.contains('cm-tab')) {
                             indent += cm.getOption('tabSize');
+                        } else if (cm.getOption('showInvisibles') && node.classList.contains('cm-ch')) {
+                            indent += node.textContent.length;
                         } else if (node.classList.contains('cm-formatting-list')) {
                             indent += node.textContent.length;
                             break;
@@ -391,7 +398,7 @@ export default {
         },
 
         /**
-         * Gets the actual width of a text or element node in the editor.
+         * Gets the actual width of a text node or element node in the editor.
          */
         getActualFormattingWidth(cm, target) {
             
@@ -401,10 +408,12 @@ export default {
             let clone;
             
             if (target.nodeType === Node.TEXT_NODE) {
+                // Use parent element’s styles for measuring text nodes
                 clone = document.createElement('span');
                 clone.setAttribute('style', window.getComputedStyle(target.parentNode, '').cssText + extraStyles);
                 clone.textContent = target.textContent;
             } else {
+                // Clone node and it’s style for regular nodes
                 clone = target.cloneNode(true);
                 clone.setAttribute('style', window.getComputedStyle(target, '').cssText + extraStyles);
             }
