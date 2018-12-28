@@ -65,6 +65,13 @@
   background: hsla(0, 0%, 93.7%, 0.5);
 }
 
+// active state of toolbar buttons
+.k-dropdown-item.active {
+  .k-button-text {
+  	opacity: 1;
+  }
+}
+
 // align invisibles button to the right of the toolbar
 .k-markdown-toolbar-buttons-right {
   margin-left: auto;

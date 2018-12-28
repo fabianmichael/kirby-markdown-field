@@ -10,7 +10,8 @@
                              v-if="headlinesArray.includes(itemKey)"
                              :key="itemIndex"
                              :icon="item.icon"
-                             @click="action(item.args)">
+                             :class="{active: isActive(item.type)}"
+                             @click="action(item)">
                 {{ item.label }}
             </k-dropdown-item>
         </k-dropdown-content>
@@ -78,11 +79,11 @@ export default {
         },
     },
     methods: {
-        action(args) {
-            // prepend the correct arg
-            this.editor.getDoc().replaceSelection(args + ' ' + this.editor.getDoc().getSelection())
-            // bring the focus back to the editor
-            this.editor.focus()
+        action(item) {
+            this.toggleLine(item.type, this.isActive(item.type))
+        },
+        isActive(type) {
+            return this.currentTokenType !== null && this.currentTokenType.secondary == type
         },
         close() {
             if(this.dropdownEl) this.dropdownEl.close()

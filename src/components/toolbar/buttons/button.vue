@@ -31,7 +31,7 @@ export default {
         },
         active() {
             return this.currentTokenType !== null && this.currentTokenType.main == this.type
-        }
+        },
     },
     watch: {
         editor(val) {
@@ -41,6 +41,9 @@ export default {
         },
     },
     methods: {
+        /**
+         * Insert text at the cursor's position.
+         */
         insert(str, incr = 0) {
             // replace current selection
             this.editorDoc.replaceSelection(str)
@@ -50,10 +53,14 @@ export default {
             // bring the focus back to the editor
             this.editor.focus()
         },
+        /**
+         * Toggle an argument (string) around the cursor / current block
+         */
         toggleWrap(arg) {
             let startPoint = this.editor.getCursor("start");
             let endPoint   = this.editor.getCursor("end");
 
+            // if the button's style is already applied
             if(this.active) {
                 let text      = this.editorDoc.getLine(startPoint.line);
 
@@ -82,6 +89,7 @@ export default {
             else {
                 let selection = this.selection
 
+                // wrap selection with arg
                 this.editorDoc.replaceSelection(arg + selection + arg)
                 endPoint.ch = startPoint.ch + arg.length + selection.length;
             }
@@ -91,45 +99,69 @@ export default {
             // bring the focus back to the editor
             this.editor.focus()
         },
-        toggleLine() {
+        /**
+         * Toggle the preceding characters of a line
+         * (quote, ordered list, unordered list, headings)
+         */
+        toggleLine(type = this.type, active = this.active) {
             let startPoint = this.editor.getCursor("start");
             let endPoint   = this.editor.getCursor("end");
             let incr       = 0
-            let _this      = this
 
+            // Regex pattern associated with each type
             let pattern = {
                 'quote': /^(\s*)\>\s+/,
                 'unordered-list': /^(\s*)(\*|\-|\+)\s+/,
-                'ordered-list': /^(\s*)\d+\.\s+/
+                'ordered-list': /^(\s*)\d+\.\s+/,
+                // 'headings': /^(#+\s*)/,
+                'heading-1': /^(\s*)#{1}\s+/,
+                'heading-2': /^(\s*)#{2}\s+/,
+                'heading-3': /^(\s*)#{3}\s+/,
+                'heading-4': /^(\s*)#{4}\s+/,
+                'heading-5': /^(\s*)#{5}\s+/,
+                'heading-6': /^(\s*)#{6}\s+/,
             }
+            // Preceding characters
             let map = {
                 'quote': '> ',
                 'unordered-list': '- ',
-                'ordered-list': '1. '
+                'ordered-list': '1. ',
+                'heading-1': '# ',
+                'heading-2': '## ',
+                'heading-3': '### ',
+                'heading-4': '#### ',
+                'heading-5': '##### ',
+                'heading-6': '###### ',
             }
 
+            // loop through each selected line
             for (var i = startPoint.line; i <= endPoint.line; i++) {
+                // get the line content
                 let text    = this.editorDoc.getLine(i);
+                // store it under a new name (we'll need the original text length when replacing range)
                 let newText = text
-                incr        = 0
+                // reset the increment
+                incr = 0
 
                 // if the style is already applied, un-apply it
-                if(this.active) {
-                    newText = text.replace(pattern[this.type], "$1")
-                    incr = map[this.type].length
+                if(active) {
+                    newText = text.replace(pattern[type], "$1")
+                    // cursor = current position minus the former preceding string's length
+                    incr = map[type].length
                 } 
                 // else, replace any other pattern before applying
                 else {
-                    incr = - map[this.type].length 
+                    // cursor = current position minus the former preceding string's length
+                    incr = - map[type].length 
 
+                    // remove any other line style before applying the new one
                     Object.keys(pattern).forEach(function(key) {
                         if(newText.match(pattern[key])) {
                             newText = newText.replace(pattern[key], "$1")
-                            incr    = map[key].length - map[_this.type].length
+                            incr    = map[key].length - map[type].length
                         }
                     })
-
-                    newText = map[this.type] + newText
+                    newText = map[type] + newText
                 }
 
                 // replace old line with new line

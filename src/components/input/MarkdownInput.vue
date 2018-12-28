@@ -168,11 +168,17 @@ export default {
         },
     },
     methods: {
+        /**
+         * Close any open dialog and bring focus back to the editor
+         */
         cancel() {
             this.editorFocus()
             this.currentDialog = null
         },
 
+        /**
+         * Open pages dialog
+         */
         openPagesDialog() {
             this.$refs['pagesDialog'].open({
                 endpoint: this.endpoints.field + '/get-pages',
@@ -181,11 +187,16 @@ export default {
             })
         },
 
+        /**
+         * Fetch files / images and open files dialog
+         */
         openFilesDialog(dialog) {
             this.$api
                 .get(this.endpoints.field + '/get-'+ dialog)
                 .then(files => {
+                    // if there are files to pick from
                     if(files.length) {
+                        // structure the files list
                         files = files.map(file => {
                             file.selected = false
                             file.thumb = []
@@ -199,6 +210,7 @@ export default {
                             multiple: false
                         })
                     }
+                    // else: show an error dialog
                     else {
                         this.$store.dispatch('notification/error', 'The page has no '+ dialog)
                     }
@@ -208,6 +220,9 @@ export default {
                 })
         },
 
+        /**
+         * Insert text at the cursor's position
+         */
         insert(str, incr = 0) {
             // replace current selection
             this.editor.getDoc().replaceSelection(str)
@@ -218,10 +233,12 @@ export default {
             this.editorFocus()
         },
 
+        /**
+         * Insert (link: ) tag on pagesDialog submit
+         */
         insertPageLink(selected) {
             let page      = selected[0]
-            let doc       = this.editor.getDoc()
-            let selection = doc.getSelection()
+            let selection = this.editor.getDoc().getSelection()
             let text      = selection.length > 0 ? selection : page.title
             let tag       = '(link: '+ page.id +' text: '+ text +')'
 
@@ -229,17 +246,24 @@ export default {
             this.currentDialog = null
         },
 
+        /**
+         * Insert (file: ) or (image: ) tag on filesDialog and imagesDialog submit
+         */
         insertFileTag(selected) {
             let file = selected[0]
             let doc  = this.editor.getDoc()
 
+            // if we're inserting an image
             if(this.currentDialog == 'images') {
                 let tag = '(image: '+ file.uuid +')'
                 this.insert(tag)
             } 
+            // if we're inserting a file
             else {
                 let selection = doc.getSelection()
+                // whether or not we add a text: argument
                 let suffix    = selection.length > 0 ? ' text: '+ selection : ''
+                // if we add a text: argument: place cursor before the closing parenthesis
                 let incr      = selection.length > 0 ? 1 : 0
 
                 this.insert('(file: '+ file.uuid + suffix +')', incr)
@@ -247,6 +271,9 @@ export default {
             this.currentDialog = null
         },
 
+        /**
+         * Set focus within the editor
+         */
         editorFocus() {
             let _this = this
             setTimeout(() => {
@@ -255,18 +282,23 @@ export default {
             })
         },
 
+        /**
+         * Set the token type of current cursor position
+         */
         setTokenType(tokenType, pos) {
             if(tokenType == null) {
                 this.currentTokenType = null
                 return
             } 
             
-            let type = {
-                main: undefined,
-                secondary: undefined,
-            }
+            // init an object
+            let type = { main: undefined, secondary: undefined }
 
+            // Keep only the last two words of the token type for comparison,
+            // because when preceding / wrapping characters are selected, formatting types are prependend.
+            // header header-6 || formatting formatting-header formatting-header-6 [header header-6]
             tokenType = tokenType.split(' ').slice(-2).join(' ')
+
             if(tokenType.endsWith('strong'))             type.main = 'bold'
             else if(tokenType.endsWith('em'))            type.main = 'italic'
             else if(tokenType.endsWith('quote'))         type.main = 'quote'
@@ -274,14 +306,17 @@ export default {
             else if(tokenType.endsWith('code'))          type.main = 'code'
             else if(tokenType.endsWith('hr'))            type.main = 'horizontal-rule'
 
+            // if kirbytag, set the exact kirbytag type as secondary
             else if(tokenType.startsWith('kirbytag')) {
                 type.main = 'kirbytag'
                 type.secondary = tokenType.split(' ')[1]
             }
+            // if header, set the exact heading level as secondary
             else if(tokenType.startsWith('header')) {
                 type.main      = 'headings'
                 type.secondary = tokenType.match(/header(\-[1-6])/gi)[0].replace('header', 'heading')
             }
+            // if empty or "formatting-list", determine whether it is an ordered or unordered list
             else if (tokenType == '' || tokenType.endsWith('formatting-list')) {
                 let text = this.editor.getDoc().getLine(pos.line);
                 if(/^\s*\d+\.\s/.test(text)) {
@@ -291,6 +326,7 @@ export default {
                 }
             }
 
+            // set the type object as current token type
             this.currentTokenType = type
         },
 
