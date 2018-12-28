@@ -7,6 +7,7 @@ export default {
 		return {
 			label: this.$t('markdown.toolbar.button.pagelink'),
             icon: 'pagelink',
+            type: 'pagelink'
 		}
 	},
 	methods: {

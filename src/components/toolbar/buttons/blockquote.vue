@@ -7,24 +7,12 @@ export default {
         return {
             label: this.$t('markdown.toolbar.button.blockquote'),
             icon: 'quote',
-            tokenType: 'quote'
+            type: 'quote'
         }
     },
     methods: {
         action() {
-            let selection         = this.editor.getDoc().getSelection()
-            let replacedSelection = []
-
-            selection.split("\n").forEach((line, index) => {
-                replacedSelection.push('> ' + line);
-            });
-
-            replacedSelection = replacedSelection.join("\n");
-
-            // replace current selection
-            this.editor.getDoc().replaceSelection(replacedSelection)
-            // bring the focus back to the editor
-            this.editor.focus()
+            this.toggleLine()
         }
     }
 };

@@ -139,9 +139,9 @@ export default {
 
         // Update current token
         this.editor.on('cursorActivity', _editor => {
-            let cur   = _editor.getCursor()
-            let token = _editor.getTokenAt(cur);
-            this.currentTokenType = token.type
+            let pos       = _editor.getCursor('start')
+            let tokenType = _editor.getTokenTypeAt(pos)
+            this.setTokenType(tokenType, pos)
         })
         
         // Emit changed value
@@ -208,12 +208,12 @@ export default {
                 })
         },
 
-        insert(text) {
-            // wrap selection with **
-            this.editor.getDoc().replaceSelection(text)
-            // move caret before the second wrapper: (tag: text[caret])
+        insert(str, incr = 0) {
+            // replace current selection
+            this.editor.getDoc().replaceSelection(str)
+            // move caret if needed
             let pos = this.editor.getCursor()
-            this.editor.setCursor({line: pos.line, ch: pos.ch - 1})
+            this.editor.setCursor({line: pos.line, ch: pos.ch - incr})
             // bring the focus back to the editor
             this.editorFocus()
         },
@@ -222,16 +222,11 @@ export default {
             let page      = selected[0]
             let doc       = this.editor.getDoc()
             let selection = doc.getSelection()
-            let text      = selection.length > 0 ? selection : page.text
+            let text      = selection.length > 0 ? selection : page.title
             let tag       = '(link: '+ page.id +' text: '+ text +')'
 
-            // insert the tag
-            doc.replaceSelection(tag)
-            // move caret before the second wrapper: (link: page/id text: Page title[caret])
-            let pos = this.editor.getCursor()
-            this.editor.setCursor({line: pos.line, ch: pos.ch - 1})
-            // bring the focus back to the editor
-            this.editorFocus()
+            this.insert(tag, 1)
+            this.currentDialog = null
         },
 
         insertFileTag(selected) {
@@ -240,25 +235,15 @@ export default {
 
             if(this.currentDialog == 'images') {
                 let tag = '(image: '+ file.uuid +')'
-                // insert the tag
-                doc.replaceSelection(tag)
+                this.insert(tag)
             } 
             else {
                 let selection = doc.getSelection()
                 let suffix    = selection.length > 0 ? ' text: '+ selection : ''
                 let incr      = selection.length > 0 ? 1 : 0
 
-                // insert the tag
-                doc.replaceSelection('(file: '+ file.uuid + suffix +')')
-                // move caret 
-                // -> after the tag if there is no selected text: (file: filename.pdf)[caret]
-                // -> before the second wrapper if there is a selected text: (file: filename.pdf text: Text[caret])
-                let pos = this.editor.getCursor()
-                this.editor.setCursor({line: pos.line, ch: pos.ch - incr})
+                this.insert('(file: '+ file.uuid + suffix +')', incr)
             }
-            
-            // bring the focus back to the editor
-            this.editorFocus()
             this.currentDialog = null
         },
 
@@ -268,6 +253,45 @@ export default {
                 _this.$refs.input.focus()
                 _this.editor.focus()
             })
+        },
+
+        setTokenType(tokenType, pos) {
+            if(tokenType == null) {
+                this.currentTokenType = null
+                return
+            } 
+            
+            let type = {
+                main: undefined,
+                secondary: undefined,
+            }
+
+            tokenType = tokenType.split(' ').slice(-2).join(' ')
+            if(tokenType.endsWith('strong'))             type.main = 'bold'
+            else if(tokenType.endsWith('em'))            type.main = 'italic'
+            else if(tokenType.endsWith('quote'))         type.main = 'quote'
+            else if(tokenType.endsWith('strikethrough')) type.main = 'strikethrough'
+            else if(tokenType.endsWith('code'))          type.main = 'code'
+            else if(tokenType.endsWith('hr'))            type.main = 'horizontal-rule'
+
+            else if(tokenType.startsWith('kirbytag')) {
+                type.main = 'kirbytag'
+                type.secondary = tokenType.split(' ')[1]
+            }
+            else if(tokenType.startsWith('header')) {
+                type.main      = 'headings'
+                type.secondary = tokenType.match(/header(\-[1-6])/gi)[0].replace('header', 'heading')
+            }
+            else if (tokenType == '' || tokenType.endsWith('formatting-list')) {
+                let text = this.editor.getDoc().getLine(pos.line);
+                if(/^\s*\d+\.\s/.test(text)) {
+                    type.main = 'ordered-list'
+                } else {
+                    type.main = 'unordered-list'
+                }
+            }
+
+            this.currentTokenType = type
         },
 
         /**

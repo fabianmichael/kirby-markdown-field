@@ -7,6 +7,7 @@ export default {
 		return {
 			label: this.$t('markdown.toolbar.button.file'),
             icon: 'attachment',
+            type: 'file'
 		}
 	},
 	methods: {

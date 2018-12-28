@@ -26,37 +26,43 @@ export default {
         return {
             label: this.$t("toolbar.button.headings"),
             icon: "title",
-            tokenType: 'header',
+            type: 'headings',
             dropdown: {
                 h1: {
                     label: this.$t("toolbar.button.heading.1"),
                     icon: "h1",
-                    args: "#"
+                    args: "#",
+                    type: 'heading-1'
                 },
                 h2: {
                     label: this.$t("toolbar.button.heading.2"),
                     icon: "h2",
-                    args: "##"
+                    args: "##",
+                    type: 'heading-2'
                 },
                 h3: {
                     label: this.$t("toolbar.button.heading.3"),
                     icon: "h3",
-                    args: "###"
+                    args: "###",
+                    type: 'heading-3'
                 },
                 h4: {
                     label: this.$t("markdown.toolbar.button.heading.4"),
                     icon: "h4",
-                    args: "####"
+                    args: "####",
+                    type: 'heading-4'
                 },
                 h5: {
                     label: this.$t("markdown.toolbar.button.heading.5"),
                     icon: "h5",
-                    args: "#####"
+                    args: "#####",
+                    type: 'heading-5'
                 },
                 h6: {
                     label: this.$t("markdown.toolbar.button.heading.6"),
                     icon: "h6",
-                    args: "######"
+                    args: "######",
+                    type: 'heading-6'
                 }
             }
         }
