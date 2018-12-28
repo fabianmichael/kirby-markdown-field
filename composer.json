@@ -10,6 +10,10 @@
         {
             "name": "Sylvain Julé",
             "email": "contact@sylvain-jule.fr"
+        },
+        {
+            "name": "Fabian Michael",
+            "email": "hallo@fabianmichael.de"
         }
     ],
     "minimum-stability": "beta"
