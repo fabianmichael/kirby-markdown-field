@@ -3,6 +3,11 @@ import 'codemirror/addon/mode/overlay';
 
 import './markdownextended';
 
+// import 'codemirror/mode/css/css';
+// import 'codemirror/mode/sass/sass';
+// import 'codemirror/mode/javascript/javascript';
+// import 'codemirror/mode/php/php';
+
 CodeMirror.defineMode('kirbytext', (config, modeConfig) => {
   if (!modeConfig.kirbytags) {
     modeConfig.kirbytags = [

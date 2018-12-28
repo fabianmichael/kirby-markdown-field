@@ -70,7 +70,7 @@ export default {
                         name: 'kirbytext',
                         highlightFormatting: true,
                         kirbytags: this.kirbytags,
-                        fencedCodeBlockHighlighting: false, // needs to be disabled, because setting line styles for nested syntax does not work.
+                        // fencedCodeBlockHighlighting: false, // needs to be disabled, because setting line styles for nested syntax does not work.
                     },
                     lineNumbers: false,
                     lineWrapping: true,
@@ -345,6 +345,8 @@ export default {
          */
         renderBlockStylesMonospace(cm, line, el) {
 
+            const lineNo = line.lineNo();
+
             const content = el.firstChild;
             const parts = Array.prototype.slice.call(content.children).filter((el) => el.tagName === 'SPAN');
 
@@ -403,8 +405,14 @@ export default {
                 }
 
                 el.style.setProperty('--cm-block-indent', indent);
+            } else if (lineNo > 0) {
+                // console.log("l", this._lastLine);
             }
+
+            this._lastLine = line;
         },
+
+        _lastLine: 0,
 
         /**
          * Gets the actual width of a text node or element node in the editor.
