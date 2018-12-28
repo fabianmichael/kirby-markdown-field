@@ -32,6 +32,8 @@ $options = array_merge_recursive($options, [
         'invisibles' => function($invisibles = false) {
             return $invisibles;
         },
+    ],
+    'computed' => [
         /**
          * Returns an array of known KirbyTags, used by the syntax highlighter.
          * Highlighting only known KirbyTags decreases the chance of false
