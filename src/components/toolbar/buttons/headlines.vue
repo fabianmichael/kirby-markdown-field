@@ -3,7 +3,7 @@
         <k-button :icon="icon"
                   :tooltip="label"
                   tabindex="-1"
-                  class="k-toolbar-button k-markdown-button"
+                  :class="['k-toolbar-button k-markdown-button', {active: active}]"
                   @click="dropdownEl.toggle()"/>
         <k-dropdown-content :ref="dropdownName">
             <k-dropdown-item v-for="(item, itemKey, itemIndex) in dropdown"
@@ -26,6 +26,7 @@ export default {
         return {
             label: this.$t("toolbar.button.headings"),
             icon: "title",
+            tokenType: 'header',
             dropdown: {
                 h1: {
                     label: this.$t("toolbar.button.heading.1"),

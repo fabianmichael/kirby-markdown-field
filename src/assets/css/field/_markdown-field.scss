@@ -58,9 +58,17 @@
   }
 }
 
+/* -----  Toolbar -------------------------------------------- */
+
+// active state of toolbar buttons
+.k-toolbar-button.active {
+  background: hsla(0, 0%, 93.7%, 0.5);
+}
+
+// align invisibles button to the right of the toolbar
 .k-markdown-toolbar-buttons-right {
-	margin-left: auto;
-	border-left: 1px solid $color-light;
+  margin-left: auto;
+  border-left: 1px solid $color-light;
 }
 
 .k-markdown-input:focus-within .k-toolbar {

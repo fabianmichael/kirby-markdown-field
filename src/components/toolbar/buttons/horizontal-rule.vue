@@ -12,7 +12,7 @@ export default {
     methods: {
         action() {
             // replace current selection
-            this.editor.getDoc().replaceSelection('\n\n---\n\n')
+            this.editor.getDoc().replaceSelection('\n\n***\n\n')
             // bring the focus back to the editor
             this.editor.focus()
         }
