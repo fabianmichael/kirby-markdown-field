@@ -2,7 +2,7 @@
     <k-button :icon="icon"
               :tooltip="label"
               tabindex="-1"
-              :class="['k-toolbar-button', 'k-markdown-button', 'k-markdown-button-'+ name]"
+              :class="['k-toolbar-button', 'k-markdown-button', 'k-markdown-button-'+ name, {active: active}]"
               @click="action" />
 </template>
 
@@ -14,6 +14,7 @@ export default {
         name: String,
         editor: Object,
         modals: Boolean,
+        currentTokenType: String,
     },
     computed: {
         dropdownName() {
@@ -27,6 +28,9 @@ export default {
         },
         selection() {
             return this.editorDoc ? this.editorDoc.getSelection() : undefined
+        },
+        active() {
+            return this.currentTokenType !== null && this.currentTokenType.includes(this.tokenType)
         }
     },
     watch: {

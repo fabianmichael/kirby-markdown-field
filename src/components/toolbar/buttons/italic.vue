@@ -7,7 +7,8 @@ export default {
         return {
             label: this.$t('toolbar.button.italic'),
             icon: 'italic',
-            shortcut: 'Cmd-I'
+            shortcut: 'Cmd-I',
+            tokenType: 'em'
         }
     },
     methods: {

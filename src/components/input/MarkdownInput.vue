@@ -6,6 +6,7 @@
                        :modals="modals"
                        :editor="editor"
                        :invisibles="invisibles"
+                       :currentTokenType="currentTokenType"
                        :buttons="buttons"/>
             <textarea ref="input"
                       class="k-markdown-input-native"
@@ -42,6 +43,7 @@ export default {
             editor: Object,
             skipNextChangeEvent: false,
             currentDialog: null,
+            currentTokenType: null,
         }
     },
     props: {
@@ -135,6 +137,13 @@ export default {
             this.$emit('input', this.value);
         })
 
+        // Update current token
+        this.editor.on('cursorActivity', _editor => {
+            let cur   = _editor.getCursor()
+            let token = _editor.getTokenAt(cur);
+            this.currentTokenType = token.type
+        })
+        
         // Emit changed value
         this.editor.on('focus', _editor => {
             this.$root.$emit('md-closeDropdowns')

@@ -7,6 +7,7 @@ export default {
         return {
             label: this.$t('toolbar.button.code'),
             icon: 'code',
+            tokenType: 'code'
         }
     },
     methods: {
