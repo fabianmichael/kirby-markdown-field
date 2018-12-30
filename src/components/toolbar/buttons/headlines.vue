@@ -82,6 +82,7 @@ export default {
         action(item) {
             this.toggleLine(item.type, this.isActive(item.type))
         },
+        // Whether a dropdown-item is active
         isActive(type) {
             return this.currentTokenType !== null && this.currentTokenType.secondary == type
         },

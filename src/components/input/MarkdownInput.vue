@@ -286,57 +286,58 @@ export default {
          * Set the token type of current cursor position
          */
         setTokenType(tokenType, pos) {
+            // skip computing if tokenType is null
             if(tokenType == null) {
                 this.currentTokenType = null
                 return
             } 
-            
+
             // init an object
-            let type = { main: undefined, secondary: undefined }
+            let main = undefined
+            let secondary = undefined
 
             // Keep only the last two words of the token type for comparison,
-            // because when preceding / wrapping characters are selected, formatting types are prependend.
+            // because when preceding / wrapping characters are selected, formatting types are prepended.
             // header header-6 || formatting formatting-header formatting-header-6 [header header-6]
-            tokenType = tokenType.split(' ').slice(-2).join(' ')
+            let tokenTypes = tokenType.split(' ').slice(-2)
 
-            if(tokenType.endsWith('strong'))             type.main = 'bold'
-            else if(tokenType.endsWith('em'))            type.main = 'italic'
-            else if(tokenType.endsWith('quote'))         type.main = 'quote'
-            else if(tokenType.endsWith('strikethrough')) type.main = 'strikethrough'
-            else if(tokenType.endsWith('code'))          type.main = 'code'
-            else if(tokenType.endsWith('hr'))            type.main = 'horizontal-rule'
+            tokenTypes.forEach(type => {
+                // main type
+                if(type == 'strong')             main = 'bold'
+                else if(type == 'em')            main = 'italic'
+                else if(type == 'quote')         main = 'quote'
+                else if(type == 'strikethrough') main = 'strikethrough'
+                else if(type == 'code')          main = 'code'
+                else if(type == 'hr')            main = 'horizontal-rule'
+                else if(type == 'kirbytag')      main = 'kirbytag'
+                else if(type == 'header')        main = 'headings'
 
-            // if kirbytag, set the exact kirbytag type as secondary
-            else if(tokenType.startsWith('kirbytag')) {
-                type.main = 'kirbytag'
-                type.secondary = tokenType.split(' ')[1]
-            }
-            // if header, set the exact heading level as secondary
-            else if(tokenType.startsWith('header')) {
-                type.main      = 'headings'
-                type.secondary = tokenType.match(/header(\-[1-6])/gi)[0].replace('header', 'heading')
-            }
-            // if empty or "formatting-list", determine whhat it really is
-            else if (tokenType == '' || tokenType.endsWith('formatting-list')) {
-                let text = this.editor.getDoc().getLine(pos.line);
-                // is it an ordered list?
-                if(/^\s*\d+\.\s/.test(text)) {
-                    type.main = 'ordered-list'
-                } 
-                // is it an unordered list?
-                else if(/^(\s*)(\*|\-|\+)\s+/.test(text)) {
-                    type.main = 'unordered-list'
-                }
-                // is it a code block?
-                else {
-                    let token = this.editor.getTokenAt(pos)
-                    if(token.type.endsWith('blockcode')) {
-                        type.main = 'code'
+                // tricky types (ul, ol, codeblock)
+                else if(type == '') {
+                    let text = this.editor.getDoc().getLine(pos.line)
+                    // is it an ordered list?
+                    if(/^\s*\d+\.\s/.test(text))              main = 'ordered-list'
+                    // is it an unordered list?
+                    else if(/^(\s*)(\*|\-|\+)\s+/.test(text)) main = 'unordered-list'
+                    // is it a code block?
+                    // somehow it doesnt get returned in the getTokenTypeAt call
+                    else {
+                        let token = this.editor.getTokenAt(pos)
+                        if(token.type.endsWith('blockcode')) {
+                            main = 'code'
+                            secondary = 'block'
+                        }
                     }
                 }
-            }
+
+                // secondary type
+                else if(type.startsWith('header-') || type.startsWith('kirbytag-')) {
+                    secondary = type.replace('header-', 'heading-')
+                }   
+            })
 
             // set the type object as current token type
+            let type = { main: main, secondary: secondary }
             this.currentTokenType = type
         },
 
