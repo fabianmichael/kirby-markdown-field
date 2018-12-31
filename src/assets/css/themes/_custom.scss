@@ -4,6 +4,7 @@
   #{--line-padding}: 4px;
   height: auto;
   padding: .25rem .5rem;
+  padding-top: 0; // fix baseline alignment with textarea field
 
   .cm-invisibles-test { 
   	color: #de935f; 
@@ -262,7 +263,7 @@
   .cm-header-2,
   .cm-header-2 ~ * {
     font-size: 24px;
-    line-height: 1.4;
+   line-height: 1.4;
   }
   
   .cm-header-3,
@@ -284,7 +285,7 @@
   .cm-header-6,
   .cm-header-6 ~ * {
     font-size: 14px;
-  }
+  } 
 
   .cm-blockheader,
   .cm-blockquote,
