@@ -323,9 +323,11 @@ export default {
                     // somehow it doesnt get returned in the getTokenTypeAt call
                     else {
                         let token = this.editor.getTokenAt(pos)
-                        if(token.type.endsWith('blockcode')) {
-                            main = 'code'
-                            secondary = 'block'
+                        if(token.type !== null) {
+                            if(token.type.endsWith('blockcode')) {
+                                main = 'code'
+                                secondary = 'block'
+                            }
                         }
                     }
                 }

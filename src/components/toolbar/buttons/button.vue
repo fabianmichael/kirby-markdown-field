@@ -57,12 +57,12 @@ export default {
          * Toggle an argument (string) around the cursor / current block
          */
         toggleWrap(arg) {
-            let startPoint = this.editor.getCursor("start");
-            let endPoint   = this.editor.getCursor("end");
+            let startPoint = this.editor.getCursor("start")
+            let endPoint   = this.editor.getCursor("end")
 
             // if the button's style is already applied
             if(this.active) {
-                let text      = this.editorDoc.getLine(startPoint.line);
+                let text = this.editorDoc.getLine(startPoint.line)
 
                 // replace last occurence of arg before cursor / selection
                 let start          = text.slice(0, startPoint.ch)
@@ -91,7 +91,7 @@ export default {
 
                 // wrap selection with arg
                 this.editorDoc.replaceSelection(arg + selection + arg)
-                endPoint.ch = startPoint.ch + arg.length + selection.length;
+                endPoint.ch = startPoint.ch + arg.length + selection.length
             }
 
             // move caret before the second wrapper: [arg]my text[caret][arg]
@@ -133,7 +133,6 @@ export default {
                 'heading-5': '##### ',
                 'heading-6': '###### ',
             }
-
             // loop through each selected line
             for (var i = startPoint.line; i <= endPoint.line; i++) {
                 // get the line content
@@ -176,7 +175,83 @@ export default {
             this.editor.setCursor({line: endPoint.line, ch: endPoint.ch - incr})
             // bring the focus back to the editor
             this.editor.focus()
+        },
+        toggleCode() {
+            // if the cursor / selection is in a code element
+            if(this.active) {
+                if(this.currentTokenType.secondary == 'block' || this.selection.includes('\n')) this.toggleCodeBlock()
+                else this.toggleWrap('`')
+            }
+            else {
+                // if multiple lines
+                if(this.selection.includes('\n')) this.toggleCodeBlock()
+                else this.toggleWrap('`')
+            }
+        },
+        toggleCodeBlock() {
+            let delimiter          = '```'
+            let startPoint         = this.editor.getCursor("start")
+            let startLine          = this.editorDoc.getLine(startPoint.line)
+            let previousLineToken  = this.editor.getTokenAt({line: startPoint.line - 1, ch: 999999 })
+            let previousLineIsCode = previousLineToken.type !== null ? previousLineToken.type.endsWith('blockcode') : false
+
+            if(this.active) {
+                let firstLine
+                let lastLine
+
+                // if startline = first line of code block
+                if(startLine.startsWith(delimiter) && !previousLineIsCode) {
+                    firstLine = startPoint.line
+                    lastLine  = this.getLastFence(firstLine, delimiter)
+                }
+                // if startline = last line of code block
+                else if(startLine.startsWith(delimiter) && previousLineIsCode) {
+                    lastLine   = startPoint.line
+                    firstLine  = this.getFirstFence(lastLine, delimiter)
+                }
+                else {
+                    firstLine  = this.getFirstFence(startPoint.line, delimiter)
+                    lastLine   = this.getLastFence(startPoint.line, delimiter)
+                }
+
+                // set selection to the whole block, and replace it minus the first and last line
+                this.editorDoc.setSelection({ line: firstLine, ch: 0}, {line: lastLine, ch: 999999 })
+                let newRange = this.editorDoc.getRange({ line: firstLine + 1, ch: 0}, {line: lastLine - 1, ch: 999999 }) 
+                this.editorDoc.replaceSelection(newRange)
+
+            }
+            else {
+                this.editorDoc.replaceSelection('```\n' + this.selection + '\n```')
+            }
+
+            // bring the focus back to the editor
+            this.editor.focus()
+        },
+        getLastFence(startLine, delimiter) {
+            let lastLine
+            let i = 0
+            while(lastLine == undefined) {
+                i++
+                let nextLine = this.editorDoc.getLine(startLine + i)
+                if(nextLine && nextLine.startsWith(delimiter)) {
+                    return startLine + i
+                    break
+                }
+            }
+        },
+        getFirstFence(startLine, delimiter) {
+            let firstLine
+            let i = 0
+            while(firstLine == undefined) {
+                i++
+                let prevLine = this.editorDoc.getLine(startLine - i)
+                if(prevLine && prevLine.startsWith(delimiter)) {
+                    return startLine - i
+                    break
+                }
+            }
         }
+
     }
 };
 </script>

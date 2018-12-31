@@ -12,19 +12,7 @@ export default {
     },
     methods: {
         action() {
-            let selection = this.selection
-            // multiple lines: wrap with ```
-            if(selection.includes('\n')) {
-                // TODO: find out how to toggleWrap code fences
-                this.editorDoc.replaceSelection('```\n' + this.selection + '\n```')
-            }
-            // single line: wrap with `
-            else {
-                this.toggleWrap('`')
-            }
-            
-            // bring the focus back to the editor
-            this.editor.focus()
+            this.toggleCode()
         }
     }
 };
