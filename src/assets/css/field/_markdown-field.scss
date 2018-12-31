@@ -24,8 +24,8 @@
        outline: 0;
     }
     &:invalid {
-        box-shadow: none;
-        outline: 0;
+      box-shadow: none;
+      outline: 0;
     }
   }
 
@@ -58,33 +58,23 @@
   }
 }
 
+
 /* -----  Toolbar -------------------------------------------- */
 
-.k-toolbar-button {
-	// active state of toolbar buttons
-	&.active {
-  		background: hsla(0, 0%, 93.7%, 0.5);
-  	}
-  	// disabled state of toolbar buttons
-  	&.disabled {
-  		opacity: 0.25;
-  		pointer-events: none;
-  	}	
+// disabled state of toolbar buttons
+.k-markdown-button.disabled {
+  opacity: 0.25;
+  pointer-events: none;
 }
 
-// active state of toolbar buttons
+// active state of dropdown items
 .k-dropdown-item.active {
   .k-button-text {
-  	opacity: 1;
+    opacity: 1;
   }
 }
 
-// align invisibles button to the right of the toolbar
-.k-markdown-toolbar-buttons-right {
-  margin-left: auto;
-  border-left: 1px solid $color-light;
-}
-
+// Editor has focus
 .k-markdown-input:focus-within .k-toolbar {
   position: -webkit-sticky;
   position: sticky;
@@ -96,8 +86,15 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   color: #000;
-  .k-markdown-button-invisibles.active {
-  	color: #de935f;
-  	transition: none;
+  // active state of toolbar buttons
+  .k-markdown-button.active {
+    background: rgba($color-focus, .1);
+    color: $color-focus;
   }
+}
+
+// align invisibles button to the right of the toolbar
+.k-markdown-toolbar-buttons-right {
+  margin-left: auto;
+  border-left: 1px solid $color-light;
 }
