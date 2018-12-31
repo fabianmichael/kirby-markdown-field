@@ -114,44 +114,61 @@ CodeMirror.defineMode(
     // Blocks
 
     function blankLine(state) {
+
+      let returnState = null;
+
       // Reset linkTitle state
       state.linkTitle = false;
       state.linkHref = false;
       state.linkText = false;
+      
       // Reset EM state
       state.em = false;
+      
       // Reset STRONG state
       state.strong = false;
+      
       // Reset strikethrough state
       state.strikethrough = false;
+      
       // Reset state.quote
       state.quote = 0;
+      
       // Reset state.indentedCode
       state.indentedCode = false;
+
+      // console.log(state.f.name, state.f.name === 'local');
+      if (state.f && state.f.name === 'local') {
+        // console.log("state", state, state.thisLine);
+        // state.thisLine.formatting = 'line-local';
+        returnState = 'line-cm-blockcode';
+      }
+      
       if (state.f == htmlBlock) {
         var exit = htmlModeMissing;
         if (!exit) {
           var inner = CodeMirror.innerMode(htmlMode, state.htmlState);
-          exit =
-            inner.mode.name == 'xml' &&
-            inner.state.tagStart === null &&
-            (!inner.state.context && inner.state.tokenize.isInText);
+          exit = inner.mode.name == 'xml' && inner.state.tagStart === null && (!inner.state.context && inner.state.tokenize.isInText);
         }
+
         if (exit) {
           state.f = inlineNormal;
           state.block = blockNormal;
           state.htmlState = null;
         }
       }
+
       // Reset state.trailingSpace
       state.trailingSpace = 0;
       state.trailingSpaceNewLine = false;
+      
       // Mark this line as blank
       state.prevLine = state.thisLine;
-      state.thisLine = {
-        stream: null,
-      };
-      return null;
+      // state.thisLine = {
+      //   stream: null,
+      // };
+
+      return returnState;
     }
 
     function blockNormal(stream, state) {
@@ -269,20 +286,23 @@ CodeMirror.defineMode(
         if (modeCfg.highlightFormatting)
           state.formatting = ['list', `list-${listType}`];
         return getType(state);
-      } else if (
-        firstTokenOnLine &&
-        state.indentation <= maxNonCodeIndentation &&
-        (match = stream.match(fencedCodeRE, true))
-      ) {
+      } else if (firstTokenOnLine && state.indentation <= maxNonCodeIndentation && (match = stream.match(fencedCodeRE, true))) {
+        
         state.quote = 0;
         state.fencedEndRE = new RegExp(match[1] + '+ *$');
         // try switching mode
-        state.localMode =
-          modeCfg.fencedCodeBlockHighlighting && getMode(match[2]);
-        if (state.localMode)
+        state.localMode = modeCfg.fencedCodeBlockHighlighting && getMode(match[2]);
+        
+        if (state.localMode) {
           state.localState = CodeMirror.startState(state.localMode);
+        }
+        
         state.f = state.block = local;
-        if (modeCfg.highlightFormatting) state.formatting = 'blockcode';
+        
+        if (modeCfg.highlightFormatting) {
+          state.formatting = 'blockcode';
+        }
+
         state.code = -1;
         return getType(state);
         // SETEXT has lowest block-scope precedence after HR, so check it after
@@ -344,29 +364,39 @@ CodeMirror.defineMode(
     }
 
     function local(stream, state) {
+      
       var currListInd = state.listStack[state.listStack.length - 1] || 0;
       var hasExitedList = state.indentation < currListInd;
       var maxFencedEndInd = currListInd + 3;
-      if (
-        state.fencedEndRE &&
-        state.indentation <= maxFencedEndInd &&
-        (hasExitedList || stream.match(state.fencedEndRE))
-      ) {
+      
+      if (state.fencedEndRE && state.indentation <= maxFencedEndInd && (hasExitedList || stream.match(state.fencedEndRE))) {
+        
         if (modeCfg.highlightFormatting) {
           state.formatting = 'blockcode';
         }
+
         var returnType;
-        if (!hasExitedList) returnType = getType(state);
+        
+        if (!hasExitedList) {
+          returnType = getType(state);
+        }
+        
         state.localMode = state.localState = null;
         state.block = blockNormal;
         state.f = inlineNormal;
         state.fencedEndRE = null;
         state.code = 0;
         state.thisLine.fencedCodeEnd = true;
-        if (hasExitedList) return switchBlock(stream, state, state.block);
+        
+        if (hasExitedList) {
+          return switchBlock(stream, state, state.block);
+        }
+        
         return returnType;
       } else if (state.localMode) {
-        return state.localMode.token(stream, state.localState);
+        // By prepending `line-cm-code` every line of the local
+        // mode of the code can be styled instead of just the token itself.
+        return 'line-cm-blockcode ' + state.localMode.token(stream, state.localState);
       } else {
         stream.skipToEnd();
         return tokenTypes.code;
@@ -402,17 +432,8 @@ CodeMirror.defineMode(
           // Add `formatting-quote` and `formatting-quote-#` for blockquotes
           // Add `error` instead if the maximum blockquote nesting depth is passed
           if (state.formatting[i] === 'quote') {
-            if (
-              !modeCfg.maxBlockquoteDepth ||
-              modeCfg.maxBlockquoteDepth >= state.quote
-            ) {
-              styles.push(
-                tokenTypes.formatting +
-                  '-' +
-                  state.formatting[i] +
-                  '-' +
-                  state.quote
-                );
+            if (!modeCfg.maxBlockquoteDepth || modeCfg.maxBlockquoteDepth >= state.quote) {
+              styles.push(`${tokenTypes.formatting}-${state.formatting[i]}-${state.quote}`);
             } else {
               styles.push('error');
             }
@@ -709,32 +730,43 @@ CodeMirror.defineMode(
           )
             setEm = false;
         }
+
         if (len > 1) {
           // Strong
-          if (
-            !state.strong &&
-            leftFlanking &&
-            (ch === '*' || !rightFlanking || punctuation.test(before))
-          )
+          if (!state.strong && leftFlanking && (ch === '*' || !rightFlanking || punctuation.test(before))) {
             setStrong = true;
-          else if (
-            state.strong == ch &&
-            rightFlanking &&
-            (ch === '*' || !leftFlanking || punctuation.test(after))
-          )
+          } else if (state.strong == ch && rightFlanking && (ch === '*' || !leftFlanking || punctuation.test(after))) {
             setStrong = false;
+          }
         }
+
         if (setStrong != null || setEm != null) {
-          if (modeCfg.highlightFormatting)
-            state.formatting =
-              setEm == null ? 'strong' : setStrong == null ? 'em' : 'strong em';
-          if (setEm === true) state.em = ch;
-          if (setStrong === true) state.strong = ch;
+
+          if (modeCfg.highlightFormatting) {
+            state.formatting = setEm == null ? 'strong' : setStrong == null ? 'em' : 'strong em';
+          }
+          
+          if (setEm === true) {
+            state.em = ch;
+          }
+          
+          if (setStrong === true) {
+            state.strong = ch;
+          }
+          
           var t = getType(state);
-          if (setEm === false) state.em = false;
-          if (setStrong === false) state.strong = false;
+          
+          if (setEm === false) {
+            state.em = false;
+          }
+
+          if (setStrong === false) {
+            state.strong = false;
+          }
+
           return t;
         }
+
       } else if (ch === ' ') {
         if (stream.eat('*') || stream.eat('_')) {
           // Probably surrounded by spaces
@@ -752,14 +784,21 @@ CodeMirror.defineMode(
         if (ch === '~' && stream.eatWhile(ch)) {
           if (state.strikethrough) {
             // Remove strikethrough
-            if (modeCfg.highlightFormatting) state.formatting = 'strikethrough';
+            if (modeCfg.highlightFormatting) {
+              state.formatting = 'strikethrough';
+            }
             var t = getType(state);
             state.strikethrough = false;
+            
             return t;
+
           } else if (stream.match(/^[^\s]/, false)) {
             // Add strikethrough
             state.strikethrough = true;
-            if (modeCfg.highlightFormatting) state.formatting = 'strikethrough';
+            if (modeCfg.highlightFormatting) {
+              state.formatting = 'strikethrough';
+            }
+
             return getType(state);
           }
         } else if (ch === ' ') {
@@ -778,7 +817,11 @@ CodeMirror.defineMode(
 
       if (modeCfg.emoji && ch === ':' && stream.match(/^[a-z_\d+-]+:/)) {
         state.emoji = true;
-        if (modeCfg.highlightFormatting) state.formatting = 'emoji';
+        
+        if (modeCfg.highlightFormatting) {
+          state.formatting = 'emoji';
+        }
+        
         var retType = getType(state);
         state.emoji = false;
         return retType;
@@ -991,10 +1034,10 @@ CodeMirror.defineMode(
           state.header = 0;
           state.hr = false;
 
-          if (stream.match(/^\s*$/, true)) {
-            blankLine(state);
-            return null;
-          }
+          // if (stream.match(/^\s*$/, true)) {
+          //   blankLine(state);
+          //   return null;
+          // }
 
           state.prevLine = state.thisLine;
           state.thisLine = {
@@ -1011,29 +1054,34 @@ CodeMirror.defineMode(
           if (!state.localState) {
             state.f = state.block;
             if (state.f != htmlBlock) {
-              var indentation = stream
-                .match(/^\s*/, true)[0]
-                .replace(/\t/g, expandedTab).length;
+              var indentation = stream.match(/^\s*/, true)[0].replace(/\t/g, expandedTab).length;
               state.indentation = indentation;
               state.indentationDiff = null;
-              if (indentation > 0) return null;
+              if (indentation > 0) {
+                return null;
+              }
             }
           }
         }
+
         return state.f(stream, state);
       },
 
       innerMode: function(state) {
-        if (state.block == htmlBlock)
+        if (state.block == htmlBlock) {
           return {
             state: state.htmlState,
             mode: htmlMode,
           };
-        if (state.localState)
+        }
+
+        if (state.localState) {
           return {
             state: state.localState,
             mode: state.localMode,
           };
+        }
+
         return {
           state: state,
           mode: mode,
@@ -1041,10 +1089,14 @@ CodeMirror.defineMode(
       },
 
       indent: function(state, textAfter, line) {
-        if (state.block == htmlBlock && htmlMode.indent)
+        if (state.block == htmlBlock && htmlMode.indent) {
           return htmlMode.indent(state.htmlState, textAfter, line);
-        if (state.localState && state.localMode.indent)
+        }
+
+        if (state.localState && state.localMode.indent) {
           return state.localMode.indent(state.localState, textAfter, line);
+        }
+
         return CodeMirror.Pass;
       },
 

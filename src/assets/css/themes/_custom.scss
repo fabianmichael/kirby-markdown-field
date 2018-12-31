@@ -77,6 +77,10 @@
 
   /* Horizontal rule */
 
+  .cm-hr {
+    color: $color-dark-grey;
+  }
+
   .cm-blockhr {
     display: flex;
 
@@ -88,7 +92,7 @@
 
     &::before,
     &::after {
-      $c: rgba($color-border, .5);
+      $c: #aaa;
       background: linear-gradient($c, $c) 50% calc(50% + 1px) / 100% 1px no-repeat;
       content: '';
       flex-grow: 1;
@@ -132,7 +136,7 @@
     color: inherit;
   }
 
-  /* HTML tags */
+  /* Source code and HTML tags */
   
   .cm-tag {
     color: $color-dark-grey;
@@ -145,18 +149,73 @@
   .cm-string {
     color: $color-dark;
   }
+  
+  /* Invisible characters addon */
 
+  .cm-ch-space {
+    $c: #aaa;
+    background: linear-gradient($c, $c) 50% calc(50% + 1px) / 2px 2px no-repeat;
+  }
+  
+  .cm-ch-nbsp {
+    $c: #aaa;
+    background:
+      linear-gradient($c, $c) 1px 100% / 1px 2px no-repeat,
+      linear-gradient($c, $c) 1px 100% / calc(100% - 2px) 1px no-repeat,
+      linear-gradient($c, $c) calc(100% - 1px) 100% / 1px 2px no-repeat;
+    color: transparent;
+  }
+
+  .cm-ch-shy {
+    margin-left: -1px;
+    position: relative;
+    left: 1px;
+    border-left: 1px solid #c82829;
+  }
+
+  .cm-show-invisibles .cm-tab {
+    $arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath fill='%23AAA' d='M9.85355339,3.14644661 C9.94403559,3.23692881 10,3.36192881 10,3.5 C10,3.63807119 9.94403559,3.76307119 9.85355339,3.85355339 L7.85355339,5.85355339 C7.65829124,6.04881554 7.34170876,6.04881554 7.14644661,5.85355339 C6.95118446,5.65829124 6.95118446,5.34170876 7.14644661,5.14644661 L8.29289322,4 L1.5,4 C1.22385763,4 1,3.77614237 1,3.5 C1,3.22385763 1.22385763,3 1.5,3 L8.29289322,3 L7.14644661,1.85355339 C6.95118446,1.65829124 6.95118446,1.34170876 7.14644661,1.14644661 C7.34170876,0.951184464 7.65829124,0.951184464 7.85355339,1.14644661 L9.85355339,3.14644661 Z'/%3E%3C/svg%3E%0A");
+    background: $arrow 2px 50% no-repeat;
+  }
+
+  /**
+   * Empty lines
+   */
+  .cm-show-invisibles .CodeMirror-line > span[role="presentation"] > [cm-text=""]:only-child::after {
+    $icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpolyline fill='none' stroke='%23AAA' stroke-linecap='round' stroke-linejoin='round' points='1.5 2.556 8.5 2.556 8.5 5'/%3E%3C/svg%3E%0A");
+    background: $icon 50% calc(50% - 1px) no-repeat;
+    content: ' ';
+    display: inline-block;
+    width: 11px;
+    margin-right: -11px;
+  }
+
+  /**
+   * Markdown line breaks
+   */
+  .cm-show-invisibles .cm-trailing-space-new-line {
+    position: relative;
+  }
+
+  .cm-show-invisibles .cm-trailing-space-new-line::after {
+    $arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='9' viewBox='0 0 11 9'%3E%3Cpath fill='%23AAA' d='M2.70710678,5 L7.25080566,5 C7.94130992,5 8.50107422,4.4402357 8.50107422,3.74973145 C8.50107422,3.05922719 7.94130992,2.49946289 7.25080566,2.49946289 C6.97466329,2.49946289 6.75080566,2.27560527 6.75080566,1.99946289 C6.75080566,1.72332052 6.97466329,1.49946289 7.25080566,1.49946289 C8.49359467,1.49946289 9.50107422,2.50694244 9.50107422,3.74973145 C9.50107422,4.99252045 8.49359467,6 7.25080566,6 L2.70710678,6 L3.85355339,7.14644661 C4.04881554,7.34170876 4.04881554,7.65829124 3.85355339,7.85355339 C3.65829124,8.04881554 3.34170876,8.04881554 3.14644661,7.85355339 L1.14644661,5.85355339 C0.951184464,5.65829124 0.951184464,5.34170876 1.14644661,5.14644661 L3.14644661,3.14644661 C3.34170876,2.95118446 3.65829124,2.95118446 3.85355339,3.14644661 C4.04881554,3.34170876 4.04881554,3.65829124 3.85355339,3.85355339 L2.70710678,5 Z'/%3E%3C/svg%3E%0A");
+    background: $arrow 50% calc(50% - 1px) no-repeat;
+    content: ' ';
+    display: inline-block;
+    min-width: 11px;
+    pointer-events: none;
+  }
 }
 
 /* -----  Kirbytext mode  --------------------------------------------------- */
 
 .k-markdown-input {
   .cm-kirbytag {
-    padding: .0625em 0;
-    margin: -.125empx -.0625em;
+    padding: 1px 0 1px;
+    margin: -2px -1px -1px;
     border-radius: .125em;
     background: rgba($color-focus, .15);
-    border: .0625em solid rgba($color-focus, .3);
+    border: 1px solid rgba($color-focus, .3);
     box-decoration-break: clone;
   }
 }
@@ -171,7 +230,7 @@
 
   .cm-header {
     font: inherit;
-    font-weight: 700;
+    font-weight: $font-weight-bold;
   }
 
   .cm-blockheader,
@@ -191,7 +250,7 @@
   .cm-header,
   .cm-header ~ * {
     font: inherit;
-    font-weight: 700;
+    font-weight: $font-weight-bold;
   }
 
   .cm-header-1,
@@ -234,6 +293,8 @@
     text-indent: calc(-1px * (var(--cm-block-indent, 0)));
   }
 
+  /* Code */
+
   .cm-blockcode,
   .cm-code {
     font-family: $font-family-mono;
@@ -241,7 +302,26 @@
     line-height: (1.5 * 16px / 14px);
   }
 
+
+  /**
+   * Use monospace for horizontal rules asterisk chars, as
+   * they better align vertically with the rule.   
+   */
   .cm-blockhr {
     font-family: $font-family-mono;
+  }
+
+  /* Invisible characters addon */
+
+  /**
+   * In sans-serif mode, the width of space characters is
+   * usually way too small, so we need to expand the
+   * NO-BREAK SPACE char a bit, to make it more legible.
+   */
+  .cm-ch-nbsp {
+    margin-left: -2px;
+    margin-right: -2px;
+    padding-left: 2px;
+    padding-right: 2px;
   }
 }
