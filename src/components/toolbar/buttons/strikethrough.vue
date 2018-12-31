@@ -7,12 +7,12 @@ export default {
         return {
             label: this.$t('markdown.toolbar.button.strikethrough'),
             icon: 'strikethrough',
-            tokenType: 'strikethrough',
+            type: 'strikethrough',
         }
     },
     methods: {
         action() {
-            this.wrap('~~')
+            this.toggleWrap('~~')
         }
     }
 };

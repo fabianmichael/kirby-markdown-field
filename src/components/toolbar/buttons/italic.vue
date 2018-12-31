@@ -8,12 +8,12 @@ export default {
             label: this.$t('toolbar.button.italic'),
             icon: 'italic',
             shortcut: 'Cmd-I',
-            tokenType: 'em'
+            type: 'italic'
         }
     },
     methods: {
         action() {
-            this.wrap('*')
+             this.toggleWrap('*')
         }
     }
 };

@@ -7,7 +7,8 @@ export default {
         return {
             label: this.$t('toolbar.button.email'),
             icon: 'email',
-            shortcut: 'Cmd-E'
+            shortcut: 'Cmd-E',
+            type: 'email'
         }
     },
     methods: {
@@ -18,31 +19,20 @@ export default {
             }
             // else, insert an inline tag
             else {
-                let doc       = this.editor.getDoc()
-                let selection = doc.getSelection()
-                let incr      = 1
+                let selection = this.selection
 
                 // if a text is selected
                 if(selection.length > 0) {
                     // if selected text is an email
                     if (this.isEmail(selection)) {
-                        doc.replaceSelection('(email: '+ selection +' text: )')
+                        this.insert('(email: '+ selection +' text: )', 1)
                     } else {
-                        doc.replaceSelection('(email:  text: '+ selection +')')
-                        // caret will be moved to the empty value: (email: [caret] text: my text)
-                        incr = selection.length + 8
+                        this.insert('(email:  text: '+ selection +')', selection.length + 8)
                     }
                 }
                 else {
-                    // wrap selection with **
-                    this.editor.getDoc().replaceSelection('(email: )')
+                    this.insert('(email: )', 1)
                 }
-
-                // move caret before the second wrapper: (link: [caret])
-                let pos = this.editor.getCursor()
-                this.editor.setCursor({line: pos.line, ch: pos.ch - incr})
-                // bring the focus back to the editor
-                this.editor.focus()
             }
         },
         isEmail(str) {

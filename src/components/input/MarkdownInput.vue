@@ -141,9 +141,9 @@ export default {
 
         // Update current token
         this.editor.on('cursorActivity', _editor => {
-            let cur   = _editor.getCursor()
-            let token = _editor.getTokenAt(cur);
-            this.currentTokenType = token.type
+            let pos       = _editor.getCursor('start')
+            let tokenType = _editor.getTokenTypeAt(pos)
+            this.setTokenType(tokenType, pos)
         })
         
         // Emit changed value
@@ -170,11 +170,17 @@ export default {
         },
     },
     methods: {
+        /**
+         * Close any open dialog and bring focus back to the editor
+         */
         cancel() {
             this.editorFocus()
             this.currentDialog = null
         },
 
+        /**
+         * Open pages dialog
+         */
         openPagesDialog() {
             this.$refs['pagesDialog'].open({
                 endpoint: this.endpoints.field + '/get-pages',
@@ -183,11 +189,16 @@ export default {
             })
         },
 
+        /**
+         * Fetch files / images and open files dialog
+         */
         openFilesDialog(dialog) {
             this.$api
                 .get(this.endpoints.field + '/get-'+ dialog)
                 .then(files => {
+                    // if there are files to pick from
                     if(files.length) {
+                        // structure the files list
                         files = files.map(file => {
                             file.selected = false
                             file.thumb = []
@@ -201,6 +212,7 @@ export default {
                             multiple: false
                         })
                     }
+                    // else: show an error dialog
                     else {
                         this.$store.dispatch('notification/error', 'The page has no '+ dialog)
                     }
@@ -210,66 +222,127 @@ export default {
                 })
         },
 
-        insert(text) {
-            // wrap selection with **
-            this.editor.getDoc().replaceSelection(text)
-            // move caret before the second wrapper: (tag: text[caret])
+        /**
+         * Insert text at the cursor's position
+         */
+        insert(str, incr = 0) {
+            // replace current selection
+            this.editor.getDoc().replaceSelection(str)
+            // move caret if needed
             let pos = this.editor.getCursor()
-            this.editor.setCursor({line: pos.line, ch: pos.ch - 1})
+            this.editor.setCursor({line: pos.line, ch: pos.ch - incr})
             // bring the focus back to the editor
             this.editorFocus()
         },
 
+        /**
+         * Insert (link: ) tag on pagesDialog submit
+         */
         insertPageLink(selected) {
             let page      = selected[0]
-            let doc       = this.editor.getDoc()
-            let selection = doc.getSelection()
-            let text      = selection.length > 0 ? selection : page.text
+            let selection = this.editor.getDoc().getSelection()
+            let text      = selection.length > 0 ? selection : page.title
             let tag       = '(link: '+ page.id +' text: '+ text +')'
 
-            // insert the tag
-            doc.replaceSelection(tag)
-            // move caret before the second wrapper: (link: page/id text: Page title[caret])
-            let pos = this.editor.getCursor()
-            this.editor.setCursor({line: pos.line, ch: pos.ch - 1})
-            // bring the focus back to the editor
-            this.editorFocus()
+            this.insert(tag, 1)
+            this.currentDialog = null
         },
 
+        /**
+         * Insert (file: ) or (image: ) tag on filesDialog and imagesDialog submit
+         */
         insertFileTag(selected) {
             let file = selected[0]
             let doc  = this.editor.getDoc()
 
+            // if we're inserting an image
             if(this.currentDialog == 'images') {
                 let tag = '(image: '+ file.uuid +')'
-                // insert the tag
-                doc.replaceSelection(tag)
+                this.insert(tag)
             } 
+            // if we're inserting a file
             else {
                 let selection = doc.getSelection()
+                // whether or not we add a text: argument
                 let suffix    = selection.length > 0 ? ' text: '+ selection : ''
+                // if we add a text: argument: place cursor before the closing parenthesis
                 let incr      = selection.length > 0 ? 1 : 0
 
-                // insert the tag
-                doc.replaceSelection('(file: '+ file.uuid + suffix +')')
-                // move caret 
-                // -> after the tag if there is no selected text: (file: filename.pdf)[caret]
-                // -> before the second wrapper if there is a selected text: (file: filename.pdf text: Text[caret])
-                let pos = this.editor.getCursor()
-                this.editor.setCursor({line: pos.line, ch: pos.ch - incr})
+                this.insert('(file: '+ file.uuid + suffix +')', incr)
             }
-            
-            // bring the focus back to the editor
-            this.editorFocus()
             this.currentDialog = null
         },
 
+        /**
+         * Set focus within the editor
+         */
         editorFocus() {
             let _this = this
             setTimeout(() => {
                 _this.$refs.input.focus()
                 _this.editor.focus()
             })
+        },
+
+        /**
+         * Set the token type of current cursor position
+         */
+        setTokenType(tokenType, pos) {
+            // skip computing if tokenType is null
+            if(tokenType == null) {
+                this.currentTokenType = null
+                return
+            } 
+
+            // init an object
+            let main = undefined
+            let secondary = undefined
+
+            // Keep only the last two words of the token type for comparison,
+            // because when preceding / wrapping characters are selected, formatting types are prepended.
+            // header header-6 || formatting formatting-header formatting-header-6 [header header-6]
+            let tokenTypes = tokenType.split(' ').slice(-2)
+
+            tokenTypes.forEach(type => {
+                // main type
+                if(type == 'strong')             main = 'bold'
+                else if(type == 'em')            main = 'italic'
+                else if(type == 'quote')         main = 'quote'
+                else if(type == 'strikethrough') main = 'strikethrough'
+                else if(type == 'code')          main = 'code'
+                else if(type == 'hr')            main = 'horizontal-rule'
+                else if(type == 'kirbytag')      main = 'kirbytag'
+                else if(type == 'header')        main = 'headings'
+
+                // tricky types (ul, ol, codeblock)
+                else if(type == '') {
+                    let text = this.editor.getDoc().getLine(pos.line)
+                    // is it an ordered list?
+                    if(/^\s*\d+\.\s/.test(text))              main = 'ordered-list'
+                    // is it an unordered list?
+                    else if(/^(\s*)(\*|\-|\+)\s+/.test(text)) main = 'unordered-list'
+                    // is it a code block?
+                    // somehow it doesnt get returned in the getTokenTypeAt call
+                    else {
+                        let token = this.editor.getTokenAt(pos)
+                        if(token.type !== null) {
+                            if(token.type.endsWith('blockcode')) {
+                                main = 'code'
+                                secondary = 'block'
+                            }
+                        }
+                    }
+                }
+
+                // secondary type
+                else if(type.startsWith('header-') || type.startsWith('kirbytag-')) {
+                    secondary = type.replace('header-', 'heading-')
+                }   
+            })
+
+            // set the type object as current token type
+            let type = { main: main, secondary: secondary }
+            this.currentTokenType = type
         },
 
         /**

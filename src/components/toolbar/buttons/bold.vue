@@ -8,12 +8,12 @@ export default {
             label: this.$t('toolbar.button.bold'),
             icon: 'bold',
             shortcut: 'Cmd-B',
-            tokenType: 'strong'
+            type: 'bold'
         }
     },
     methods: {
         action() {
-            this.wrap('**')
+            this.toggleWrap('**')
         }
     }
 };
