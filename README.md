@@ -2,11 +2,7 @@
 
 Enhanced markdown editor for Kirby 3
 
-> ⚠️This field is a work in progress, we advise not to use it in your installations yet. Any help is most welcome, and will allow us to release it sooner.
-
-> README will need to be re-written properly
-
-[screenshot once published]
+![screenshot](https://user-images.githubusercontent.com/14079751/50558980-b3393300-0cf2-11e9-94c0-209b89fa5cdb.jpg)
 
 <br/>
 
