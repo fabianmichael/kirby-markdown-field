@@ -1,6 +1,6 @@
 # Kirby – Markdown field
 
-Enhanced markdown editor for Kirby 3
+Enhanced markdown editor for Kirby 3, community built.
 
 ![screenshot](https://user-images.githubusercontent.com/14079751/50558980-b3393300-0cf2-11e9-94c0-209b89fa5cdb.jpg)
 
