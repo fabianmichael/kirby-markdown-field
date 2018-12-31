@@ -169,10 +169,10 @@ export default {
                     if(type == 'ordered-list') {
                         let prevLine = this.editorDoc.getLine(startPoint.line - 1)
                         if(prevLine && prevLine.match(pattern['ordered-list'])) {
-                            let numRegex = /^\s*(\d+)\.\s+/
+                            let numRegex  = /^\s*(\d+)\.\s+/
                             let prevCount = numRegex.exec(prevLine)[1]
-                                prevCount = parseInt(prevCount) + 1
-                            prefix = prevCount + '. '
+                            let newCount  = parseInt(prevCount) + 1
+                            prefix = newCount + '. '
                         }
                     }
                     newText = prefix + newText
