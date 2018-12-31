@@ -7,7 +7,7 @@
 
   // General setup
   position: relative;
-  transform: translate3d(0, 0, 0);
+  // transform: translate3d(0, 0, 0); // causes issue with sticky on Safari
 
   .k-markdown-input-native {
     resize: none;
