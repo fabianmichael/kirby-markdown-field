@@ -60,9 +60,16 @@
 
 /* -----  Toolbar -------------------------------------------- */
 
-// active state of toolbar buttons
-.k-toolbar-button.active {
-  background: hsla(0, 0%, 93.7%, 0.5);
+.k-toolbar-button {
+	// active state of toolbar buttons
+	&.active {
+  		background: hsla(0, 0%, 93.7%, 0.5);
+  	}
+  	// disabled state of toolbar buttons
+  	&.disabled {
+  		opacity: 0.25;
+  		pointer-events: none;
+  	}	
 }
 
 // active state of toolbar buttons

@@ -10,6 +10,11 @@ export default {
             type: 'image'
 		}
 	},
+	computed: {
+		disabled() {
+			return this.currentTokenType !== null && this.currentTokenType.main == 'kirbytag'
+		}
+	},
 	methods: {
 		action() {
 			this.$root.$emit('md-openDialog', 'images')

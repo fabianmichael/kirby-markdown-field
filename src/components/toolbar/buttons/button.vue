@@ -2,7 +2,7 @@
     <k-button :icon="icon"
               :tooltip="label"
               tabindex="-1"
-              :class="['k-toolbar-button', 'k-markdown-button', 'k-markdown-button-'+ name, {active: active}]"
+              :class="['k-toolbar-button', 'k-markdown-button', 'k-markdown-button-'+ name, {active: active}, {disabled: disabled}]"
               @click="action" />
 </template>
 
@@ -32,6 +32,9 @@ export default {
         active() {
             return this.currentTokenType !== null && this.currentTokenType.main == this.type
         },
+        disabled() {
+            return false
+        }
     },
     watch: {
         editor(val) {

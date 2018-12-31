@@ -11,6 +11,11 @@ export default {
             type: 'link'
         }
     },
+    computed: {
+        disabled() {
+            return this.currentTokenType !== null && this.currentTokenType.main == 'kirbytag'
+        }
+    },
     methods: {
         action() {
             // open a modal if allowed
