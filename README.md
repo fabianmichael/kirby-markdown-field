@@ -141,7 +141,4 @@ MIT
 **Inspirations / K2 fields:**
 
 - [Visual Markdown Editor](https://github.com/JonasDoebertin/kirby-visual-markdown) by [Jonas Döbertin](https://github.com/JonasDoebertin)
-- [SimpleMDE for Kirby](https://github.com/medienbaecker/kirby-simplemde) by [Jonas Döbertin](https://github.com/medienbaecker)
-
-
-MIT
+- [SimpleMDE for Kirby](https://github.com/medienbaecker/kirby-simplemde) by [Thomas Günther](https://github.com/medienbaecker)
