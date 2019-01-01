@@ -57,11 +57,12 @@ You have access to the very same options as [the textarea field](https://nnnnext
 ### 3.2. Font settings
 
 You can set the desired font settings:
-- `family`: **monospace** (default) | sans-serif
-- `size`: **regular** (default) | small
-- `scaling`: true | **false** (default), whether headings should scale from 30px to 16px, or simply turn bold without any scaling.
 
-Note that you can choose to override only one of these options, or all of them, it's up to you. By default, without an explicitely-set options, `scaling` will be set to `true` for sans-serif fonts, and `false` for monospaced fonts.
+| Option | Type | Required | Default | Description |
+|:-------|:-----|:---------|:--------|:------------|
+| family | String | false | 'monospace' | Sets the font family. Available options: monospace, sans-serif |
+| size | String | false | 'regular' | Sets the font size. Available options: regular, small |
+| scaling | Boolean | false | false (monospace) | true (sans-serif) | Whether headings should scale from 30px to 16px, or simply turn bold without any scaling |
 
 ```yaml
 buttons:
