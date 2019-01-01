@@ -64,10 +64,6 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .cm-formatting {
-    color: $color-dark-grey;
-  }
-
   .cm-comment {
     background: darken(#fafafa, 2%);
     color: black;
@@ -211,6 +207,14 @@
     display: inline-block;
     min-width: 11px;
     pointer-events: none;
+  }
+
+  /**
+   * Formatting characters
+   */
+
+  .cm-formatting, .cm-blockquote .cm-formatting-quote {
+    color: $color-dark-grey;
   }
 
 }
