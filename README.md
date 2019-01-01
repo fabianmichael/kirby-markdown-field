@@ -67,7 +67,7 @@ You can set the desired font settings:
 Note that you can choose to override only one or two of these options on a per-field basis, you don't have to explicitely set them all.
 
 ```yaml
-buttons:
+font:
   family: monospace
   scaling: false
   size: regular
