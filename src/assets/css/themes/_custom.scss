@@ -64,6 +64,10 @@
     font-variant-numeric: tabular-nums;
   }
 
+  .cm-formatting {
+    color: $color-dark-grey;
+  }
+
   .cm-comment {
     background: darken(#fafafa, 2%);
     color: black;
@@ -208,6 +212,7 @@
     min-width: 11px;
     pointer-events: none;
   }
+
 }
 
 /* -----  Kirbytext mode  --------------------------------------------------- */
