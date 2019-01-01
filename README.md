@@ -64,6 +64,8 @@ You can set the desired font settings:
 | size | String | false | `regular` | Sets the font size. Available options: regular, small |
 | scaling | Boolean | false | `false` (monospace) / `true` (sans-serif) | Whether headings should scale from 30px to 16px, or simply turn bold without any scaling |
 
+Note that you can choose to override only one or two of these options on a per-field basis, you don't have to explicitely set them all.
+
 ```yaml
 buttons:
   family: monospace
