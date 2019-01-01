@@ -12,8 +12,9 @@ Enhanced markdown editor for Kirby 3, community built.
 - [2. Setup](#2-setup)
 - [3. Options](#3-available-options)
   - [3.1. Available options](#31-available-options)
-  - [3.2. Buttons](#32-buttons)
-  - [3.3. Default options](#33-default-options)
+  - [3.2. Font-settings](#32-font-settings)
+  - [3.3. Buttons](#33-buttons)
+  - [3.4. Default options](#34-default-options)
 - [4. Development](#4-development)
 - [5. License](#5-license)
 - [6. Credits](#6-credits)
@@ -48,12 +49,28 @@ You have access to the very same options as [the textarea field](https://nnnnext
 
 | Option | Type | Required | Default | Description |
 |:-------|:-----|:---------|:--------|:------------|
-| font | String | false | monospace | Sets the font of the Markdown field. Available options: monospace, sans-serif |
+| font | Object | false | [see below](#32-font-settings) | Sets the font options of the Markdown field. [See below](#32-font-settings) the available options |
 | modals | Boolean | false | true | If set to `false`, link and email tags will be added without opening a modal |
 | blank | Boolean | false | false | If set to `true`, editors will be presented an option to add the `target: _blank` option to link tags |
 | invisibles | Boolean | false | false | If set to `true`, the *invisibles* button will be displayed in the toolbar, allowing you to show / hide hidden characters and whitespaces |
 
-### 3.2. Buttons
+### 3.2. Font settings
+
+You can set the desired font settings:
+- `family`: **monospace** (default) | sans-serif
+- `size`: **regular** (default) | small
+- `scaling`: true | **false** (default), whether headings should scale from 30px to 16px, or simply turn bold without any scaling.
+
+Note that you can choose to override only one of these options, or all of them, it's up to you. By default, without an explicitely-set options, `scaling` will be set to `true` for sans-serif fonts, and `false` for monospaced fonts.
+
+```yaml
+buttons:
+  family: monospace
+  scaling: false
+  size: regular
+```
+
+### 3.3. Buttons
 
 This field is packing the usual textarea buttons, and some more.
 
@@ -82,14 +99,18 @@ buttons:
   - file
 ```
 
-### 3.3. Default options
+### 3.4. Default options
 
 You can globally override the default options, instead of setting them on a per-field basis. In your `site/config/config.php`:
 
 ```php
 return [
   'community.markdown-field.buttons'    => ['headlines', 'bold', 'italic', 'divider', 'link', 'email', 'code', 'divider', 'ul', 'ol'],
-  'community.markdown-field.font'       => 'monospace',
+  'community.markdown-field.font'       => [
+    'family'  => 'monospace',
+    'scaling' => false,
+    'size'    => 'regular',
+  ],
   'community.markdown-field.modals'     => true,
   'community.markdown-field.blank'      => false,
   'community.markdown-field.invisibles' => false,
