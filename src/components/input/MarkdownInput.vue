@@ -1,5 +1,5 @@
 <template>
-    <div :data-theme="theme" class="k-markdown-input" :font="font">
+    <div :data-theme="theme" class="k-markdown-input" :font-family="font.family" :font-size="font.size" :font-scaling="font.scaling">
         <div class="k-markdown-input-wrapper" :data-size="size">
             <k-markdown-toolbar v-if="buttons"
                        ref="toolbar"
@@ -60,7 +60,7 @@ export default {
         placeholder: String,
         size: String,
         value: String,
-        font: String,
+        font: Object,
         kirbytags: Array,
         options: {
             type: Object,
@@ -77,7 +77,7 @@ export default {
                     extraKeys: {
                         'Enter': 'newlineAndIndentContinueMarkdownList',
                     },
-                    font: this.font,
+                    font: this.font.family,
                     showInvisibles: false,
                 };
             },

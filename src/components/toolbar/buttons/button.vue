@@ -163,7 +163,19 @@ export default {
                             incr    = map[key].length - map[type].length
                         }
                     })
-                    newText = map[type] + newText
+
+                    let prefix = map[type]
+                    // check if there's a preceding ordered li to set a proper incrementation
+                    if(type == 'ordered-list') {
+                        let prevLine = this.editorDoc.getLine(startPoint.line - 1)
+                        if(prevLine && prevLine.match(pattern['ordered-list'])) {
+                            let numRegex  = /^\s*(\d+)\.\s+/
+                            let prevCount = numRegex.exec(prevLine)[1]
+                            let newCount  = parseInt(prevCount) + 1
+                            prefix = newCount + '. '
+                        }
+                    }
+                    newText = prefix + newText
                 }
 
                 // replace old line with new line

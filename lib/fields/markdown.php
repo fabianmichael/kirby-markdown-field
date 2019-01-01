@@ -1,36 +1,57 @@
 <?php
 
+use Kirby\Toolkit\A;
+
 $options = require kirby()->root('kirby') . '/config/fields/textarea.php';
 
 
 /* Merge new properties
 --------------------------------*/
 
-$options = array_merge_recursive($options, [
+$options = A::merge($options, [
     'props' => [
         /**
+         * Sets the toolbar buttons.
+         */
+        'buttons' => function($buttons = null) {
+            return $buttons ?? option('community.markdown-field.buttons');
+        },
+        /*
          * Sets the editor font. Allowed values: monospace, sans-serif
          */
-        'font' => function($font = 'monospace') {
-            return $font;
+        'font' => function($font = null) {
+        	$fontOptions = option('community.markdown-field.font');
+
+        	if($font) {
+        		// if there is a family set but no scaling option
+        		if(array_key_exists('family', $font) && !array_key_exists('scaling', $font)) {
+        			// default scaling: true for sans-serif, false for monospace
+        			$scaling     = $font['family'] == 'sans-serif';
+        			$fontOptions = A::merge($fontOptions, array('scaling' => $scaling));
+        		}
+        		// merge field options with global defaults
+        		$fontOptions = A::merge($fontOptions, $font);
+        	}
+
+            return $fontOptions;
         },
         /**
          * Whether link / email buttons should open a modal. Boolean.
          */
-        'modals' => function($modals = true) {
-            return $modals;
+        'modals' => function($modals = null) {
+            return $modals ?? option('community.markdown-field.modals');
         },
         /**
          * Whether link dialogs enable editors to easily set a target="_blank". Boolean.
          */
-        'blank' => function($blank = false) {
-            return $blank;
+        'blank' => function($blank = null) {
+            return $blank ?? option('community.markdown-field.blank');
         },
         /**
          * Whether the 'invisibles' button should be displayed. Boolean.
          */
-        'invisibles' => function($invisibles = false) {
-            return $invisibles;
+        'invisibles' => function($invisibles = null) {
+            return $invisibles ?? option('community.markdown-field.invisibles');
         },
     ],
     'computed' => [

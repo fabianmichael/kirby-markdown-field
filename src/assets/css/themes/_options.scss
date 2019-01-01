@@ -1,0 +1,110 @@
+/* -----  Font-size option  --------------------------------------------------- */
+
+.k-markdown-input[font-size="small"] .CodeMirror {
+  font-size: 14px; 
+}
+
+
+/* -----  Font scaling option  ------------------------------------------------- */
+
+.k-markdown-input[font-scaling=true] .CodeMirror {
+  .cm-header,
+  .cm-header ~ * {
+    font: inherit;
+    font-weight: $font-weight-bold;
+  }
+
+  .cm-header-1,
+  .cm-header-1 ~ * {
+    font-size: 30px;
+    line-height: 1.25;
+  }
+  
+  .cm-header-2,
+  .cm-header-2 ~ * {
+    font-size: 24px;
+    line-height: 1.4;
+  }
+  
+  .cm-header-3,
+  .cm-header-3 ~ * {
+    font-size: 20px;
+    line-height: 1.5;
+  }
+
+  .cm-header-4,
+  .cm-header-4 ~ * {
+    font-size: 18px;
+  }
+
+  .cm-header-5,
+  .cm-header-5 ~ * {
+    font-size: 16px;
+  }
+
+  .cm-header-6,
+  .cm-header-6 ~ * {
+    font-size: 16px;
+  } 
+}
+
+
+/* -----  Monospace font  --------------------------------------------------- */
+
+.k-markdown-input[font-family="monospace"] .CodeMirror {
+  font-family: $font-family-mono;
+  line-height: 1.75;
+
+  .cm-blockheader,
+  .cm-blockquote,
+  .cm-blocklist {
+    padding-left: calc(var(--line-padding) + 1ch * (var(--cm-block-indent, 0)));
+    text-indent: calc(-1ch * (var(--cm-block-indent, 0)));
+  }
+}
+
+/* -----  Sans-serif font  -------------------------------------------------- */
+
+.k-markdown-input[font-family="sans-serif"] .CodeMirror {
+  font-family: $font-family-sans;
+  line-height: 1.5;
+
+  .cm-blockheader,
+  .cm-blockquote,
+  .cm-blocklist {
+    padding-left: calc(var(--line-padding) + 1px * (var(--cm-block-indent, 0)));
+    text-indent: calc(-1px * (var(--cm-block-indent, 0)));
+  }
+
+  /* Code */
+
+  .cm-blockcode,
+  .cm-code {
+    font-family: $font-family-mono;
+    font-size: (14px / 16px * 1rem);
+    line-height: (1.5 * 16px / 14px);
+  }
+
+
+  /**
+   * Use monospace for horizontal rules asterisk chars, as
+   * they better align vertically with the rule.   
+   */
+  .cm-blockhr {
+    font-family: $font-family-mono;
+  }
+
+  /* Invisible characters addon */
+
+  /**
+   * In sans-serif mode, the width of space characters is
+   * usually way too small, so we need to expand the
+   * NO-BREAK SPACE char a bit, to make it more legible.
+   */
+  .cm-ch-nbsp {
+    margin-left: -2px;
+    margin-right: -2px;
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+}

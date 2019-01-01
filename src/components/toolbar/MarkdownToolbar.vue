@@ -12,7 +12,7 @@
 <script>
 export default {
     props: {
-        buttons: [Boolean, Array],
+        buttons: Array,
         editor: Object,
         modals: Boolean,
         invisibles: Boolean,
@@ -20,30 +20,22 @@ export default {
     },
     computed: {
         layout() {
-            if(this.buttons == true) {
-                return ['headlines', 'bold', 'italic', 'divider', 'link', 'email', 'code', 'divider', 'ul', 'ol']
-            }
-            else if(Array.isArray(this.buttons)) {
-                let sortedButtons = this.buttons.map(button => {
-                    // if it has a subarray
-                    if(Array.isArray(button)) {
-                        // if it's a headlines array
-                        if(button.some(el => ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(el))) {
-                            return {
-                                name: 'headlines',
-                                buttons: button
-                            }
+            let sortedButtons = this.buttons.map(button => {
+                // if it has a subarray
+                if(Array.isArray(button)) {
+                    // if it's a headlines array
+                    if(button.some(el => ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(el))) {
+                        return {
+                            name: 'headlines',
+                            buttons: button
                         }
                     }
-                    else {
-                        return button
-                    }
-                })
-                return sortedButtons
-            }
-            else {
-                return []
-            }
+                }
+                else {
+                    return button
+                }
+            })
+            return sortedButtons
         }
     },
     methods: {
