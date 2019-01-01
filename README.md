@@ -50,9 +50,9 @@ You have access to the very same options as [the textarea field](https://nnnnext
 | Option | Type | Required | Default | Description |
 |:-------|:-----|:---------|:--------|:------------|
 | font | Object | false | [see below](#32-font-settings) | Sets the font options of the Markdown field. [See below](#32-font-settings) the available options |
-| modals | Boolean | false | true | If set to `false`, link and email tags will be added without opening a modal |
-| blank | Boolean | false | false | If set to `true`, editors will be presented an option to add the `target: _blank` option to link tags |
-| invisibles | Boolean | false | false | If set to `true`, the *invisibles* button will be displayed in the toolbar, allowing you to show / hide hidden characters and whitespaces |
+| modals | Boolean | false | `true` | If set to `false`, link and email tags will be added without opening a modal |
+| blank | Boolean | false | `false` | If set to `true`, editors will be presented an option to add the `target: _blank` option to link tags |
+| invisibles | Boolean | false | `false` | If set to `true`, the *invisibles* button will be displayed in the toolbar, allowing you to show / hide hidden characters and whitespaces |
 
 ### 3.2. Font settings
 
@@ -60,9 +60,9 @@ You can set the desired font settings:
 
 | Option | Type | Required | Default | Description |
 |:-------|:-----|:---------|:--------|:------------|
-| family | String | false | 'monospace' | Sets the font family. Available options: monospace, sans-serif |
-| size | String | false | 'regular' | Sets the font size. Available options: regular, small |
-| scaling | Boolean | false | false (monospace) | true (sans-serif) | Whether headings should scale from 30px to 16px, or simply turn bold without any scaling |
+| family | String | false | `monospace` | Sets the font family. Available options: monospace, sans-serif |
+| size | String | false | `regular` | Sets the font size. Available options: regular, small |
+| scaling | Boolean | false | `false` (monospace) / `true` (sans-serif) | Whether headings should scale from 30px to 16px, or simply turn bold without any scaling |
 
 ```yaml
 buttons:
