@@ -213,7 +213,7 @@
    * Formatting characters
    */
 
-  .cm-formatting, .cm-blockquote .cm-formatting-quote {
+  .cm-formatting:not(.cm-formatting-header), .cm-blockquote .cm-formatting-quote {
     color: $color-dark-grey;
   }
 
