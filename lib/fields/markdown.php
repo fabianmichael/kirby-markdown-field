@@ -20,7 +20,20 @@ $options = A::merge($options, [
          * Sets the editor font. Allowed values: monospace, sans-serif
          */
         'font' => function($font = null) {
-            return $font ?? option('community.markdown-field.font');
+        	$fontOptions = option('community.markdown-field.font');
+
+        	if($font) {
+        		// if there is a family set but no scaling option
+        		if(array_key_exists('family', $font) && !array_key_exists('scaling', $font)) {
+        			// default scaling: true for sans-serif, false for monospace
+        			$scaling     = $font['family'] == 'sans-serif';
+        			$fontOptions = A::merge($fontOptions, array('scaling' => $scaling));
+        		}
+        		// merge field options with global defaults
+        		$fontOptions = A::merge($fontOptions, $font);
+        	}
+
+            return $fontOptions;
         },
         /**
          * Whether link / email buttons should open a modal. Boolean.

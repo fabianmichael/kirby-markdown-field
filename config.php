@@ -3,7 +3,11 @@
 Kirby::plugin('community/markdown-field', [
 	'options' => array(
 		'buttons'    => ['headlines', 'bold', 'italic', 'divider', 'link', 'email', 'code', 'divider', 'ul', 'ol'],
-		'font'       => 'monospace',
+		'font'       => [
+			'family'  => 'monospace',
+			'size'    => 'regular',
+			'scaling' => false,
+		],
 		'modals'     => true,
 		'blank'      => false,
 		'invisibles' => false,
