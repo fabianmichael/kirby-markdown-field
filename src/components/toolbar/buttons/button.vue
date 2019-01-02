@@ -153,9 +153,6 @@ export default {
                 } 
                 // else, replace any other pattern before applying
                 else {
-                    // cursor = current position minus the former preceding string's length
-                    incr = - map[type].length 
-
                     // remove any other line style before applying the new one
                     Object.keys(pattern).forEach(function(key) {
                         if(newText.match(pattern[key])) {
@@ -167,7 +164,7 @@ export default {
                     let prefix = map[type]
                     // check if there's a preceding ordered li to set a proper incrementation
                     if(type == 'ordered-list') {
-                        let prevLine = this.editorDoc.getLine(startPoint.line - 1)
+                        let prevLine = this.editorDoc.getLine(i - 1)
                         if(prevLine && prevLine.match(pattern['ordered-list'])) {
                             let numRegex  = /^\s*(\d+)\.\s+/
                             let prevCount = numRegex.exec(prevLine)[1]
@@ -175,6 +172,11 @@ export default {
                             prefix = newCount + '. '
                         }
                     }
+
+                    // cursor = current position + prefix length
+                    // negative because incr is then subtracted from endPoint, minus + minus = +
+                    incr -= prefix.length
+
                     newText = prefix + newText
                 }
 
@@ -186,7 +188,7 @@ export default {
                 )
             }
 
-            // move caret before the second wrapper: [arg]my text[caret][arg]
+            // move caret
             this.editor.setCursor({line: endPoint.line, ch: endPoint.ch - incr})
             // bring the focus back to the editor
             this.editor.focus()
