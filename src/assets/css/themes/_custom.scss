@@ -7,7 +7,7 @@
   padding-top: 0; // fix baseline alignment with textarea field
 
   .cm-invisibles-test { 
-  	color: #de935f; 
+    color: #de935f; 
   }
 
   /**
@@ -135,8 +135,14 @@
 
   /* Blockquote */
 
-  .cm-blockquote .cm-quote {
-    color: inherit;
+  .cm-blockquote {
+    border-left: 4px solid rgba($color-dark, .1);
+    .cm-quote {
+      color: inherit;
+    }
+    .cm-formatting-quote {
+      padding-left: 2px;
+    }
   }
 
   /* Source code and HTML tags */
