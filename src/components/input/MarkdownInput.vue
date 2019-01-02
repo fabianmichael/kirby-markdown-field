@@ -52,10 +52,7 @@ export default {
         modals: Boolean, 
         blank: Boolean,
         invisibles: Boolean,
-        buttons: {
-          type: [Boolean, Array],
-          default: true
-        },
+        buttons: [Boolean, Array],
         endpoints: Object,
         placeholder: String,
         size: String,

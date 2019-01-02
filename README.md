@@ -102,6 +102,12 @@ buttons:
   - file
 ```
 
+If you don't need it, you can also hide the toolbar:
+
+```
+buttons: false
+```
+
 ### 3.4. Default options
 
 You can globally override the default options, instead of setting them on a per-field basis. In your `site/config/config.php`:
