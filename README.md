@@ -2,7 +2,7 @@
 
 Enhanced markdown editor for Kirby 3, community built.
 
-![screenshot](https://user-images.githubusercontent.com/14079751/50558980-b3393300-0cf2-11e9-94c0-209b89fa5cdb.jpg)
+![screenshot](https://user-images.githubusercontent.com/14079751/50606008-7cb31200-0ec4-11e9-9685-a48a8ba398a4.jpg)
 
 <br/>
 
