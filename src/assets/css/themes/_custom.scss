@@ -1,59 +1,67 @@
 /* -----  Editor basics  ---------------------------------------------------- */
 
-.k-markdown-input .CodeMirror {
-  #{--line-padding}: 4px;
-  height: auto;
-  padding: .25rem .5rem;
-  padding-top: 0; // fix baseline alignment with textarea field
 
-  .cm-invisibles-test { 
-    color: #de935f; 
+.k-markdown-input { 
+  .CodeMirror {
+    #{--line-padding}: 4px;
+    height: auto;
+    padding: .25rem .5rem;
+
+    .cm-invisibles-test { 
+      color: #de935f; 
+    }
+
+    /**
+     * Set placeholder color
+     */
+    &-placeholder {
+      color: #999999;
+    }
+
+    .CodeMirror-scroll {
+      overflow: auto;
+    }
+
+    /* Editor content */
+
+    /**
+     * Default style for every line.
+     */
+    pre {
+      padding: 0 var(--line-padding);
+    }
+
+    /**
+     * 1. Needed to keep tabs before nested list items from
+     *    collapsing.
+     */
+    .cm-tab {
+      width: 4ch; /* 1 */
+    }
+
+    /* Selected text */
+
+    .CodeMirror-selected {
+      background-color: rgba($color-focus, .2);
+    }
+
+    .CodeMirror-selectedtext {
+      color: $color-dark;
+    }
+
+    /* Cursor */
+
+    .CodeMirror-cursor {
+      border-left: 2px solid $color-focus;
+    }
   }
 
-  /**
-   * Set placeholder color
-   */
-  &-placeholder {
-    color: #999999;
+  /*
+   * Fix padding-top when toolbar is shown
+   */ 
+  .k-toolbar ~ .CodeMirror {
+    padding-top: 0; 
   }
-
-  .CodeMirror-scroll {
-    overflow: auto;
-  }
-
-  /* Editor content */
-
-  /**
-   * Default style for every line.
-   */
-  pre {
-    padding: 0 var(--line-padding);
-  }
-
-  /**
-   * 1. Needed to keep tabs before nested list items from
-   *    collapsing.
-   */
-  .cm-tab {
-    width: 4ch; /* 1 */
-  }
-
-  /* Selected text */
-
-  .CodeMirror-selected {
-    background-color: rgba($color-focus, .2);
-  }
-
-  .CodeMirror-selectedtext {
-    color: $color-dark;
-  }
-
-  /* Cursor */
-
-  .CodeMirror-cursor {
-    border-left: 2px solid $color-focus;
-  }
-
 }
 
 /* -----  Shared text formatting -------------------------------------------- */
