@@ -1,3 +1,10 @@
+// make sure there's no overflow
+.k-markdown-field {
+	.k-input-element {
+		width: 100%;
+	}
+}
+
 // disabled option
 .k-input[data-theme=field][data-disabled] .CodeMirror {
   background: #efefef;
