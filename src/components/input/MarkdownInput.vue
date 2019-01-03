@@ -238,7 +238,7 @@ export default {
         insertPageLink(selected) {
             let page      = selected[0]
             let selection = this.editor.getDoc().getSelection()
-            let text      = selection.length > 0 ? selection : page.title
+            let text      = selection.length > 0 ? selection : page.text || page.title
             let tag       = '(link: '+ page.id +' text: '+ text +')'
 
             this.insert(tag, 1)
