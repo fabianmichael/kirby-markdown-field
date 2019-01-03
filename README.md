@@ -104,7 +104,7 @@ buttons:
 
 If you don't need it, you can also hide the toolbar:
 
-```
+```yaml
 buttons: false
 ```
 
@@ -145,12 +145,13 @@ npm run build
 
 > You **must** run the build process before pushing the repo, else the hot-reload code will prevent it to work in any install.
 
-
 <br/>
 
 ## 5. License
 
 MIT
+
+<br/>
 
 ## 6. Credits
 
