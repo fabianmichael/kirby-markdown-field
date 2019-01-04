@@ -82,7 +82,7 @@ export default {
     },
     mounted() {
         this.editor = CodeMirror.fromTextArea(this.$refs.input, this.options);
-        this.editor.setValue(this.value);
+        this.editor.setValue(this.value || '');
 
         // force refresh after setValue, else some text might not be rendered before the editor is clicked
         this.$nextTick(() => this.editor.refresh())
@@ -154,7 +154,7 @@ export default {
     watch: {
         value(newVal, oldVal) {
             let editorValue = this.editor.getValue()
-            if (newVal !== editorValue) {
+            if (newVal && newVal !== editorValue) {
                 this.skipNextChangeEvent = true
                 let scrollInfo = this.editor.getScrollInfo()
                 // set the new value as the editor's content
@@ -286,7 +286,7 @@ export default {
          */
         setTokenType(tokenType, pos) {
             // skip computing if tokenType is null
-            if(tokenType == null) {
+            if(!tokenType || tokenType == null) {
                 this.currentTokenType = null
                 return
             } 
