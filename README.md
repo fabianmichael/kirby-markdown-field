@@ -10,7 +10,7 @@ Enhanced markdown editor for Kirby 3, community built.
 
 - [1. Installation](#1-installation)
 - [2. Setup](#2-setup)
-- [3. Options](#3-available-options)
+- [3. Options](#3-options)
   - [3.1. Available options](#31-available-options)
   - [3.2. Font-settings](#32-font-settings)
   - [3.3. Buttons](#33-buttons)
