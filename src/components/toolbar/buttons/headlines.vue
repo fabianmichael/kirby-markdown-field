@@ -4,6 +4,7 @@
                   :tooltip="label"
                   tabindex="-1"
                   :class="['k-toolbar-button k-markdown-button', {active: active}]"
+                  @mousedown.prevent
                   @click="dropdownEl.toggle()"/>
         <k-dropdown-content :ref="dropdownName">
             <k-dropdown-item v-for="(item, itemKey, itemIndex) in dropdown"
@@ -11,6 +12,7 @@
                              :key="itemIndex"
                              :icon="item.icon"
                              :class="{active: isActive(item.type)}"
+                             @mousedown.prevent
                              @click="action(item)">
                 {{ item.label }}
             </k-dropdown-item>
