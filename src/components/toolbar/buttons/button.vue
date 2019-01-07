@@ -3,6 +3,7 @@
               :tooltip="label"
               tabindex="-1"
               :class="['k-toolbar-button', 'k-markdown-button', 'k-markdown-button-'+ name, {active: active}, {disabled: disabled}]"
+              @mousedown.prevent
               @click="action" />
 </template>
 
