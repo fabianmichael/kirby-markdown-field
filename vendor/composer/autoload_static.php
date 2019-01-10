@@ -4,10 +4,10 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit200861368b12d9f26a5cfde056116c6d
+class ComposerStaticInit7beca0a84c55879272fea2e235c8d762
 {
     public static $files = array (
-        'ed140f4a22b642be7ff246939c596e1a' => __DIR__ . '/../..' . '/config.php',
+        'e606d6dd7cb881075bfe445949cb3e6d' => __DIR__ . '/../..' . '/config.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

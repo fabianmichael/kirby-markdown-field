@@ -1,5 +1,5 @@
 {
-    "name": "community/markdown-field",
+    "name": "k-community/markdown-field",
     "description": "Enhanced markdown editor for Kirby 3",
     "type": "kirby-plugin",
     "license": "MIT",
