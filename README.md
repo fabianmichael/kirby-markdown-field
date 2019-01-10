@@ -25,7 +25,7 @@ Enhanced markdown editor for Kirby 3, community built.
 
 Download and copy this repository to ```/site/plugins/markdown-field```
 
-Alternatively, you can install it with composer: ```composer require community/markdown-field```
+Alternatively, you can install it with composer: ```composer require k-community/markdown-field```
 
 <br/>
 
