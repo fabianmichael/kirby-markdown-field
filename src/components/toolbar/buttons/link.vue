@@ -20,7 +20,7 @@ export default {
         action() {
             // open a modal if allowed
             if(this.modals) {
-                this.$root.$emit('md-openDialog', 'link')
+                this.$root.$emit('md-openDialog' + this.fieldname, 'link')
             }
             // else, insert an inline tag
             else {

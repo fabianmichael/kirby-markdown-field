@@ -12,7 +12,7 @@ export default {
     props: {
         button: [String, Object],
         buttonIndex: String,
-        name: String,
+        fieldname: String,
         editor: Object,
         modals: Boolean,
         currentTokenType: String,
@@ -40,7 +40,7 @@ export default {
     watch: {
         editor(val) {
             if(typeof val !== 'undefined' && this.shortcut) {
-                this.$root.$emit('md-registerShortcut', this.shortcut, this.action)
+                this.$root.$emit('md-registerShortcut' + this.fieldname, this.shortcut, this.action)
             }
         },
     },

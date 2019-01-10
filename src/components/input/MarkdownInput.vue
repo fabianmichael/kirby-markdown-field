@@ -3,6 +3,7 @@
         <div class="k-markdown-input-wrapper" :data-size="size">
             <k-markdown-toolbar v-if="buttons"
                        ref="toolbar"
+                       :name="name"
                        :modals="modals"
                        :editor="editor"
                        :invisibles="invisibles"
@@ -48,6 +49,7 @@ export default {
         }
     },
     props: {
+        name: String,
         autofocus: Boolean,
         modals: Boolean, 
         blank: Boolean,
@@ -94,14 +96,14 @@ export default {
         }
 
         // Register shortcuts
-        this.$root.$on('md-registerShortcut', (shortcut, fn) => {
+        this.$root.$on('md-registerShortcut' + this.name, (shortcut, fn) => {
             let map = {}
                 map[shortcut] = fn
             this.editor.addKeyMap(map)
         })
 
         // Open dialogs
-        this.$root.$on('md-openDialog', dialog => {
+        this.$root.$on('md-openDialog' + this.name, dialog => {
             let dialogName = dialog == 'images' ? 'files' : dialog
 
             if(this.$refs[dialogName + "Dialog"]) {

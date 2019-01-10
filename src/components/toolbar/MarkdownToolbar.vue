@@ -1,7 +1,7 @@
 <template>
     <nav class="k-toolbar k-markdown-toolbar">
         <div class="k-toolbar-buttons k-markdown-toolbar-buttons">
-            <component v-for="(button, index) in layout" :is="'k-markdown-button-' + buttonName(button)" :key="index" :button="button" :name="buttonName(button)" :currentTokenType="currentTokenType" :buttonIndex="index" :editor="editor" :modals="modals"/>
+            <component v-for="(button, index) in layout" :is="'k-markdown-button-' + buttonName(button)" :key="index" :button="button" :name="buttonName(button)" :currentTokenType="currentTokenType" :buttonIndex="index" :editor="editor" :modals="modals" :fieldname="name"/>
             <div v-if="invisibles" class="k-markdown-toolbar-buttons-right">
                 <component is="k-markdown-button-invisibles" button="invisibles" name="invisibles" buttonIndex="100" :editor="editor" :modals="modals"/>
             </div>
@@ -12,6 +12,7 @@
 <script>
 export default {
     props: {
+        name: String,
         buttons: Array,
         editor: Object,
         modals: Boolean,
