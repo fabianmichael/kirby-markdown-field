@@ -156,7 +156,7 @@ export default {
     watch: {
         value(newVal, oldVal) {
             let editorValue = this.editor.getValue()
-            if (newVal && newVal !== editorValue) {
+            if (newVal !== undefined && newVal !== editorValue) {
                 this.skipNextChangeEvent = true
                 let scrollInfo = this.editor.getScrollInfo()
                 // set the new value as the editor's content
