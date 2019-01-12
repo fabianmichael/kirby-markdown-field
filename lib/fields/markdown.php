@@ -14,7 +14,16 @@ $options = A::merge($options, [
          * Sets the toolbar buttons.
          */
         'buttons' => function($buttons = null) {
-            return $buttons ?? option('community.markdown-field.buttons');
+            $buttons = $buttons ?? option('community.markdown-field.buttons');
+
+            $uniqueButtons = array();
+			foreach ($buttons as $button) {
+    			if ($button == 'divider' || !in_array($button, $uniqueButtons)) {
+        			$uniqueButtons[] = $button;
+    			}
+    		}
+
+    		return $uniqueButtons;
         },
         /*
          * Sets the editor font. Allowed values: monospace, sans-serif
