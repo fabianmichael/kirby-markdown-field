@@ -8,6 +8,9 @@ Kirby::plugin('community/markdown-field', [
 			'size'    => 'regular',
 			'scaling' => false,
 		],
+		'query'      => [
+			'pagelink' => null,
+		],
 		'modals'     => true,
 		'blank'      => false,
 		'invisibles' => false,

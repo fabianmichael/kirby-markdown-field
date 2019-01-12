@@ -14,7 +14,8 @@ Enhanced markdown editor for Kirby 3, community built.
   - [3.1. Available options](#31-available-options)
   - [3.2. Font-settings](#32-font-settings)
   - [3.3. Buttons](#33-buttons)
-  - [3.4. Default options](#34-default-options)
+  - [3.4. Query](#34-query)
+  - [3.5. Default options](#34-default-options)
 - [4. Development](#4-development)
 - [5. License](#5-license)
 - [6. Credits](#6-credits)
@@ -53,6 +54,7 @@ You have access to the very same options as [the textarea field](https://nnnnext
 | modals | Boolean | false | `true` | If set to `false`, link and email tags will be added without opening a modal |
 | blank | Boolean | false | `false` | If set to `true`, editors will be presented an option to add the `target: _blank` option to link tags |
 | invisibles | Boolean | false | `false` | If set to `true`, the *invisibles* button will be displayed in the toolbar, allowing you to show / hide hidden characters and whitespaces |
+| query | Object | false | [see below](#34-query) | Sets a custom query for the page selector dialog |
 
 ### 3.2. Font settings
 
@@ -108,7 +110,16 @@ If you don't need it, you can also hide the toolbar:
 buttons: false
 ```
 
-### 3.4. Default options
+### 3.4. Query
+
+You can limit the options shown in the page selector dialog, by setting a `pagelink` query (if unset, you'll be able to browse the entire site tree):
+
+```yaml
+query:
+  pagelink: site.find('my-page').children
+```
+
+### 3.5. Default options
 
 You can globally override the default options, instead of setting them on a per-field basis. In your `site/config/config.php`:
 
@@ -119,6 +130,9 @@ return [
     'family'  => 'monospace',
     'scaling' => false,
     'size'    => 'regular',
+  ],
+  'community.markdown-field.query'      => [
+    'pagelink' => null,
   ],
   'community.markdown-field.modals'     => true,
   'community.markdown-field.blank'      => false,

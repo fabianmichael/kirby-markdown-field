@@ -53,6 +53,12 @@ $options = A::merge($options, [
         'invisibles' => function($invisibles = null) {
             return $invisibles ?? option('community.markdown-field.invisibles');
         },
+        'query' => function($query = null) {
+        	$queryOptions = option('community.markdown-field.query');
+        	$queryOptions = $query ? A::merge($queryOptions, $query) : $queryOptions;
+
+        	return $queryOptions;
+        }
     ],
     'computed' => [
         /**
@@ -106,16 +112,23 @@ $options = A::merge($options, [
                 'pattern' => 'get-pages',
                 'action' => function () {
                     $field = $this->field();
+					$query = $field->query()['pagelink'];
 
-                    if (!$parent = $this->site()->find($this->requestQuery('parent'))) {
-                        $parent = $this->site();
+                    if ($query) {
+                        $pages = $field->model()->query($query, 'Kirby\Cms\Pages');
+                        $model = null;
                     }
+                    else {
+                    	if (!$parent = $this->site()->find($this->requestQuery('parent'))) {
+	                        $parent = $this->site();
+	                    }
 
-                    $pages = $parent->children();
-                    $model = [
-                        'id'    => $parent->id() == '' ? null : $parent->id(),
-                        'title' => $parent->title()->value()
-                    ];
+	                    $pages = $parent->children();
+	                    $model = [
+	                        'id'    => $parent->id() == '' ? null : $parent->id(),
+	                        'title' => $parent->title()->value()
+	                    ];
+	                }
 
                     $children = [];
                     foreach ($pages as $index => $page) {
@@ -136,10 +149,12 @@ $options = A::merge($options, [
                     $field = $this->field();
                     $files = $field->model()->query('page.images', 'Kirby\Cms\Files');
                     $files = $files ?? $field->model()->query('site.images', 'Kirby\Cms\Files');
+
                     $data  = [];
                     foreach ($files as $index => $file) {
                         $data[] = $field->fileResponse($file);
                     }
+
                     return $data;
                 }
             ],
@@ -150,10 +165,12 @@ $options = A::merge($options, [
                     $field = $this->field();
                     $files = $field->model()->query('page.files.filterBy("type", "!=", "image")', 'Kirby\Cms\Files');
                     $files = $files ?? $field->model()->query('site.files.filterBy("type", "!=", "image")', 'Kirby\Cms\Files');
+
                     $data  = [];
                     foreach ($files as $index => $file) {
                         $data[] = $field->fileResponse($file);
                     }
+
                     return $data;
                 }
             ]
