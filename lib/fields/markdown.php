@@ -135,6 +135,7 @@ $options = A::merge($options, [
                 'action'  => function () {
                     $field = $this->field();
                     $files = $field->model()->query('page.images', 'Kirby\Cms\Files');
+                    $files = $files ?? $field->model()->query('site.images', 'Kirby\Cms\Files');
                     $data  = [];
                     foreach ($files as $index => $file) {
                         $data[] = $field->fileResponse($file);
@@ -148,6 +149,7 @@ $options = A::merge($options, [
                 'action'  => function () {
                     $field = $this->field();
                     $files = $field->model()->query('page.files.filterBy("type", "!=", "image")', 'Kirby\Cms\Files');
+                    $files = $files ?? $field->model()->query('site.files.filterBy("type", "!=", "image")', 'Kirby\Cms\Files');
                     $data  = [];
                     foreach ($files as $index => $file) {
                         $data[] = $field->fileResponse($file);
