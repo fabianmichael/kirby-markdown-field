@@ -51,7 +51,7 @@ export default {
     props: {
         name: String,
         autofocus: Boolean,
-        modals: Boolean, 
+        modals: Boolean,
         blank: Boolean,
         invisibles: Boolean,
         buttons: [Boolean, Array],
@@ -144,7 +144,7 @@ export default {
             let tokenType = _editor.getTokenTypeAt(pos)
             this.setTokenType(tokenType, pos)
         })
-        
+
         // Emit changed value
         this.editor.on('focus', _editor => {
             this.$root.$emit('md-closeDropdowns')
@@ -152,6 +152,10 @@ export default {
 
         // Additional styling
         this.editor.on('renderLine', this.renderLine.bind(this));
+
+        // Accept dragText from Kirby sections
+        this.editor.on('drop', this.onDrop.bind(this))
+
     },
     watch: {
         value(newVal, oldVal) {
@@ -258,7 +262,7 @@ export default {
             if(this.currentDialog == 'images') {
                 let tag = '(image: '+ file.uuid +')'
                 this.insert(tag)
-            } 
+            }
             // if we're inserting a file
             else {
                 let selection = doc.getSelection()
@@ -291,7 +295,7 @@ export default {
             if(!tokenType || tokenType == null) {
                 this.currentTokenType = null
                 return
-            } 
+            }
 
             // init an object
             let main = undefined
@@ -336,7 +340,7 @@ export default {
                 // secondary type
                 else if(type.startsWith('header-') || type.startsWith('kirbytag-')) {
                     secondary = type.replace('header-', 'heading-')
-                }   
+                }
             })
 
             // set the type object as current token type
@@ -382,7 +386,7 @@ export default {
 
                     indent +=  this.getActualFormattingWidth(cm, parts[i]);
                 }
-                
+
                 el.style.setProperty('--cm-block-indent', indent);
 
             } else if (formatting.classList.contains('cm-formatting-header')) {
@@ -441,25 +445,25 @@ export default {
 
                     indent += parts[i].textContent.length;
                 }
-                
+
                 el.style.setProperty('--cm-block-indent', indent);
 
             } else if (formatting.classList.contains('cm-formatting-header')) {
                 // Header
                 const regex = new RegExp('cm-formatting-header-([1-6])');
                 const level = parseInt(regex.exec(content.children[0].className)[1], 10);
-            
+
                 el.style.setProperty('--cm-block-indent', level + 1);
 
             } else if (content.querySelector('.cm-formatting-list')) {
                 // List item
 
                 const nodes = content.childNodes; // We need all text nodes as well
-                
+
                 let indent = 0;
 
                 for (let i = 0, l = nodes.length; i < l; i++) {
-                    
+
                     const node = nodes[i];
 
                     if (node.nodeType === Node.TEXT_NODE) {
@@ -490,12 +494,12 @@ export default {
          * Gets the actual width of a text node or element node in the editor.
          */
         getActualFormattingWidth(cm, target) {
-            
-            const wrapper = cm.getWrapperElement(); 
+
+            const wrapper = cm.getWrapperElement();
             const extraStyles = 'position: absolute !important; top: -1000px !important; white-space: pre !important;';
 
             let clone;
-            
+
             if (target.nodeType === Node.TEXT_NODE) {
                 // Use parent element’s styles for measuring text nodes
                 clone = document.createElement('span');
@@ -508,12 +512,26 @@ export default {
             }
 
             wrapper.appendChild(clone);
-    
+
             const width = clone.getBoundingClientRect().width;
             clone.remove();
-            
+
             return width;
         },
+
+        /**
+         * Handles the drop event from CodeMirror
+         * Allows it to accept Kirby DragTexts
+         */
+        onDrop(cm, e) {
+            const drag = this.$store.state.drag;
+
+            if (drag && drag.type === "text") {
+                this.editorFocus()
+                this.insert(drag.data)
+                e.preventDefault()
+            }
+        }
     }
 }
 </script>
