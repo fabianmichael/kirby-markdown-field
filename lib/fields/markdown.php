@@ -14,7 +14,10 @@ $options = A::merge($options, [
          * Sets the toolbar buttons.
          */
         'buttons' => function($buttons = null) {
+        	if($buttons === false) return false;
+        	
             $buttons = $buttons ?? option('community.markdown-field.buttons');
+        	if(empty($buttons)) return false;
 
             $uniqueButtons = array();
 			foreach ($buttons as $button) {
