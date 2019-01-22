@@ -1,7 +1,6 @@
 <?php
 
 use Kirby\Toolkit\A;
-use Kirby\Toolkit\I18n;
 
 $options = require __DIR__ . '/../../../../../kirby/config/fields/textarea.php';
 
