@@ -1,6 +1,7 @@
 <?php
 
 use Kirby\Toolkit\A;
+use Kirby\Toolkit\I18n;
 
 $options = require __DIR__ . '/../../../../../kirby/config/fields/textarea.php';
 
@@ -159,7 +160,8 @@ $options = A::merge($options, [
                 'method'  => 'GET',
                 'action'  => function () {
                     $field = $this->field();
-                    $files = $field->model()->query('page.images', 'Kirby\Cms\Files');
+					$query = $field->query()['images'];
+                    $files = $field->model()->query($query, 'Kirby\Cms\Files');
                     $files = $files ?? $field->model()->query('site.images', 'Kirby\Cms\Files');
 
                     $data  = [];
@@ -175,7 +177,8 @@ $options = A::merge($options, [
                 'method'  => 'GET',
                 'action'  => function () {
                     $field = $this->field();
-                    $files = $field->model()->query('page.files.filterBy("type", "!=", "image")', 'Kirby\Cms\Files');
+					$query = $field->query()['files'];
+                    $files = $field->model()->query($query, 'Kirby\Cms\Files');
                     $files = $files ?? $field->model()->query('site.files.filterBy("type", "!=", "image")', 'Kirby\Cms\Files');
 
                     $data  = [];

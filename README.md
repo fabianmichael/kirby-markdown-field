@@ -112,11 +112,16 @@ buttons: false
 
 ### 3.4. Query
 
-You can limit the options shown in the page selector dialog, by setting a `pagelink` query (if unset, you'll be able to browse the entire site tree):
+You can limit the options shown in the dialogs, by setting:
+- a `pagelink` query (if unset, you'll be able to browse the entire site tree)
+- a `images` query (if unset, you'll pick images from the current page)
+- a `files` query (if unset, you'll pick files from the current page)
 
 ```yaml
 query:
-  pagelink: site.find('my-page').children
+  pagelink: kirby.page('my-page').children
+  images: kirby.page('my-page').images
+  files: kirby.page('my-page').filterBy("type", "!=", "image")
 ```
 
 ### 3.5. Default options
@@ -133,6 +138,8 @@ return [
   ],
   'community.markdown-field.query'      => [
     'pagelink' => null,
+    'images'   => 'page.images',
+    'files'    => 'page.files.filterBy("type", "!=", "image")',
   ],
   'community.markdown-field.modals'     => true,
   'community.markdown-field.blank'      => false,

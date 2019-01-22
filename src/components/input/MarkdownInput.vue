@@ -257,8 +257,6 @@ export default {
         insertFileTag(selected) {
             let file = selected[0]
             let doc  = this.editor.getDoc()
-
-            // console.log(selected)
             
             // if we're inserting an image
             if(this.currentDialog == 'images') {

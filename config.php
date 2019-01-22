@@ -10,6 +10,8 @@ Kirby::plugin('community/markdown-field', [
 		],
 		'query'      => [
 			'pagelink' => null,
+			'images'   => 'page.images',
+			'files'    => 'page.files.filterBy("type", "!=", "image")',
 		],
 		'modals'     => true,
 		'blank'      => false,
