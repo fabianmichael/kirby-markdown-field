@@ -3,7 +3,7 @@
         <div class="k-markdown-input-wrapper" :data-size="size">
             <k-markdown-toolbar v-if="buttons"
                        ref="toolbar"
-                       :name="name"
+                       :id="id"
                        :modals="modals"
                        :editor="editor"
                        :invisibles="invisibles"
@@ -46,10 +46,10 @@ export default {
             skipNextChangeEvent: false,
             currentDialog: null,
             currentTokenType: null,
+            id: '',
         }
     },
     props: {
-        name: String,
         autofocus: Boolean,
         modals: Boolean,
         blank: Boolean,
@@ -82,6 +82,9 @@ export default {
             },
         },
     },
+    created() {
+        this.id = this._uid
+    },
     mounted() {
         this.editor = CodeMirror.fromTextArea(this.$refs.input, this.options);
         this.editor.setValue(this.value || '');
@@ -96,14 +99,14 @@ export default {
         }
 
         // Register shortcuts
-        this.$root.$on('md-registerShortcut' + this.name, (shortcut, fn) => {
+        this.$root.$on('md-registerShortcut' + this.id, (shortcut, fn) => {
             let map = {}
                 map[shortcut] = fn
             this.editor.addKeyMap(map)
         })
 
         // Open dialogs
-        this.$root.$on('md-openDialog' + this.name, dialog => {
+        this.$root.$on('md-openDialog' + this.id, dialog => {
             let dialogName = dialog == 'images' ? 'files' : dialog
 
             if(this.$refs[dialogName + "Dialog"]) {

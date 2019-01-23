@@ -17,7 +17,7 @@ export default {
 	},
 	methods: {
 		action() {
-			this.$root.$emit('md-openDialog' + this.fieldname, 'images')
+			this.$root.$emit('md-openDialog' + this.id, 'images')
 		}
 	}
 };
