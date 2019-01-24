@@ -245,38 +245,48 @@ export default {
          * Insert (link: ) tag on pagesDialog submit
          */
         insertPageLink(selected) {
-            let page      = selected[0]
-            let selection = this.editor.getDoc().getSelection()
-            let text      = selection.length > 0 ? selection : page.text || page.title
-            let tag       = '(link: '+ page.id +' text: '+ text +')'
+            if(selected && selected.length) {
+                let page      = selected[0]
+                let selection = this.editor.getDoc().getSelection()
+                let text      = selection.length > 0 ? selection : page.text || page.title
+                let tag       = '(link: '+ page.id +' text: '+ text +')'
 
-            this.insert(tag, 1)
-            this.currentDialog = null
+                this.insert(tag, 1)
+                this.currentDialog = null
+            }
+            else {
+                this.cancel()
+            }
         },
 
         /**
          * Insert (file: ) or (image: ) tag on filesDialog and imagesDialog submit
          */
         insertFileTag(selected) {
-            let file = selected[0]
-            let doc  = this.editor.getDoc()
-            
-            // if we're inserting an image
-            if(this.currentDialog == 'images') {
-                let tag = '(image: '+ file.uuid +')'
-                this.insert(tag)
-            }
-            // if we're inserting a file
-            else {
-                let selection = doc.getSelection()
-                // whether or not we add a text: argument
-                let suffix    = selection.length > 0 ? ' text: '+ selection : ''
-                // if we add a text: argument: place cursor before the closing parenthesis
-                let incr      = selection.length > 0 ? 1 : 0
+            if(selected && selected.length) {
+                let file = selected[0]
+                let doc  = this.editor.getDoc()
+                
+                // if we're inserting an image
+                if(this.currentDialog == 'images') {
+                    let tag = '(image: '+ file.uuid +')'
+                    this.insert(tag)
+                }
+                // if we're inserting a file
+                else {
+                    let selection = doc.getSelection()
+                    // whether or not we add a text: argument
+                    let suffix    = selection.length > 0 ? ' text: '+ selection : ''
+                    // if we add a text: argument: place cursor before the closing parenthesis
+                    let incr      = selection.length > 0 ? 1 : 0
 
-                this.insert('(file: '+ file.uuid + suffix +')', incr)
+                    this.insert('(file: '+ file.uuid + suffix +')', incr)
+                }
+                this.currentDialog = null
             }
-            this.currentDialog = null
+            else {
+                this.cancel()
+            }
         },
 
         /**
