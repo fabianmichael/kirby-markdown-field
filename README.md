@@ -46,7 +46,7 @@ editor:
 
 ### 3.1. Available options
 
-You have access to the very same options as [the textarea field](https://nnnnext.getkirby.com/docs/cheatsheet/fields/textarea), and a few more:
+You have access to the very same options as [the textarea field](https://getkirby.com/docs/reference/panel/fields/textarea), and a few more:
 
 | Option | Type | Required | Default | Description |
 |:-------|:-----|:---------|:--------|:------------|
