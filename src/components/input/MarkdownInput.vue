@@ -75,9 +75,12 @@ export default {
                     lineWrapping: true,
                     extraKeys: {
                         'Enter': 'newlineAndIndentContinueMarkdownList',
+                        'Tab': false, // Tab key will skip to next input on the page when setting it to false
                     },
                     font: this.font.family,
                     showInvisibles: false,
+                    tabSize: 2,
+
                 };
             },
         },
@@ -266,7 +269,7 @@ export default {
             if(selected && selected.length) {
                 let file = selected[0]
                 let doc  = this.editor.getDoc()
-                
+
                 // if we're inserting an image
                 if(this.currentDialog == 'images') {
                     let tag = '(image: '+ file.uuid +')'
