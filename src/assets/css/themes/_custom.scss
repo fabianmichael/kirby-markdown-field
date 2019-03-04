@@ -94,8 +94,11 @@
   .cm-blockhr {
     display: flex;
 
-    span {
+    > span {
       flex-grow: 0;
+    }
+
+    .cm-hr {
       padding-left: 1ch;
       padding-right: 1ch;
     }
@@ -110,7 +113,7 @@
   }
 
   /* Markdown link */
-  
+
   .cm-link {
     color: inherit;
     text-decoration: none;
@@ -127,7 +130,7 @@
   }
 
   /* Code */
-  
+
   .cm-code {
     background: rgba($color-dark, .05);
   }
@@ -153,7 +156,7 @@
   }
 
   /* Source code and HTML tags */
-  
+
   .cm-tag {
     color: $color-dark-grey;
   }
@@ -165,14 +168,14 @@
   .cm-string {
     color: $color-dark;
   }
-  
+
   /* Invisible characters addon */
 
   .cm-ch-space {
     $c: #aaa;
     background: linear-gradient($c, $c) 50% calc(50% + 1px) / 2px 2px no-repeat;
   }
-  
+
   .cm-ch-nbsp {
     $c: #aaa;
     background:
