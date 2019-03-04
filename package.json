@@ -28,13 +28,13 @@
     "codemirror": "^5.42.0",
     "cross-env": "^5.2.0",
     "envify": "^4.1.0",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.0",
     "gulp-autoprefixer": "^6.0.0",
     "node-sass": "^4.9.4",
     "uglify-js": "^3.4.7",
     "vue": "^2.5.17",
     "vueify": "^9.4.1",
-    "watchify": "^3.11.0"
+    "watchify": "^3.11.1"
   },
   "browserslist": [
     "> 1%",

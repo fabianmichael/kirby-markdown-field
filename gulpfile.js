@@ -1,11 +1,10 @@
-var gulp = require('gulp');
-var autoprefixer = require('gulp-autoprefixer');
+const { dest, src } = require('gulp');
+const autoprefixer = require('gulp-autoprefixer');
 
-gulp.task('prefix', function() {
-    return gulp.src('./index.css')
+function prefix() {
+    return src('./index.css')
                .pipe(autoprefixer())
-               .pipe(gulp.dest('./'));
-});
+               .pipe(dest('./'));
+}
 
-// Default Task
-gulp.task('default', ['prefix']);
+exports.default = prefix;
