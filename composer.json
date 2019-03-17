@@ -3,9 +3,6 @@
     "description": "Enhanced markdown editor for Kirby 3",
     "type": "kirby-plugin",
     "license": "MIT",
-    "autoload": {
-        "files": ["config.php"]
-    },
     "authors": [
         {
             "name": "Sylvain Julé",
@@ -16,5 +13,11 @@
             "email": "hallo@fabianmichael.de"
         }
     ],
+    "require": {
+        "getkirby/composer-installer": "^1.1"
+    },
+    "extra": {
+        "installer-name": "superplugin"
+    },
     "minimum-stability": "beta"
 }
