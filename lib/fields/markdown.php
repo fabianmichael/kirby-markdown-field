@@ -2,7 +2,7 @@
 
 use Kirby\Toolkit\A;
 
-$options = require __DIR__ . '/../../../../../kirby/config/fields/textarea.php';
+$options = require kirby()->root('kirby') . '/config/fields/textarea.php';
 
 
 /* Merge new properties
