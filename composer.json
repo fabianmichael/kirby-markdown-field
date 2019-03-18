@@ -17,7 +17,7 @@
         "getkirby/composer-installer": "^1.1"
     },
     "extra": {
-        "installer-name": "superplugin"
+        "installer-name": "markdown-field"
     },
     "minimum-stability": "beta"
 }
