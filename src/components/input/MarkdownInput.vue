@@ -85,6 +85,11 @@ export default {
             },
         },
     },
+    computed: {
+        currentLanguage() {
+            return this.$store.state.languages.current
+        }
+    },
     created() {
         this.id = this._uid
     },
@@ -252,7 +257,8 @@ export default {
                 let page      = selected[0]
                 let selection = this.editor.getDoc().getSelection()
                 let text      = selection.length > 0 ? selection : page.text || page.title
-                let tag       = '(link: '+ page.id +' text: '+ text +')'
+                let lang      = this.currentLanguage && !this.currentLanguage.default ? ' lang: '+ this.currentLanguage.code : ''
+                let tag       = '(link: '+ page.id +' text: '+ text + lang +')'
 
                 this.insert(tag, 1)
                 this.currentDialog = null
