@@ -1,13 +1,13 @@
 /* -----  Editor basics  ---------------------------------------------------- */
 
-.k-markdown-input { 
+.k-markdown-input {
   .CodeMirror {
     #{--line-padding}: 4px;
     height: auto;
     padding: .25rem .5rem;
 
-    .cm-invisibles-test { 
-      color: #de935f; 
+    .cm-invisibles-test {
+      color: #de935f;
     }
 
     /**
@@ -57,9 +57,9 @@
 
   /*
    * Fix padding-top when toolbar is shown
-   */ 
+   */
   .k-toolbar ~ .CodeMirror {
-    padding-top: 0; 
+    padding-top: 0;
   }
 }
 
@@ -190,6 +190,13 @@
     position: relative;
     left: 1px;
     border-left: 1px solid #c82829;
+  }
+
+  .cm-ch-zero-width-space {
+    margin-left: -1px;
+    position: relative;
+    margin-right: -1px;
+    border-left: 2px dotted #c82829;
   }
 
   .cm-show-invisibles .cm-tab {
