@@ -61,14 +61,14 @@ export default {
             return str.match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
         },
         createKirbytext() {
-            if (this.value.text.length > 0) {
+            if (this.value.text && this.value.text.length > 0) {
                 return '(email: '+ this.value.email +' text: '+ this.value.text +')'
             } else {
                 return '(email: '+ this.value.email +')'
             }
         },
         createMarkdown() {
-            if (this.value.text.length > 0) {
+            if (this.value.text && this.value.text.length > 0) {
                 return '['+ this.value.text +'](mailto:'+ this.value.email +')'
             } else {
                 return '<'+ this.value.email +'>'

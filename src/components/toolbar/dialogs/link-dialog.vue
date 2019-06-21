@@ -77,14 +77,14 @@ export default {
         createKirbytext() {
             let blank = this.blank && this.value.blank ? ' target: _blank' : ''
 
-            if (this.value.text.length > 0) {
+            if (this.value.text && this.value.text.length > 0) {
                 return '(link: '+ this.value.url +' text: '+ this.value.text + blank +')'
             } else {
                 return '(link: '+ this.value.url + blank +')'
             }
         },
         createMarkdown() {
-            if (this.value.text.length > 0) {
+            if (this.value.text && this.value.text.length > 0) {
                 return '['+ this.value.text +']('+ this.value.url +')'
             } else {
                 return '<'+ this.value.url +'>'
