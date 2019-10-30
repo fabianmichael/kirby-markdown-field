@@ -84,7 +84,7 @@ This field is packing the usual textarea buttons, and some more.
 ```yaml
 buttons:
   - headlines
-    - h1 
+    - h1
     - h2
     - h3
     - h4
@@ -109,6 +109,32 @@ If you don't need it, you can also hide the toolbar:
 ```yaml
 buttons: false
 ```
+
+The full list of available buttons:
+
+```yaml
+buttons:
+  - headlines
+      - h1
+      - h2
+      - h3
+      - h4
+      - h5
+      - h6
+  - bold
+  - italic
+  - ul
+  - ol
+  - link
+  - email
+  - blockquote
+  - horizontal-rule
+  - strikethrough
+  - pagelink
+  - image
+  - file
+```
+
 
 ### 3.4. Query
 
