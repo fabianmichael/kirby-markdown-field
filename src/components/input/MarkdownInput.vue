@@ -75,6 +75,7 @@ export default {
                     lineWrapping: true,
                     extraKeys: {
                         'Enter': 'newlineAndIndentContinueMarkdownList',
+                        'Shift-Tab': false,
                         'Tab': false, // Tab key will skip to next input on the page when setting it to false
                     },
                     font: this.font.family,
