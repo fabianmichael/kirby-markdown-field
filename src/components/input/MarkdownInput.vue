@@ -81,7 +81,6 @@ export default {
                     font: this.font.family,
                     showInvisibles: false,
                     tabSize: 2,
-
                 };
             },
         },
