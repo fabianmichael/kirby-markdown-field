@@ -46,10 +46,10 @@ export default {
             skipNextChangeEvent: false,
             currentDialog: null,
             currentTokenType: null,
-            id: '',
         }
     },
     props: {
+        id: Number,
         autofocus: Boolean,
         modals: Boolean,
         blank: Boolean,
@@ -90,15 +90,17 @@ export default {
             return this.$store.state.languages.current
         }
     },
-    created() {
-        this.id = this._uid
-    },
     mounted() {
         this.editor = CodeMirror.fromTextArea(this.$refs.input, this.options);
         this.editor.setValue(this.value || '');
 
         // force refresh after setValue, else some text might not be rendered before the editor is clicked
-        this.$nextTick(() => this.editor.refresh())
+        this.refresh()
+
+        // event triggered from parent
+        this.$root.$on('md-refresh' + this.id, () => {
+            this.refresh()
+        })
 
         // Custom autofocus: place the cursor at the end of current value
         if(this.autofocus) {
@@ -180,10 +182,13 @@ export default {
                 this.editor.scrollTo(scrollInfo.left, scrollInfo.top)
             }
             // force refresh
-            this.$nextTick(() => this.editor.refresh())
+            this.refresh()
         },
     },
     methods: {
+        refresh() {
+            this.$nextTick(() => this.editor.refresh())
+        },
         /**
          * Close any open dialog and bring focus back to the editor
          */

@@ -13,6 +13,35 @@ export default {
         blank: Boolean,
         invisibles: Boolean,
         kirbytags: Array,
+    },
+    // below, code to refresh input within a newly expanded builder block
+    computed: {
+        builderBlock() {
+            return this.getParentComponent('builder-block')
+        },
+        builderExpanded() {
+            return this.builderBlock && this.builderBlock.expanded
+        }
+    },
+    watch: {
+        builderExpanded(newVal, oldVal) {
+            if (newVal === true) {
+                this.$root.$emit('md-refresh' + this._uid)
+            }
+        },
+    },
+    methods: {
+        getParentComponent(componentName) {
+            let component = null
+            let parent = this.$parent
+            while (parent && !component) {
+                if (parent.$options._componentTag === componentName) {
+                    component = parent
+                }
+                parent = parent.$parent
+            }
+            return component
+        },
     }
 };
 </script>
