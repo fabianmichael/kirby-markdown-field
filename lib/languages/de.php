@@ -14,4 +14,5 @@ return array(
     'markdown.toolbar.button.image'           => 'Bild einfügen',
     'markdown.toolbar.button.file'            => 'Datei-Download einfügen',
     'markdown.toolbar.button.strikethrough'   => 'Durchgestrichener Text',
+    'markdown.toolbar.button.footnote'        => 'Fußnote',
 );

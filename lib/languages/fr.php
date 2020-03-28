@@ -14,4 +14,5 @@ return array(
     'markdown.toolbar.button.image'           => 'Insérer une image',
     'markdown.toolbar.button.file'            => 'Insérer un fichier téléchargeable',
     'markdown.toolbar.button.strikethrough'   => 'Texte barré',
+    'markdown.toolbar.button.footnote'        => 'Note de bas de page',
 );

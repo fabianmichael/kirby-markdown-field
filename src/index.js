@@ -17,6 +17,7 @@ import Code           from './components/toolbar/buttons/code.vue'
 import Divider        from './components/toolbar/buttons/divider.vue'
 import Email          from './components/toolbar/buttons/email.vue'
 import File           from './components/toolbar/buttons/file.vue'
+import Footnote       from './components/toolbar/buttons/footnote.vue'
 import Headlines      from './components/toolbar/buttons/headlines.vue'
 import HorizontalRule from './components/toolbar/buttons/horizontal-rule.vue'
 import Image          from './components/toolbar/buttons/image.vue'
@@ -44,6 +45,7 @@ panel.plugin('community/markdown-field', {
         'k-markdown-button-divider': Divider,
         'k-markdown-button-email': Email,
         'k-markdown-button-file': File,
+        'k-markdown-button-footnote': Footnote,
         'k-markdown-button-headlines': Headlines,
         'k-markdown-button-horizontal-rule': HorizontalRule,
         'k-markdown-button-image': Image,
