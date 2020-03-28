@@ -16,6 +16,7 @@ Kirby::plugin('community/markdown-field', [
 		'modals'     => true,
 		'blank'      => false,
 		'invisibles' => false,
+        'direction'  => false,
 	),
     'fields' => array(
         'markdown' => require_once __DIR__ . '/lib/fields/markdown.php',

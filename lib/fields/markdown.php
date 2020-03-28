@@ -66,6 +66,12 @@ $options = A::merge($options, [
         'invisibles' => function($invisibles = null) {
             return $invisibles ?? option('community.markdown-field.invisibles');
         },
+        /**
+         * Whether the current language direction should be checked on init. Boolean.
+         */
+        'direction' => function($direction = null) {
+            return $invisibles ?? option('community.markdown-field.direction');
+        },
         'query' => function($query = null) {
         	$queryOptions = option('community.markdown-field.query');
         	$queryOptions = $query ? A::merge($queryOptions, $query) : $queryOptions;

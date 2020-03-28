@@ -22,14 +22,14 @@
     "not ie <= 11"
   ],
   "devDependencies": {
-    "@vue/component-compiler-utils": "^3.0.0",
-    "codemirror": "^5.46.0",
+    "@vue/component-compiler-utils": "^3.1.1",
+    "codemirror": "^5.52.2",
     "cssnano": "^4.1.10",
-    "sass": "^1.21.0",
-    "vue-template-compiler": "^2.6.10"
+    "sass": "^1.26.3",
+    "vue-template-compiler": "^2.6.11"
   },
   "dependencies": {
-    "vue": "^2.6.10",
+    "vue": "^2.6.11",
     "vue-hot-reload-api": "^2.3.4"
   }
 }

@@ -12,6 +12,7 @@ export default {
         modals: Boolean,
         blank: Boolean,
         invisibles: Boolean,
+        direction: Boolean,
         kirbytags: Array,
     },
     // below, code to refresh input within a newly expanded builder block

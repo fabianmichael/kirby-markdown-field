@@ -54,6 +54,7 @@ export default {
         modals: Boolean,
         blank: Boolean,
         invisibles: Boolean,
+        direction: Boolean,
         buttons: [Boolean, Array],
         endpoints: Object,
         placeholder: String,
@@ -91,6 +92,10 @@ export default {
         }
     },
     mounted() {
+        if(this.direction) {
+            this.options.direction = this.currentLanguage.direction;
+        }
+
         this.editor = CodeMirror.fromTextArea(this.$refs.input, this.options);
         this.editor.setValue(this.value || '');
 
