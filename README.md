@@ -103,6 +103,7 @@ buttons:
   - pagelink
   - image
   - file
+  - footnote
 ```
 
 If you don't need it, you can also hide the toolbar:
@@ -134,6 +135,7 @@ buttons:
   - pagelink
   - image
   - file
+  - footnote
 ```
 
 
