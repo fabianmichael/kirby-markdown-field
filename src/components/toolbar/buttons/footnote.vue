@@ -5,7 +5,7 @@ export default {
     extends: BaseButton,
     data() {
         return {
-            label: this.$t('toolbar.button.footnote'),
+            label: this.$t('markdown.toolbar.button.footnote'),
             icon: 'footnote',
             type: 'footnote'
         }
