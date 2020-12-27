@@ -24,18 +24,18 @@ export default {
                     label: this.$t("link"),
                     type: 'text',
                     placeholder: this.$t("url.placeholder"),
-                    icon: 'url'
+                    icon: 'url',
                 },
                 text: {
                     label: this.$t("link.text"),
-                    type: 'text'
+                    type: 'text',
                 }
             },
             blankField: {
                 blank: {
                     label: this.$t("markdown.dialog.blank"),
                     type: 'toggle',
-                    text: [this.$t("markdown.no"), this.$t("markdown.yes")]
+                    text: [this.$t("markdown.no"), this.$t("markdown.yes")],
                 }
             }
         }
@@ -101,7 +101,8 @@ export default {
             this.$refs.dialog.close()
         },
         resetValue() {
-            this.value = {url: null, text: null}
+            let _blankDefault = this.blank == 'always' ? true : false
+            this.value = {url: null, text: null, blank: _blankDefault}
         }
     }
 };

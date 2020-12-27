@@ -30,7 +30,7 @@ $options = A::merge($options, [
     		return $uniqueButtons;
         },
         /*
-         * Sets the editor font. Allowed values: monospace, sans-serif
+         * Sets the editor font.
          */
         'font' => function($font = null) {
         	$fontOptions = option('community.markdown-field.font');

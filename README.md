@@ -53,7 +53,7 @@ You have access to the very same options as [the textarea field](https://getkirb
 |:-------|:-----|:---------|:--------|:------------|
 | font | Object | false | [see below](#32-font-settings) | Sets the font options of the Markdown field. [See below](#32-font-settings) the available options |
 | modals | Boolean | false | `true` | If set to `false`, link and email tags will be added without opening a modal |
-| blank | Boolean | false | `false` | If set to `true`, editors will be presented an option to add the `target: _blank` option to link tags |
+| blank | Boolean / String | false | `false` | If set to `true`, editors will be presented an option to add the `target: _blank` option to link tags. If set to `always`, the option will be activated by default |
 | invisibles | Boolean | false | `false` | If set to `true`, the *invisibles* button will be displayed in the toolbar, allowing you to show / hide hidden characters and whitespaces |
 | direction | Boolean | false | `false` | If set to `true`, the current translation direction will be checked on init. Improves compatibility with rtl languages |
 | query | Object | false | [see below](#34-query) | Sets a custom query for the page selector dialog |
