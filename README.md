@@ -15,7 +15,8 @@ Enhanced markdown editor for Kirby 3, community built.
   - [3.2. Font-settings](#32-font-settings)
   - [3.3. Buttons](#33-buttons)
   - [3.4. Query](#34-query)
-  - [3.5. Default options](#34-default-options)
+  - [3.5. Size](#35-size)
+  - [3.6. Default options](#36-default-options)
 - [4. Development](#4-development)
 - [5. License](#5-license)
 - [6. Credits](#6-credits)
@@ -56,6 +57,7 @@ You have access to the very same options as [the textarea field](https://getkirb
 | invisibles | Boolean | false | `false` | If set to `true`, the *invisibles* button will be displayed in the toolbar, allowing you to show / hide hidden characters and whitespaces |
 | direction | Boolean | false | `false` | If set to `true`, the current translation direction will be checked on init. Improves compatibility with rtl languages |
 | query | Object | false | [see below](#34-query) | Sets a custom query for the page selector dialog |
+| size | String | false | `small` | Sets the empty height of the Markdown field |
 
 ### 3.2. Font settings
 
@@ -153,12 +155,38 @@ query:
   files: kirby.page('my-page').filterBy("type", "!=", "image")
 ```
 
-### 3.5. Default options
+### 3.5. Size
+
+You can define the height of the field when empty. Default is `small`, which is equal to 1 line. Therefore when you set `buttons: false`, the field mimics a text field, only you have some highlighting on top of it.
+
+If you want it to look like an empty `textarea` field (2 lines), set it to `medium`.
+
+```yaml
+size: medium
+```
+
+Note that you can make the default height any height you want with some [custom panel CSS](https://getkirby.com/docs/reference/system/options/panel#custom-panel-css). First, set the `size` option to any string you'd like:
+
+```yaml
+size: custom-size
+```
+
+Then in your `panel.css`:
+
+```css
+.k-markdown-input-wrapper[data-size="custom-size"] .cm-s-default,
+.k-markdown-input-wrapper[data-size="custom-size"] .CodeMirror-scroll {
+    min-height: 15rem;
+}
+```
+
+### 3.6. Default options
 
 You can globally override the default options, instead of setting them on a per-field basis. In your `site/config/config.php`:
 
 ```php
 return [
+  'community.markdown-field.size'       => 'small',
   'community.markdown-field.buttons'    => ['headlines', 'bold', 'italic', 'divider', 'link', 'email', 'code', 'divider', 'ul', 'ol'],
   'community.markdown-field.font'       => [
     'family'  => 'monospace',

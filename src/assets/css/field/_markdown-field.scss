@@ -40,27 +40,13 @@
   &[data-size="small"] {
     .cm-s-default,
     .CodeMirror-scroll {
-      min-height: 7.5rem;
+      min-height: 0;
     }
   }
   &[data-size="medium"] {
     .cm-s-default,
     .CodeMirror-scroll {
-      min-height: 15rem;
-    }
-  }
-
-  &[data-size="large"] {
-    .cm-s-default,
-    .CodeMirror-scroll {
-      min-height: 30rem;
-    }
-  }
-
-  &[data-size="huge"] {
-    .cm-s-default,
-    .CodeMirror-scroll {
-      min-height: 45rem;
+      min-height: 3.5rem;
     }
   }
 }

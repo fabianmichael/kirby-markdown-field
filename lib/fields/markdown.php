@@ -70,7 +70,13 @@ $options = A::merge($options, [
          * Whether the current language direction should be checked on init. Boolean.
          */
         'direction' => function($direction = null) {
-            return $invisibles ?? option('community.markdown-field.direction');
+            return $direction ?? option('community.markdown-field.direction');
+        },
+        /**
+         * Min-height of the field when empty. String.
+         */
+        'size' => function($size = null) {
+            return $size ?? option('community.markdown-field.size');
         },
         'query' => function($query = null) {
         	$queryOptions = option('community.markdown-field.query');
