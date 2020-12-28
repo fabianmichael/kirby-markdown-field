@@ -128,7 +128,7 @@ $options = A::merge($options, [
                 }
             ],
             [
-                'pattern' => 'get-pages',
+                'pattern' => 'pages',
                 'method' => 'GET',
                 'action' => function () {
                     $field = $this->field();
@@ -140,6 +140,7 @@ $options = A::merge($options, [
                         'parent'   => $this->requestQuery('parent'),
                         'model'    => $model,
                         'query'    => $query,
+                        'search'   => $this->requestQuery('search'),
                     ];
 
                     return (new PagePicker($params))->toArray();

@@ -209,7 +209,7 @@ export default {
          */
         openPagesDialog() {
             this.$refs['pagesDialog'].open({
-                endpoint: this.endpoints.field + '/get-pages',
+                endpoint: this.endpoints.field + '/pages',
                 multiple: false,
                 selected: []
             })
