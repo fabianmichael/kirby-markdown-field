@@ -17,7 +17,7 @@ Enhanced markdown editor for Kirby 3, community built.
   - [3.4. Query](#34-query)
   - [3.5. Size](#35-size)
   - [3.6. Default options](#36-default-options)
-- [4. Custom buttons](#4-custom buttons)
+- [4. Custom buttons](#4-custom-buttons)
 - [5. Development](#5-development)
 - [6. License](#6-license)
 - [7. Credits](#7-credits)
@@ -200,7 +200,7 @@ return [
 
 ## 4. Custom buttons
 
-Since 1.0.8 you can register your own buttons. This functionnality has [a dedicated guide](custom-buttons/README.md).
+Since 1.0.8 you can register your own buttons. This functionnality has [a dedicated guide](custom-buttons).
 
 <br/>
 
