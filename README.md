@@ -17,9 +17,10 @@ Enhanced markdown editor for Kirby 3, community built.
   - [3.4. Query](#34-query)
   - [3.5. Size](#35-size)
   - [3.6. Default options](#36-default-options)
-- [4. Development](#4-development)
-- [5. License](#5-license)
-- [6. Credits](#6-credits)
+- [4. Custom buttons](#4-custom buttons)
+- [5. Development](#5-development)
+- [6. License](#6-license)
+- [7. Credits](#7-credits)
 
 <br/>
 
@@ -197,7 +198,13 @@ return [
 
 <br/>
 
-## 4. Development
+## 4. Custom buttons
+
+Since 1.0.8 you can register your own buttons. This functionnality has [a dedicated guide](custom-buttons/README.md).
+
+<br/>
+
+## 5. Development
 
 - Clone the repo
 - `cd` to your newly created folder (named `kirby-markdown-field`, or whatever you have chosen)
@@ -216,13 +223,13 @@ npm run build
 
 <br/>
 
-## 5. License
+## 6. License
 
 MIT
 
 <br/>
 
-## 6. Credits
+## 7. Credits
 
 **Text editor:**
 
@@ -230,9 +237,7 @@ MIT
 
 **Contributors:**
 
-- [Fabian Michael](https://github.com/fabianmichael)
-- [Sylvain Julé](https://github.com/sylvainjule)
-- [Thomas Günther](https://github.com/medienbaecker)
+@fabianmichael, @sylvainjule, @medienbaecker, @mtsknn, @nsteiner, @rasteiner, @thomasfahrland, @johannschopplich
 
 **Inspirations / K2 fields:**
 

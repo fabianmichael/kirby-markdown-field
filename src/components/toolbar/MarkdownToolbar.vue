@@ -10,6 +10,9 @@
 </template>
 
 <script>
+import './helpers/plugins.js';
+import './helpers/buttons.js';
+
 export default {
     props: {
         id: String,
@@ -19,6 +22,16 @@ export default {
         invisibles: Boolean,
         currentTokenType: String,
         uploads: [Boolean, Object, Array],
+    },
+    beforeCreate() {
+        Object.keys(window.markdownEditor.buttons).forEach(key => {
+            const button = window.markdownEditor.buttons[key];
+            if (button.extends && window.markdownEditor.buttons[button.extends]) {
+                button.extends = window.markdownEditor.buttons[button.extends];
+            }
+
+            this.$options.components['k-markdown-button-' + key] = button;
+        });
     },
     computed: {
         layout() {

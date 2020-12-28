@@ -1,8 +1,6 @@
 <script>
-import BaseButton from './button.vue'
-
 export default {
-    extends: BaseButton,    
+    extends: 'default',
     data() {
         return {
             label: this.$t('toolbar.button.italic'),
