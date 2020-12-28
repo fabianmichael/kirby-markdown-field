@@ -8,6 +8,7 @@
                        :editor="editor"
                        :invisibles="invisibles"
                        :currentTokenType="currentTokenType"
+                       :uploads="uploads"
                        :buttons="buttons"/>
             <textarea ref="input"
                       class="k-markdown-input-native"
@@ -18,7 +19,8 @@
         <k-markdown-link-dialog ref="linkDialog" :editor="editor" :blank="blank" @cancel="cancel" @submit="insert"/>
         <k-markdown-email-dialog ref="emailDialog" :editor="editor" @cancel="cancel" @submit="insert"/>
         <k-pages-dialog ref="pagesDialog" @cancel="cancel" @submit="insertPageLink" />
-        <k-files-dialog ref="filesDialog" @cancel="cancel" @submit="insertFileTag" />
+        <k-files-dialog ref="fileDialog" @cancel="cancel" @submit="insertFile($event)" />
+        <k-upload v-if="uploads" ref="fileUpload" @success="insertUpload" />
     </div>
 </template>
 
@@ -62,6 +64,7 @@ export default {
         value: String,
         font: Object,
         kirbytags: Array,
+        uploads: [Boolean, Object, Array],
         options: {
             type: Object,
             default: function () {
@@ -122,26 +125,25 @@ export default {
 
         // Open dialogs
         this.$root.$on('md-openDialog' + this.id, dialog => {
-            let dialogName = dialog == 'images' ? 'files' : dialog
-
-            if(this.$refs[dialogName + "Dialog"]) {
+            if(this.$refs[dialog + "Dialog"]) {
                 this.currentDialog = dialog
 
                 // open the pages dialog with the correct options
                 if(dialog == 'pages') {
                     this.openPagesDialog()
                 }
-                // open the files dialog with the correct options
-                else if(dialog == 'images' || dialog == 'files') {
-                    this.openFilesDialog(dialog)
-                }
-                // open every other dialog without additional params
+                // open any other dialog without additional params
                 else {
-                    this.$refs[dialogName + "Dialog"].open();
+                    this.$refs[dialog + "Dialog"].open();
                 }
             } else {
                 throw "Invalid toolbar dialog";
             }
+        })
+        this.$root.$on('md-fileCommand' + this.id, command => {
+            // alert(command)
+            if(command == 'selectFile') this.selectFile()
+            if(command == 'uploadFile') this.uploadFile()
         })
 
         // Emit changed value
@@ -213,37 +215,30 @@ export default {
             })
         },
 
+
         /**
-         * Fetch files / images and open files dialog
+         * File handling
          */
-        openFilesDialog(dialog) {
-            this.$api
-                .get(this.endpoints.field + '/get-'+ dialog)
-                .then(files => {
-                    // if there are files to pick from
-                    if(files.length) {
-                        // structure the files list
-                        files = files.map(file => {
-                            file.selected = false
-                            file.thumb = []
-                            file.thumb.url = false;
-                            if(file.thumbs && file.thumbs.tiny) {
-                                file.thumb.url = file.thumbs.tiny;
-                            }
-                            return file;
-                        })
-                        this.$refs['filesDialog'].open(files, {
-                            multiple: false
-                        })
-                    }
-                    // else: show an error dialog
-                    else {
-                        this.$store.dispatch('notification/error', 'The page has no '+ dialog)
-                    }
-                })
-                .catch((error) => {
-                    this.$store.dispatch('notification/error', 'The files query does not seem to be correct')
-                })
+        insertFile(files) {
+            if (files && files.length > 0) {
+                this.insert(files.map(file => file.dragText).join("\n\n"));
+            }
+        },
+        insertUpload(files, response) {
+            this.insert(response.map(file => file.dragText).join("\n\n"));
+            this.$events.$emit("model.update");
+        },
+        selectFile() {
+            this.$refs.fileDialog.open({
+                endpoint: this.endpoints.field + "/files",
+                multiple: false
+            });
+        },
+        uploadFile() {
+            this.$refs.fileUpload.open({
+                url: '/api/' + this.endpoints.field + "/upload",
+                multiple: false,
+            });
         },
 
         /**
@@ -271,36 +266,6 @@ export default {
                 let tag       = '(link: '+ page.id +' text: '+ text + lang +')'
 
                 this.insert(tag, 1)
-                this.currentDialog = null
-            }
-            else {
-                this.cancel()
-            }
-        },
-
-        /**
-         * Insert (file: ) or (image: ) tag on filesDialog and imagesDialog submit
-         */
-        insertFileTag(selected) {
-            if(selected && selected.length) {
-                let file = selected[0]
-                let doc  = this.editor.getDoc()
-
-                // if we're inserting an image
-                if(this.currentDialog == 'images') {
-                    let tag = '(image: '+ file.uuid +')'
-                    this.insert(tag)
-                }
-                // if we're inserting a file
-                else {
-                    let selection = doc.getSelection()
-                    // whether or not we add a text: argument
-                    let suffix    = selection.length > 0 ? ' text: '+ selection : ''
-                    // if we add a text: argument: place cursor before the closing parenthesis
-                    let incr      = selection.length > 0 ? 1 : 0
-
-                    this.insert('(file: '+ file.uuid + suffix +')', incr)
-                }
                 this.currentDialog = null
             }
             else {

@@ -20,7 +20,6 @@ import File           from './components/toolbar/buttons/file.vue'
 import Footnote       from './components/toolbar/buttons/footnote.vue'
 import Headlines      from './components/toolbar/buttons/headlines.vue'
 import HorizontalRule from './components/toolbar/buttons/horizontal-rule.vue'
-import Image          from './components/toolbar/buttons/image.vue'
 import Invisibles     from './components/toolbar/buttons/invisibles.vue'
 import Italic         from './components/toolbar/buttons/italic.vue'
 import Link           from './components/toolbar/buttons/link.vue'
@@ -48,7 +47,6 @@ panel.plugin('community/markdown-field', {
         'k-markdown-button-footnote': Footnote,
         'k-markdown-button-headlines': Headlines,
         'k-markdown-button-horizontal-rule': HorizontalRule,
-        'k-markdown-button-image': Image,
         'k-markdown-button-invisibles': Invisibles,
         'k-markdown-button-italic': Italic,
         'k-markdown-button-link': Link,

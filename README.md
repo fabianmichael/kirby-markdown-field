@@ -103,8 +103,6 @@ buttons:
   - horizontal-rule
   - strikethrough
   - pagelink
-  - image
-  - file
   - footnote
 ```
 
@@ -135,7 +133,6 @@ buttons:
   - horizontal-rule
   - strikethrough
   - pagelink
-  - image
   - file
   - footnote
 ```
@@ -143,16 +140,11 @@ buttons:
 
 ### 3.4. Query
 
-You can limit the options shown in the dialogs, by setting:
-- a `pagelink` query (if unset, you'll be able to browse the entire site tree)
-- a `images` query (if unset, you'll pick images from the current page)
-- a `files` query (if unset, you'll pick files from the current page)
+You can limit the options shown in the Pagelink dialog, by setting a `pagelink` query (if unset, you'll be able to browse the entire website tree)
 
 ```yaml
 query:
   pagelink: kirby.page('my-page').children
-  images: kirby.page('my-page').images
-  files: kirby.page('my-page').filterBy("type", "!=", "image")
 ```
 
 ### 3.5. Size
@@ -187,7 +179,7 @@ You can globally override the default options, instead of setting them on a per-
 ```php
 return [
   'community.markdown-field.size'       => 'small',
-  'community.markdown-field.buttons'    => ['headlines', 'bold', 'italic', 'divider', 'link', 'email', 'code', 'divider', 'ul', 'ol'],
+  'community.markdown-field.buttons'    => ['headlines', 'bold', 'italic', 'divider', 'link', 'email', 'file', 'code', 'divider', 'ul', 'ol'],
   'community.markdown-field.font'       => [
     'family'  => 'monospace',
     'scaling' => false,
@@ -195,8 +187,6 @@ return [
   ],
   'community.markdown-field.query'      => [
     'pagelink' => null,
-    'images'   => 'page.images',
-    'files'    => 'page.files.filterBy("type", "!=", "image")',
   ],
   'community.markdown-field.modals'     => true,
   'community.markdown-field.blank'      => false,

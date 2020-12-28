@@ -96,30 +96,40 @@ $options = A::merge($options, [
             return $tags;
         }
     ],
-    'methods' => [
-        'fileResponse' => function($file) {
-            $thumb = ['width'  => 100, 'height' => 100];
-            $image = $file->panelImage($this->image, $thumb);
-            $model = $this->model();
-            $uuid  = $file->parent() === $model ? $file->filename() : $file->id();
-            return [
-                'filename' => $file->filename(),
-                'text'     => $file->toString('{{ file.filename }}'),
-                'link'     => $file->panelUrl(true),
-                'id'       => $file->id(),
-                'uuid'     => $uuid,
-                'url'      => $file->url(),
-                'info'     => $file->toString(false),
-                'image'    => $image,
-                'icon'     => $file->panelIcon($image),
-                'type'     => $file->type(),
-            ];
-        },
-    ],
-    'api' => function() {
+    'api' => function () {
         return [
             [
+                'pattern' => 'files',
+                'method' => 'GET',
+                'action' => function () {
+                    $params = array_merge($this->field()->files(), [
+                        'page'   => $this->requestQuery('page'),
+                        'search' => $this->requestQuery('search')
+                    ]);
+
+                    return $this->field()->filepicker($params);
+                }
+            ],
+            [
+                'pattern' => 'upload',
+                'method' => 'POST',
+                'action' => function () {
+                    $field   = $this->field();
+                    $uploads = $field->uploads();
+
+                    return $this->field()->upload($this, $uploads, function ($file, $parent) use ($field) {
+                        $absolute = $field->model()->is($parent) === false;
+
+                        return [
+                            'filename' => $file->filename(),
+                            'dragText' => $file->dragText('auto', $absolute),
+                        ];
+                    });
+                }
+            ],
+            [
                 'pattern' => 'get-pages',
+                'method' => 'GET',
                 'action' => function () {
                     $field = $this->field();
                     $model = $field->model();
@@ -133,40 +143,6 @@ $options = A::merge($options, [
                     ];
 
                     return (new PagePicker($params))->toArray();
-                }
-            ],
-            [
-                'pattern' => 'get-images',
-                'method'  => 'GET',
-                'action'  => function () {
-                    $field = $this->field();
-					$query = $field->query()['images'];
-                    $files = $field->model()->query($query, 'Kirby\Cms\Files');
-                    $files = $files ?? $field->model()->query('site.images', 'Kirby\Cms\Files');
-
-                    $data  = [];
-                    foreach ($files as $index => $file) {
-                        $data[] = $field->fileResponse($file);
-                    }
-
-                    return $data;
-                }
-            ],
-            [
-                'pattern' => 'get-files',
-                'method'  => 'GET',
-                'action'  => function () {
-                    $field = $this->field();
-					$query = $field->query()['files'];
-                    $files = $field->model()->query($query, 'Kirby\Cms\Files');
-                    $files = $files ?? $field->model()->query('site.files.filterBy("type", "!=", "image")', 'Kirby\Cms\Files');
-
-                    $data  = [];
-                    foreach ($files as $index => $file) {
-                        $data[] = $field->fileResponse($file);
-                    }
-
-                    return $data;
                 }
             ]
         ];
