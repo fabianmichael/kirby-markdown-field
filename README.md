@@ -1,5 +1,7 @@
 # Kirby – Markdown field
 
+⚠️ This branch in an early exploration of upgrading the field to CodeMirror 6. This is by any means not ready for production yet. ⚠️
+
 Enhanced markdown editor for Kirby 3, community built.
 
 ![screenshot](https://user-images.githubusercontent.com/14079751/50606008-7cb31200-0ec4-11e9-9685-a48a8ba398a4.jpg)

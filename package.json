@@ -1,6 +1,6 @@
 {
   "name": "kirby-markdown-field",
-  "version": "0.1.0",
+  "version": "2.0.0-alpha",
   "description": "Enhanced markdown editor for Kirby 3",
   "main": "index.js",
   "author": "Kirby Community",
@@ -23,13 +23,22 @@
   ],
   "devDependencies": {
     "@vue/component-compiler-utils": "^3.1.1",
-    "codemirror": "^5.59.0",
     "cssnano": "^4.1.10",
     "parcel": "^1.12.4",
     "sass": "^1.30.0",
     "vue-template-compiler": "^2.6.12"
   },
   "dependencies": {
+    "@codemirror/commands": "^0.17.3",
+    "@codemirror/highlight": "^0.17.2",
+    "@codemirror/history": "^0.17.2",
+    "@codemirror/lang-markdown": "^0.17.2",
+    "@codemirror/matchbrackets": "^0.17.2",
+    "@codemirror/rangeset": "^0.17.1",
+    "@codemirror/search": "^0.17.1",
+    "@codemirror/state": "^0.17.1",
+    "@codemirror/stream-parser": "^0.17.1",
+    "@codemirror/view": "^0.17.7",
     "vue": "^2.6.12",
     "vue-hot-reload-api": "^2.3.4"
   }

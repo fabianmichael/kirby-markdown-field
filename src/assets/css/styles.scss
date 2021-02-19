@@ -1,10 +1,64 @@
-@import 
-  'abstracts/variables.scss';
+// @import 
+//   'abstracts/variables.scss';
 
-@import 
-  'field/markdown-field.scss';
+// @import 
+//   'field/markdown-field.scss';
 
-@import 
-  'themes/default.scss',
-  'themes/custom.scss',
-  'themes/options.scss';
+// @import 
+//   'themes/default.scss',
+//   'themes/custom.scss',
+//   'themes/options.scss';
+
+.cm-markdown-codeblock {
+  background: var(--color-background);
+  background-clip: content-box;
+}
+
+.kirbytag {
+  padding: 1px 0 1px;
+  margin: -1px 0 0px;
+  /* border-radius: .125em; */
+  background: rgba(66,113,174,.15);
+  border: 1px solid rgba(66,113,174,.3);
+  border-width: 1px 0;
+  box-decoration-break: clone;            
+}
+
+// /* .cm-selectionMatch .kirbytag {
+//   background: #d7fdc2;
+// } */
+
+.kirbytag-open {
+  border-left-width: 1px;
+  margin-left: -1px;
+  border-radius: 2px 0 0 2px;
+}
+
+.kirbytag-close {
+  border-right-width: 1px;
+  margin-right: -1px;
+  border-radius: 0 2px 2px 0;
+}
+
+.mention {
+  color: red;
+  font-weight: bold;
+}
+
+.custom-highlight {
+  padding: 1px 0;
+  margin: -2px -1px;
+  border-radius: 2px;
+  background: rgba(255,0,0,.15);
+  border: 1px solid rgba(255,0,0,.3);
+  box-decoration-break: clone;   
+}
+
+.cm-specialChar[title~="0xa0"] {
+  $c: #aaa;
+  background:
+    linear-gradient($c, $c) 1px 100% / 1px 2px no-repeat,
+    linear-gradient($c, $c) 1px 100% / calc(100% - 2px) 1px no-repeat,
+    linear-gradient($c, $c) calc(100% - 1px) 100% / 1px 2px no-repeat;
+  color: transparent !important;
+}
