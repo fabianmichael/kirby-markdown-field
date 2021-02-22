@@ -9,9 +9,14 @@ export default {
             type: 'italic'
         }
     },
+    computed: {
+        active() {
+            return this.currentInlineFormat.includes("Emphasis");
+        },
+    },
     methods: {
         action() {
-             this.toggleWrap('*')
+            this.toggleInlineFormat('*');
         }
     }
 };

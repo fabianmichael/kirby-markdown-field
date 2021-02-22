@@ -3,13 +3,15 @@
         <div class="k-toolbar-buttons k-markdown-toolbar-buttons">
             <component
                 v-for="(button, index) in layout"
-                :is="'k-markdown-button-' + buttonName(button)"
+                :is="`k-markdown-button-${buttonName(button)}`"
                 :key="index" :button="button"
                 :name="buttonName(button)"
                 :currentTokenType="currentTokenType"
+                :currentTokens="currentTokens"
+                :currentInlineFormat="currentInlineFormat"
                 :buttonIndex="index"
                 :uploads="uploads"
-                :view="view"
+                :editor="editor"
                 :modals="modals"
                 :id="id"
                 @command="command"
@@ -35,10 +37,12 @@ export default {
     props: {
         id: String,
         buttons: Array,
-        view: Object,
+        editor: Object,
         modals: Boolean,
         invisibles: Boolean,
         currentTokenType: String,
+        currentTokens: Array,
+        currentInlineFormat: Array,
         uploads: [Boolean, Object, Array],
     },
     beforeCreate() {

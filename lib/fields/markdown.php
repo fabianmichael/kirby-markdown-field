@@ -29,6 +29,12 @@ $options = A::merge($options, [
 
     		return $uniqueButtons;
         },
+        /**
+         * Sets whether the editor is editable
+         */
+        'disabled' => function(bool $disabled = false) {
+            return $disabled;
+        },
         /*
          * Sets the editor font.
          */
@@ -94,7 +100,13 @@ $options = A::merge($options, [
         'kirbytags' => function() {
             $tags = array_keys(kirby()->extensions('tags'));
             return $tags;
-        }
+        },
+        'extra' => function() {
+            return option('markdown.extra', false);
+        },
+        'breaks' => function() {
+            return option('markdown.breaks', true);
+        },
     ],
     'api' => function () {
         return [

@@ -9,13 +9,15 @@
   >
     <div class="k-markdown-input-wrapper" :data-size="size">
       <k-markdown-toolbar
-        v-if="buttons"
+        v-if="buttons && !disabled"
         ref="toolbar"
         :id="id"
         :modals="modals"
-        :view="view"
+        :editor="editor"
         :invisibles="invisibles"
         :currentTokenType="currentTokenType"
+        :currentTokens="currentTokens"
+        :currentInlineFormat="currentInlineFormat"
         :uploads="uploads"
         :buttons="buttons"
         @mousedown.native.prevent
@@ -25,6 +27,8 @@
         @dragover="onDragOver"
         @dragleave="onDragLeave"
         @drop="onDrop"
+        @keydown.meta.enter="onSubmit"
+        @keydown.ctrl.enter="onSubmit"
       />
       <!-- <textarea ref="input"
                       class="k-markdown-input-native"
@@ -64,23 +68,41 @@ import { keymap, highlightSpecialChars, EditorView } from "@codemirror/view";
 import { EditorState } from "@codemirror/state";
 import { history, historyKeymap } from "@codemirror/history";
 import { standardKeymap } from "@codemirror/commands";
-import { markdown, markdownKeymap } from "@codemirror/lang-markdown";
+import { markdown, markdownKeymap, markdownLanguage } from "@codemirror/lang-markdown";
 // import {ViewPlugin, Decoration} from "@codemirror/view"
 // import {RangeSetBuilder} from '@codemirror/rangeset';
 // import {defaultHighlightStyle} from "@codemirror/highlight"
 // import {bracketMatching} from "@codemirror/matchbrackets"
 import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
-import markdownCommands from "../../extensions/markdownCommands.js";
+import markdownCommands, { getCurrentInlineTokens } from "../../extensions/markdownCommands.js";
+import {Table, Strikethrough} from "lezer-markdown"
+
+import { drawSelection } from "@codemirror/view"
 
 // import kirbytags from '../../extensions/kirbytags.js';
 // import customHighlights from '../../extensions/customHighlights.js';
-import { theme, highlightStyle } from "../../extensions/theme.js";
+import { theme, highlightStyle, markTag } from "../../extensions/theme.js";
 
 import Toolbar from "../toolbar/MarkdownToolbar.vue";
 import LinkDialog from "../toolbar/dialogs/link-dialog.vue";
 import EmailDialog from "../toolbar/dialogs/email-dialog.vue";
 
 import { syntaxTree } from "@codemirror/language";
+
+
+import {styleTags, tags as t} from "@codemirror/highlight"
+const MarkDelim = {resolve: "Mark", mark: "MarkMark"}
+const Mark = {
+  defineNodes: ["Mark", "MarkMark"],
+  parseInline: [{
+    name: "Mark",
+    parse(cx, next, pos) {
+      if (next != 61 /* '=' */ || cx.char(pos + 1) != 61) return -1
+      return cx.addDelimiter(MarkDelim, pos, pos + 2, true, true)
+    },
+    after: "Emphasis"
+  }]
+}
 
 export default {
   components: {
@@ -90,12 +112,14 @@ export default {
   },
   data() {
     return {
-      view: Object,
+      editor: Object,
       skipNextChangeEvent: false,
       currentDialog: null,
 
       currentTokenType: null,
       currentTokenNode: null,
+      currentTokens: [],
+      currentInlineFormat: [],
       over: false,
     };
   },
@@ -104,6 +128,7 @@ export default {
     autofocus: Boolean,
     modals: Boolean,
     blank: Boolean,
+    disabled: Boolean,
     invisibles: Boolean,
     direction: Boolean,
     buttons: [Boolean, Array],
@@ -113,7 +138,10 @@ export default {
     value: String,
     font: Object,
     kirbytags: Array,
+    disabled: Boolean,
     uploads: [Boolean, Object, Array],
+    breaks: Boolean,
+    extra: Boolean,
     // options: {
     //     type: Object,
     //     default: function () {
@@ -148,22 +176,24 @@ export default {
 
     const _this = this;
 
-    this.view = new EditorView({
+    this.editor = new EditorView({
       state: startState,
       parent: this.$refs.input,
+      editable: !this.dispatch,
       dispatch: function (transaction) {
         this.update([transaction]);
         // https://discuss.codemirror.net/t/codemirror-6-proper-way-to-listen-for-changes/2395/6
         _this.onInput();
         _this.setTokenType();
+        _this.currentInlineFormat = getCurrentInlineTokens(_this.editor);
         // console.log("dd", this.domAtPos(this.state.selection.main.head).node)
       },
     });
 
     // Custom autofocus: place the cursor at the end of current value
-    if (this.autofocus) {
-      this.view.focus();
-      this.view.dispatch({ selection: { anchor: this.view.state.doc.length } });
+    if (this.autofocus && !this.disabled) {
+      this.editor.focus();
+      this.editor.dispatch({ selection: { anchor: this.editor.state.doc.length } });
     }
 
     // // Open dialogs
@@ -220,7 +250,6 @@ export default {
           highlightSpecialChars({
             specialChars: /\u00a0/g,
           }),
-          // bracketMatching(),
           history(),
           keymap.of([
             ...standardKeymap,
@@ -228,13 +257,30 @@ export default {
             ...markdownKeymap,
             ...markdownCommands,
           ]),
-          // kirbytags,
-          markdown(),
           highlightStyle,
+          // kirbytags,
+          markdown({
+            base: markdownLanguage,
+            extensions: [
+              Mark,
+              Table,
+              Strikethrough,
+              {
+                props: [
+                  styleTags({
+                    "Mark/... MarkMark": markTag,
+                  }),
+                ]
+              },
+            ]
+          }),
+          
           // customHighlights,
           highlightSelectionMatches({
             minSelectionLength: 2,
           }),
+          drawSelection(),
+          // bracketMatching(),
           theme,
           // lineStyles,
         ],
@@ -292,8 +338,8 @@ export default {
      * Insert text at the cursor's position
      */
     insert(text, incr = 0) {
-      const transaction = this.view.state.replaceSelection(text);
-      this.view.dispatch(transaction);
+      const transaction = this.editor.state.replaceSelection(text);
+      this.editor.dispatch(transaction);
       // replace current selection
       // this.editor.getDoc().replaceSelection(str)
       // move caret if needed
@@ -327,23 +373,23 @@ export default {
     editorFocus() {
       setTimeout(() => {
         this.$refs.input.focus();
-        this.view.focus();
+        this.editor.focus();
       });
     },
 
     focus() {
-      this.view.focus();
+      this.editor.focus();
     },
 
     getEditorValue() {
-      return this.view.state.doc.toString();
+      return this.editor.state.doc.toString();
     },
 
     setEditorValue(value) {
-      this.view.dispatch({
+      this.editor.dispatch({
         changes: {
           from: 0,
-          to: this.view.state.doc.length,
+          to: this.editor.state.doc.length,
           insert: value,
         },
       });
@@ -357,7 +403,7 @@ export default {
      * Set the token type of current cursor position
      */
     setTokenType(tokenType, pos) {
-      const state = this.view.state;
+      const state = this.editor.state;
 
       // const gatherMarkup = function (node, line, doc) {
       //     let nodes = []
@@ -403,7 +449,7 @@ export default {
       ];
 
       // let n = treeBefore;
-      // let tags = [];
+      let tags = [];
 
       const marks = {
         StrongEmphasis: "bold",
@@ -413,7 +459,7 @@ export default {
 
       for (let n of trees) {
         do {
-          // tags.push(n.name);
+          tags.push(n.name);
           if (marks[n.name]) {
             inlineFormat = marks[n.name];
             inlineNode = n;
@@ -422,27 +468,7 @@ export default {
         } while ((n = n.parent));
       }
 
-      this.view._currentTokenType = inlineFormat;
-      this.view._currentTokenNode = inlineNode;
-
-      // console.log("current inline format:", inlineFormat, inlineNode.from, inlineNode.to);
-
-      // n = treeAfter;
-
-      // do {
-      //     tags.push(n.name);
-      // } while (n = n.parent);
-
-      // tags = tags.filter((value, index, self) => self.indexOf(value) === index);
-
-      // console.log("tags", tags);
-
-      // console.log("dd", resolvedTree, gatherMarkup(resolvedTree, line.text, state.doc));
-      // skip computing if tokenType is null
-      // if(!tokenType || tokenType == null) {
-      //     this.currentTokenType = nullNode =
-      //     return
-      // }
+      console.log("tags", tags);
 
       // // init an object
       // let main = undefined
@@ -535,6 +561,9 @@ export default {
         this.focus();
         this.over = true;
       }
+    },
+    onSubmit($event) {
+      return this.$emit("submit", $event);
     },
   },
 };

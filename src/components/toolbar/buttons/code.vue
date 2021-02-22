@@ -8,9 +8,14 @@ export default {
             type: 'code'
         }
     },
+    computed: {
+        active() {
+            return this.currentInlineFormat.includes("InlineCode");
+        },
+    },
     methods: {
         action() {
-            this.toggleCode()
+            this.toggleInlineFormat('`');
         }
     }
 };

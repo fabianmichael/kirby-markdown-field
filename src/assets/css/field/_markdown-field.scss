@@ -105,10 +105,45 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   color: #000;
+
+  .k-markdown-button {
+    position: relative;
+  }
+
+  // .k-button-icon {
+  //   width: 32px;
+  //   height: 32px;
+  //   border-radius: 2px;
+  // }
+
+  // .k-toolbar-button:hover {
+  //   background: transparent;
+  // }
+
+  // .k-toolbar-button:hover .k-button-icon {
+  //   background: hsla(0,0%,93.7%,.5);
+  // }
+
   // active state of toolbar buttons
-  .k-markdown-button.active {
-    background: rgba($color-focus, .1);
-    color: $color-focus;
+  .k-markdown-button.active{
+    // &::before {
+    //   content: "";
+    //   background: rgba($color-focus, .1);
+    //   position: absolute;
+    //   $inset: 3px;
+    //   top: $inset;
+    //   left: $inset;
+    //   right: $inset;
+    //   bottom: $inset;
+    //   border-radius: var(--border-radius);
+    // }
+    background: rgba($color-focus, .075);
+    color: $color-focus; // #498FCE
+  }
+
+  .k-button-icon {
+    position: relative;
+    z-index: 2;
   }
 }
 

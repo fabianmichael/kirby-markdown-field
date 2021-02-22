@@ -8,9 +8,14 @@ export default {
             type: 'strikethrough',
         }
     },
+    computed: {
+        active() {
+            return this.currentInlineFormat.includes("Strikethrough");
+        },
+    },
     methods: {
         action() {
-            this.toggleWrap('~~')
+            this.toggleInlineFormat('~~');
         }
     }
 };

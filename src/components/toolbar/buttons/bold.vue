@@ -6,12 +6,17 @@ export default {
             label: this.$t('toolbar.button.bold'),
             icon: 'bold',
             shortcut: 'Cmd-B',
-            type: 'bold'
+            type: 'bold',
         }
+    },
+    computed: {
+        active() {
+            return this.currentInlineFormat.includes("StrongEmphasis");
+        },
     },
     methods: {
         action() {
-            this.toggleWrap('**')
+            this.toggleInlineFormat('**')
         }
     }
 };

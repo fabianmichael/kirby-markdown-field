@@ -1,10 +1,10 @@
 import { EditorView } from "@codemirror/view"
 import { Extension } from "@codemirror/state"
-import { HighlightStyle, tags as t } from "@codemirror/highlight"
-import {Decoration, themeClass} from "@codemirror/view"
-import {RangeSetBuilder} from "@codemirror/rangeset"
-import {ViewPlugin, DecorationSet, ViewUpdate} from "@codemirror/view"
-import {Facet} from "@codemirror/state"
+import { HighlightStyle, Tag, tags as t } from "@codemirror/highlight"
+import { Decoration, themeClass } from "@codemirror/view"
+import { RangeSetBuilder } from "@codemirror/rangeset"
+import { ViewPlugin, DecorationSet, ViewUpdate } from "@codemirror/view"
+import { Facet } from "@codemirror/state"
 // https://github.com/codemirror/theme-one-dark/blob/main/src/one-dark.ts
 // https://github.com/codemirror/view/blob/main/src/theme.ts
 // https://github.com/codemirror/highlight/blob/main/src/highlight.ts
@@ -24,7 +24,7 @@ const theme = EditorView.theme({
     },
     "$scroller": {
         fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, Courier, monospace',
-        lineHeight: '1.65',
+        lineHeight: '1.5',
         fontSize: '1rem',
     },
     "$content": {
@@ -35,10 +35,23 @@ const theme = EditorView.theme({
     },
     "$kirbytag": {
         background: "cyan",
-    }
+    },
+    "$cursor": {
+        position: "absolute",
+        borderLeft: "2.2px solid currentColor",
+        marginLeft: "-1.2px",
+    },
+    "$$focused $cursor": {
+        "color": "var(--color-focus)"
+    },
+    "$$focused $selectionBackground, $selectionBackground": {
+        backgroundColor: "hsla(195, 80%, 40%, .17)", // "rgba(66,113,174,0.15);",
+    },
 }, { dark: false });
 
 export { theme };
+
+export const markTag = Tag.define();
 
 
 // // Using https://github.com/one-dark/vscode-one-dark-theme/ as reference for the colors
@@ -131,16 +144,23 @@ const highlightStyle = HighlightStyle.define(
         color: malibu
     },
     {
-        tag: [t.color, t.constant(t.name), t.standard(t.name)],
+        tag: [t.constant(t.name), t.standard(t.name)],
         color: whiskey
+    },
+    { // Marked text `==marked==`
+        tag: markTag, // t.color,
+        backgroundColor: "#FCE566",
+        padding: "2px",
+        margin: "-2px",
+        borderRadius: "3px",
     },
     {
         tag: [t.definition(t.name), t.separator],
         color: ivory
     },
     {
-        tag: [t.typeName, t.className, t.number, t.changed, t.annotation, t.modifier, t.self, t.namespace],
-        color: chalky
+        tag: [t.angleBracket, t.typeName, t.className, t.number, t.changed, t.annotation, t.modifier, t.self, t.namespace],
+        color: "#999" // HTML tag etc.
     },
     {
         tag: [t.operator, t.operatorKeyword, t.url, t.escape, t.regexp, t.link, t.special(t.string)],
@@ -176,8 +196,8 @@ const highlightStyle = HighlightStyle.define(
         color: "#999",
     },
     {
-        tag: t.invalid,
-        color: invalid
+        tag: t.deleted,
+        textDecoration: "line-through",
     },
 );
 //   {tag: [t.definition(t.name), t.separator],
@@ -221,7 +241,7 @@ export { highlightStyle };
 // function stripeDeco(view) {
 //   const step = view.state.facet(stepSize)
 //   const builder = new RangeSetBuilder()
-  
+
 //   for (let { from, to } of view.visibleRanges) {
 //     let inCode = false;
 
