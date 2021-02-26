@@ -1,281 +1,100 @@
-import { EditorView } from "@codemirror/view"
-// import { Extension } from "@codemirror/state"
-import { HighlightStyle, Tag, tags as t } from "@codemirror/highlight"
-// import { Decoration, themeClass } from "@codemirror/view"
-// import { RangeSetBuilder } from "@codemirror/rangeset"
-// import { ViewPlugin, DecorationSet, ViewUpdate } from "@codemirror/view"
-// import { Facet } from "@codemirror/state"
+import { EditorView } from "@codemirror/view";
+import { HighlightStyle, tags as t } from "@codemirror/highlight";
+import { redo } from "@codemirror/history";
 
-const theme = EditorView.theme({
-    "$": {
-        caretColor: "var(--color-focus)",
+const theme = EditorView.theme(
+  {
+    $$focused: {
+      outline: "none",
     },
-    "$$focused": {
-        outline: "none",
+    $scroller: {
+      fontFamily: "var(--font-family-mono)",
+      lineHeight: "var(--cm-line-height)",
+      fontSize: "var(--font-size-medium)",
     },
-    "$$light $content": {
-        caretColor: "var(--color-focus)",
-    },
-    "$$dark $content": {
-        caretColor: "var(--color-focus)",
-    },
-    "$scroller": {
-        fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, Courier, monospace',
-        lineHeight: '1.5',
-        fontSize: '1rem',
-    },
-    "$content": {
-        whiteSpace: "pre-wrap",
+    $content: {
+      whiteSpace: "pre-wrap",
     },
     "$content $line": {
-        padding: "0 .375rem",
+      margin: "0 var(--cm-line-margin)",
     },
-    "$kirbytag": {
-        background: "cyan",
-    },
-    "$cursor": {
-        position: "absolute",
-        borderLeft: "2.2px solid currentColor",
-        marginLeft: "-1.2px",
+    $cursor: {
+      position: "absolute",
+      borderLeft: ".125rem solid currentColor",
+      marginLeft: "-.0625rem",
     },
     "$$focused $cursor": {
-        "color": "var(--color-focus)"
+      color: "var(--color-focus)",
     },
     "$$focused $selectionBackground, $selectionBackground": {
-        backgroundColor: "hsla(195, 80%, 40%, .17)",
+      backgroundColor: "hsla(195, 80%, 40%, .17)",
     },
-    "$$focused $matchingBracket > *": {
-        color: "currentColor !important", // force-override syntax highlighting color
-    }
-}, { dark: false });
+    "$codeblock": {
+        margin: "0 calc(.25 * var(--cm-line-margin))",
+        padding: "0 calc(.75 * var(--cm-line-margin))",
+    },
+    // "$kirbytag": {
+    //     background: "cyan",
+    // },
+  },
+  { dark: false }
+);
 
 export { theme };
 
-// export const markTag = Tag.define();
-
-
-// // Using https://github.com/one-dark/vscode-one-dark-theme/ as reference for the colors
-
-const chalky = "#e5c07b",
-    coral = "red",
-    cyan = "yan",
-    invalid = "green",
-    ivory = "orange",
-    stone = "#999", // Brightened compared to original to increase contrast
-    malibu = "brightgreen",
-    sage = "darkred",
-    whiskey = "tan",
-    violet = "pink",
-    darkBackground = "#21252b",
-    highlightBackground = "#2c313a",
-    background = "#282c34",
-    selection = "#3E4451",
-    cursor = "#528bff"
-
-// /// The editor theme styles for One Dark.
-// export const oneDarkTheme = EditorView.theme({
-//   $: {
-//     color: ivory,
-//     backgroundColor: background,
-//     "& ::selection": {backgroundColor: selection},
-//     caretColor: cursor
-//   },
-
-//   "$$focused $cursor": {borderLeftColor: cursor},
-//   "$$focused $selectionBackground, $selectionBackground": {backgroundColor: selection},
-
-//   $panels: {backgroundColor: darkBackground, color: ivory},
-//   "$panels.top": {borderBottom: "2px solid black"},
-//   "$panels.bottom": {borderTop: "2px solid black"},
-
-//   $searchMatch: {
-//     backgroundColor: "#72a1ff59",
-//     outline: "1px solid #457dff"
-//   },
-//   "$searchMatch.selected": {
-//     backgroundColor: "#6199ff2f"
-//   },
-
-//   $activeLine: {backgroundColor: highlightBackground},
-//   $selectionMatch: {backgroundColor: "#aafe661a"},
-
-//   "$matchingBracket, $nonmatchingBracket": {
-//     backgroundColor: "#bad0f847",
-//     outline: "1px solid #515a6b"
-//   },
-
-//   $gutters: {
-//     backgroundColor: background,
-//     color: stone,
-//     border: "none"
-//   },
-//   "$gutterElement.lineNumber": {color: "inherit"},
-
-//   $foldPlaceholder: {
-//     backgroundColor: "transparent",
-//     border: "none",
-//     color: "#ddd"
-//   },
-
-//   $tooltip: {
-//     border: "1px solid #181a1f",
-//     backgroundColor: darkBackground
-//   },
-//   "$tooltip.autocomplete": {
-//     "& > ul > li[aria-selected]": {
-//       backgroundColor: highlightBackground,
-//       color: ivory
-//     }
-//   }
-// }, {dark: true})
-
-/// The highlighting style for code in the One Dark theme.
 const highlightStyle = HighlightStyle.define(
-    {
-        tag: t.keyword,
-        color: violet
-    },
-    {
-        tag: [t.name, t.deleted, t.character, t.macroName],
-        color: coral
-    },
-    {
-        tag: [t.function(t.variableName), t.labelName],
-        color: malibu
-    },
-    {
-        tag: [t.constant(t.name), t.standard(t.name)],
-        color: whiskey
-    },
-    // { // Marked text `==marked==`
-    //     tag: markTag, // t.color,
-    //     backgroundColor: "#FCE566",
-    //     padding: "2px",
-    //     margin: "-2px",
-    //     borderRadius: "3px",
-    // },
-    {
-        tag: [t.definition(t.name), t.separator],
-        color: ivory
-    },
-    {
-        tag: [t.operator, t.angleBracket, t.typeName, t.className, t.number, t.changed, t.annotation, t.modifier, t.self, t.namespace,  t.propertyName],
-        color: "#999" // HTML tag etc.
-    },
-    {
-        tag: [t.operatorKeyword, t.url, t.escape, t.regexp, t.link, t.special(t.string)],
-        color: cyan
-    },
-    {
-        tag: [t.meta, t.comment],
-        color: stone
-    },
-    {
-        tag: t.strong,
-        fontWeight: "bold"
-    },
-    {
-        tag: t.emphasis,
-        fontStyle: "italic"
-    },
-    {
-        tag: t.link,
-        // color: stone,
-        // textDecoration: "underline"
-    },
-    {
-        tag: t.heading,
-        fontWeight: "bold",
-    },
-    {
-        tag: [t.atom, t.bool, t.special(t.variableName)],
-        color: whiskey
-    },
-    {
-        tag: [t.processingInstruction, t.string, t.inserted],
-        color: stone, // "#999",
-    },
-    {
-        tag: t.deleted,
-        textDecoration: "line-through",
-    },
-    {
-        tag: t.url,
-        color: stone,
-        textDecoration: "underline",
-    }
+  {
+    tag: [
+      t.name,
+      t.angleBracket,
+      t.operator,
+      t.meta,
+      t.comment,
+      t.processingInstruction,
+      t.string,
+      t.inserted,
+    ],
+    color: "var(--cm-color-meta)",
+  },
+  {
+      tag: t.contentSeparator,
+      color: "currentColor",
+      fontWeight: "700",
+  },
+  {
+    tag: t.strong,
+    fontWeight: "700",
+  },
+  {
+    tag: [t.heading1, t.heading2, t.heading3, t.heading4, t.heading5, t.heading6],
+    fontWeight: "700",
+    color: "currentColor",
+  },
+  {
+      tag: t.heading, // table header
+      fontWeight: "700",
+  },
+  {
+    tag: t.emphasis,
+    fontStyle: "italic",
+  },
+
+  {
+    tag: t.deleted,
+    textDecoration: "line-through",
+  },
+  {
+    tag: t.url,
+    color: "var(--cm-color-meta)",
+    textDecoration: ".05em solid underline",
+    textUnderlineOffset: ".14em",
+  },
+  {
+    tag: t.character, // HTML Entity
+    color: "currentColor",
+  }
 );
-//   {tag: [t.definition(t.name), t.separator],
-//    color: ivory},
-//   {tag: [t.typeName, t.className, t.number, t.changed, t.annotation, t.modifier, t.self, t.namespace],
-//    color: chalky},
-//   {tag: [t.operator, t.operatorKeyword, t.url, t.escape, t.regexp, t.link, t.special(t.string)],
-//    color: cyan},
-//   {tag: [t.meta, t.comment],
-//    color: stone},
-//   {tag: t.strong,
-//    fontWeight: "bold"},
-//   {tag: t.emphasis,
-//    fontStyle: "italic"},
-//   {tag: t.link,
-//    color: stone,
-//    textDecoration: "underline"},
-//   {tag: t.heading,
-//    fontWeight: "bold",
-//    color: coral},
-//   {tag: [t.atom, t.bool, t.special(t.variableName)],
-//    color: whiskey },
-//   {tag: [t.processingInstruction, t.string, t.inserted],
-//    color: sage},
-//   {tag: t.invalid,
-//    color: invalid},
 
 /// Extension to enable the One Dark theme (both the editor theme and
 /// the highlight style).
 export { highlightStyle };
-
-
-// const stripe = Decoration.line({
-//   attributes: {class: themeClass("markdown-codeblock") }
-// })
-
-// const stepSize = Facet.define({
-//     combine: values => values.length ? Math.min(...values) : 2
-// })
-
-// function stripeDeco(view) {
-//   const step = view.state.facet(stepSize)
-//   const builder = new RangeSetBuilder()
-
-//   for (let { from, to } of view.visibleRanges) {
-//     let inCode = false;
-
-//     for (let pos = from; pos <= to;) {
-//       let line = view.state.doc.lineAt(pos)
-//       if (/^```/.test(line.text)) {
-//         inCode = !inCode;
-//       }
-//     if (inCode) {
-//         builder.add(line.from, line.from, stripe)
-//     }
-//       pos = line.to + 1
-//     }
-//   }
-
-//   return builder.finish()
-// }
-
-// const lineStyles = ViewPlugin.fromClass(class {
-//   constructor(view) {
-//     this.decorations = stripeDeco(view)
-//   }
-
-//   update(update) {
-//     if (update.docChanged || update.viewportChanged)
-//       this.decorations = stripeDeco(update.view)
-//   }
-// }, {
-//   decorations: v => v.decorations
-// });
-
-// export { lineStyles };

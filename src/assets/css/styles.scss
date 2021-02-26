@@ -4,14 +4,60 @@
 @import 
   'field/markdown-field.scss';
 
+:root {
+  --cm-line-margin: .375rem;
+  --cm-line-height: 1.5;
+  
+  --cm-color-meta: #aaa;
+  --cm-color-light-gray: rgba(0,0,0,.1);
+}
+
 // @import 
 //   'themes/default.scss',
 //   'themes/custom.scss',
 //   'themes/options.scss';
 
-.cm-markdown-codeblock {
-  background: var(--color-background);
-  background-clip: content-box;
+.cm-codeblock {
+  background: rgba(0, 0, 0, .04);
+  
+}
+
+.cm-heading {
+  text-indent: calc((var(--cm-indent) + 1) * -1ch);
+  padding-left: calc((var(--cm-indent) + 1) * 1ch) !important;
+}
+
+.cm-blockquote {
+  border-left: .25rem solid rgba(0,0,0,.1);
+  padding-left: calc(var(--cm-indent) - .25rem);
+  padding-left: 1ch !important;
+}
+
+.cm-ol {
+  padding-left: 3ch !important;
+  text-indent: -3ch;
+}
+
+.cm-ul {
+  padding-left: 2ch !important;
+  text-indent: -2ch;
+}
+
+.cm-hr {
+  display: flex !important;
+  text-align: center;
+}
+
+.cm-hr::before,
+.cm-hr::after {
+  content: "";
+  flex-grow: 1;
+  background: linear-gradient(var(--cm-color-light-gray), var(--cm-color-light-gray)) 50% calc(50% + .0625rem) / 100% .0625rem no-repeat;
+}
+
+.cm-hr > span {
+  flex-grow: 0;
+  padding: 0 1ch;
 }
 
 .kirbytag {

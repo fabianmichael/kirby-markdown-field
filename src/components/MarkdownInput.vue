@@ -66,7 +66,12 @@
       @cancel="cancel"
       @submit="insertFile($event)"
     /> -->
-    <k-upload v-if="uploads" ref="fileUpload" @success="insertUpload" />
+    <k-upload
+      v-if="uploads"
+      ref="fileUpload"
+      @success="insertUpload"
+      @error="onUploadError"
+    />
   </div>
 </template>
 
@@ -123,7 +128,7 @@ export default {
       return this.$store.state.languages.current;
     },
   },
- watch: {
+  watch: {
     value(newVal, oldVal) {
       if (newVal !== undefined && newVal !== this.getEditorValue()) {
         // this.skipNextChangeEvent = true
@@ -176,8 +181,6 @@ export default {
 
     // console.log("diags", this.$refs.dialogs.find(item => item.$options._componentTag === 'k-markdown-link-dialog'))
 
-    
-
     // // Open dialogs
     // this.$root.$on('md-openDialog' + this.id, dialog => {
     //     if(this.$refs[dialog + "Dialog"]) {
@@ -218,6 +221,7 @@ export default {
         value,
         {
           customHighlights: this.customHighlights,
+          kirbytags: this.kirbytags,
           highlights: this.highlights,
           placeholder: this.placeholder,
           specialChars: this.specialChars,
@@ -256,10 +260,13 @@ export default {
         this.insert(files.map((file) => file.dragText).join("\n\n"));
       }
     },
+
     insertUpload(files, response) {
+      console.log("insert Upload");
       this.insert(response.map((file) => file.dragText).join("\n\n"));
       this.$events.$emit("model.update");
     },
+
     selectFile() {
       this.$refs.fileDialog.open({
         endpoint: this.endpoints.field + "/files",
@@ -478,6 +485,7 @@ export default {
       //     this.insert(drag.data)
       //     e.preventDefault()
       // }
+      console.log("drop");
 
       // dropping text
       const drag = this.$store.state.drag;
@@ -492,12 +500,13 @@ export default {
     },
     onDragOver($event) {
       // drag & drop for files
-      // if (this.uploads && this.$helper.isUploadEvent($event)) {
-      //     $event.dataTransfer.dropEffect = "copy";
-      //     this.focus();
-      //     this.over = true;
-      //     return;
-      // }
+      if (this.uploads && this.$helper.isUploadEvent($event)) {
+        $event.dataTransfer.dropEffect = "copy";
+        this.focus();
+        this.over = true;
+        console.log("upload?");
+        return;
+      }
       // drag & drop for text
       const drag = this.$store.state.drag;
       if (drag && drag.type === "text") {
@@ -516,6 +525,9 @@ export default {
         this.specialChars = !this.specialChars;
       }
     },
+    onUploadError() {
+      console.log("upload error");
+    }
   },
 };
 </script>

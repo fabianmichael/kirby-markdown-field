@@ -1,7 +1,8 @@
 import {ViewPlugin, Decoration} from "@codemirror/view";
 import {RangeSetBuilder} from '@codemirror/rangeset';
 
-const plugin = ViewPlugin.fromClass(class {
+function makePlugin(kirbytags) {
+  return ViewPlugin.fromClass(class {
     constructor(view) {
       this.decorations = this.mkDeco(view)
     }
@@ -12,18 +13,20 @@ const plugin = ViewPlugin.fromClass(class {
 
     mkDeco(view) {
       let b = new RangeSetBuilder();
-      const knownTags = ["link", "image"].join("|");
-      let regex = new RegExp(`(\\((?:${knownTags}):)|(\\()|(\\))`, "gi");
+      const knownTags = kirbytags.join("|");
+      let regex = new RegExp(`(\\((?:${knownTags}):)|(\\()|(\\))`, "gi"); // |(\n{3,})
 
       for (let {from, to} of view.visibleRanges) {
         
         let range = view.state.sliceDoc(from, to);
+        
         let inTag = false;
         let level = 0;
         let match;
         let tagStartIndex;
-
+        
         while (match = regex.exec(range)) {
+          console.log("rr");
           // console.log("match", match);
           
           if (match[1] && !inTag) {
@@ -56,17 +59,22 @@ const plugin = ViewPlugin.fromClass(class {
               tagStartIndex = null;
               level = 0;
             }
-          }
+          } /*else if (match[4] && inTag) {
+            inTag = false;
+            tagStartIndex = null;
+            level = 0;
+          }*/
 
         }
         
-        return b.finish()
       }
+      return b.finish()
     }
   },
   {
     decorations: (v) => v.decorations
   }
 );
+}
 
-export default plugin;
+export default (kirbytags) => makePlugin(kirbytags);

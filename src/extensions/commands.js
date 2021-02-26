@@ -31,7 +31,6 @@ function getNextGroupRange(view) {
     : null;
 }
 
-
 function getCurrentInlineToken(view) {
   const state = view.state;
   const tree = syntaxTree(state);
@@ -69,6 +68,37 @@ function getCurrentInlineToken(view) {
     node: inlineNode,
   };
 }
+
+// export const BlockNames = [
+//   "FencedCode",
+//   "Blockquote",
+//   "HorizontalRule",
+//   "ATXHeading1",
+//   "ATXHeading2",
+//   "ATXHeading3",
+//   "ATXHeading4",
+//   "ATXHeading5",
+//   "ATXHeading6",
+// ];
+
+export function getBlockName(view, pos, blockNames) {
+  const tree = syntaxTree(view.state);
+  const trees = [
+    tree.resolve(pos, -1),
+    tree.resolve(pos, 1),
+  ];
+
+  for (let n of trees) {
+    do {
+      if (blockNames.includes(n.name)) {
+        return n.name;
+      }
+    } while ((n = n.parent));
+  }
+
+  return "Paragraph";
+}
+
 
 export function getCurrentInlineTokens(view) {
   const state = view.state;
