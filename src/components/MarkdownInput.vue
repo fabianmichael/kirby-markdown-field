@@ -20,6 +20,7 @@
         :currentInlineFormat="currentInlineFormat"
         :uploads="uploads"
         :buttons="buttons"
+        @command="onCommand"
         @mousedown.native.prevent
       />
       <div
@@ -36,7 +37,13 @@
             </textarea> -->
     </div>
 
-    <k-markdown-link-dialog
+    <!-- <component
+      v-for="(item, index) in dialogsDefs"
+      :key="index"
+      :is="item.is"
+      ref="dialogs"
+    /> -->
+    <!-- <k-markdown-link-dialog
       ref="linkDialog"
       :editor="editor"
       :blank="blank"
@@ -58,51 +65,22 @@
       ref="fileDialog"
       @cancel="cancel"
       @submit="insertFile($event)"
-    />
+    /> -->
     <k-upload v-if="uploads" ref="fileUpload" @success="insertUpload" />
   </div>
 </template>
 
 <script>
-import { keymap, highlightSpecialChars, EditorView } from "@codemirror/view";
-import { EditorState } from "@codemirror/state";
-import { history, historyKeymap } from "@codemirror/history";
-import { standardKeymap } from "@codemirror/commands";
-import { markdown, markdownKeymap, markdownLanguage } from "@codemirror/lang-markdown";
-// import {ViewPlugin, Decoration} from "@codemirror/view"
-// import {RangeSetBuilder} from '@codemirror/rangeset';
-// import {defaultHighlightStyle} from "@codemirror/highlight"
-// import {bracketMatching} from "@codemirror/matchbrackets"
-import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
-import markdownCommands, { getCurrentInlineTokens } from "../../extensions/markdownCommands.js";
-import {Table, Strikethrough} from "lezer-markdown"
-
-import { drawSelection } from "@codemirror/view"
-
-// import kirbytags from '../../extensions/kirbytags.js';
-// import customHighlights from '../../extensions/customHighlights.js';
-import { theme, highlightStyle, markTag } from "../../extensions/theme.js";
-
-import Toolbar from "../toolbar/MarkdownToolbar.vue";
-import LinkDialog from "../toolbar/dialogs/link-dialog.vue";
-import EmailDialog from "../toolbar/dialogs/email-dialog.vue";
+import Field from "./MarkdownField.vue";
+import Toolbar from "./toolbar/MarkdownToolbar.vue";
+import LinkDialog from "./toolbar/dialogs/link-dialog.vue";
+import EmailDialog from "./toolbar/dialogs/email-dialog.vue";
 
 import { syntaxTree } from "@codemirror/language";
+import { EditorView } from "@codemirror/view";
 
-
-import {styleTags, tags as t} from "@codemirror/highlight"
-const MarkDelim = {resolve: "Mark", mark: "MarkMark"}
-const Mark = {
-  defineNodes: ["Mark", "MarkMark"],
-  parseInline: [{
-    name: "Mark",
-    parse(cx, next, pos) {
-      if (next != 61 /* '=' */ || cx.char(pos + 1) != 61) return -1
-      return cx.addDelimiter(MarkDelim, pos, pos + 2, true, true)
-    },
-    after: "Emphasis"
-  }]
-}
+import { getCurrentInlineTokens } from "../extensions/commands.js";
+import editorState from "../extensions/editor-state";
 
 export default {
   components: {
@@ -121,63 +99,56 @@ export default {
       currentTokens: [],
       currentInlineFormat: [],
       over: false,
+      specialChars: false,
+
+      // dialogs: [],
+      // dialogsDefs: [
+      //   {
+      //     id: "link",
+      //     is: "k-markdown-link-dialog",
+
+      //   },
+      //   {
+      //     id: "email",
+      //     is: "k-markdown-email-dialog",
+      //   }
+      // ],
     };
   },
   props: {
-    id: Number,
-    autofocus: Boolean,
-    modals: Boolean,
-    blank: Boolean,
-    disabled: Boolean,
-    invisibles: Boolean,
-    direction: Boolean,
-    buttons: [Boolean, Array],
-    endpoints: Object,
-    placeholder: String,
-    size: String,
-    value: String,
-    font: Object,
-    kirbytags: Array,
-    disabled: Boolean,
-    uploads: [Boolean, Object, Array],
-    breaks: Boolean,
-    extra: Boolean,
-    // options: {
-    //     type: Object,
-    //     default: function () {
-    //         return {
-    //             mode: {
-    //                 name: 'kirbytext',
-    //                 highlightFormatting: true,
-    //                 kirbytags: this.kirbytags,
-    //                 // fencedCodeBlockHighlighting: false, // needs to be disabled, because setting line styles for nested syntax does not work.
-    //             },
-    //             lineNumbers: false,
-    //             lineWrapping: true,
-    //             extraKeys: {
-    //                 'Enter': 'newlineAndIndentContinueMarkdownList',
-    //                 'Shift-Tab': false,
-    //                 'Tab': false, // Tab key will skip to next input on the page when setting it to false
-    //             },
-    //             font: this.font.family,
-    //             showInvisibles: false,
-    //             tabSize: 2,
-    //         };
-    //     },
-    // },
+    ...Field.props,
   },
   computed: {
     currentLanguage() {
       return this.$store.state.languages.current;
     },
   },
+ watch: {
+    value(newVal, oldVal) {
+      if (newVal !== undefined && newVal !== this.getEditorValue()) {
+        // this.skipNextChangeEvent = true
+        // let scrollInfo = this.editor.getScrollInfo()
+        // set the new value as the editor's content
+        // this.editor.setValue(newVal)
+        // restore scroll position
+        // this.editor.scrollTo(scrollInfo.left, scrollInfo.top)
+        this.setEditorValue(newVal);
+      }
+      // // force refresh
+      // this.refresh()
+    },
+    specialChars(newVal, oldVal) {
+      if (newVal === oldVal) {
+        return;
+      }
+      this.editor.setState(this.createState(this.value, this.editor.state));
+    },
+  },
   mounted() {
-    const startState = this.createEditorState(this.value || "");
-
     const _this = this;
 
     this.editor = new EditorView({
-      state: startState,
+      state: this.createState(this.value),
       parent: this.$refs.input,
       editable: !this.dispatch,
       dispatch: function (transaction) {
@@ -190,11 +161,22 @@ export default {
       },
     });
 
+    // Enable spell-checking to enable browser extensions, such as Language Tool
+    if (this.spellcheck) {
+      this.editor.contentDOM.setAttribute("spellcheck", "true");
+    }
+
     // Custom autofocus: place the cursor at the end of current value
     if (this.autofocus && !this.disabled) {
       this.editor.focus();
-      this.editor.dispatch({ selection: { anchor: this.editor.state.doc.length } });
+      this.editor.dispatch({
+        selection: { anchor: this.editor.state.doc.length },
+      });
     }
+
+    // console.log("diags", this.$refs.dialogs.find(item => item.$options._componentTag === 'k-markdown-link-dialog'))
+
+    
 
     // // Open dialogs
     // this.$root.$on('md-openDialog' + this.id, dialog => {
@@ -227,64 +209,21 @@ export default {
     // // Accept dragText from Kirby sections
     // this.editor.on('drop', this.onDrop.bind(this))
   },
-  watch: {
-    value(newVal, oldVal) {
-      if (newVal !== undefined && newVal !== this.getEditorValue()) {
-        // this.skipNextChangeEvent = true
-        // let scrollInfo = this.editor.getScrollInfo()
-        // set the new value as the editor's content
-        // this.editor.setValue(newVal)
-        // restore scroll position
-        // this.editor.scrollTo(scrollInfo.left, scrollInfo.top)
-        this.setEditorValue(newVal);
-      }
-      // // force refresh
-      // this.refresh()
-    },
+  beforeDestroy() {
+    this.editor.destroy();
   },
   methods: {
-    createEditorState(value) {
-      return EditorState.create({
-        doc: value,
-        extensions: [
-          highlightSpecialChars({
-            specialChars: /\u00a0/g,
-          }),
-          history(),
-          keymap.of([
-            ...standardKeymap,
-            ...historyKeymap,
-            ...markdownKeymap,
-            ...markdownCommands,
-          ]),
-          highlightStyle,
-          // kirbytags,
-          markdown({
-            base: markdownLanguage,
-            extensions: [
-              Mark,
-              Table,
-              Strikethrough,
-              {
-                props: [
-                  styleTags({
-                    "Mark/... MarkMark": markTag,
-                  }),
-                ]
-              },
-            ]
-          }),
-          
-          // customHighlights,
-          highlightSelectionMatches({
-            minSelectionLength: 2,
-          }),
-          drawSelection(),
-          // bracketMatching(),
-          theme,
-          // lineStyles,
-        ],
-      });
+    createState(value, oldState = null) {
+      return editorState(
+        value,
+        {
+          customHighlights: this.customHighlights,
+          highlights: this.highlights,
+          placeholder: this.placeholder,
+          specialChars: this.specialChars,
+        },
+        oldState
+      );
     },
 
     refresh() {
@@ -393,6 +332,11 @@ export default {
           insert: value,
         },
       });
+    },
+
+    onSpecialChars() {
+      console.log("sp");
+      this.specialChars = !this.specialChars;
     },
 
     onInput() {
@@ -564,6 +508,13 @@ export default {
     },
     onSubmit($event) {
       return this.$emit("submit", $event);
+    },
+    onCommand($event) {
+      console.log("command");
+
+      if ($event === "specialChars") {
+        this.specialChars = !this.specialChars;
+      }
     },
   },
 };

@@ -13,24 +13,26 @@
     "dev": "parcel watch src/index.js --no-source-maps -d ./",
     "build": "parcel build src/index.js --no-source-maps --experimental-scope-hoisting -d ./"
   },
-  "posthtml": {
-    "recognizeSelfClosing": true
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 11"
-  ],
   "devDependencies": {
     "@vue/component-compiler-utils": "^3.1.1",
+    "autoprefixer": "^9.8.6",
+    "babel-eslint": "^10.1.0",
     "cssnano": "^4.1.10",
+    "eslint": "^6.7.2",
+    "eslint-plugin-cypress": "^2.11.2",
+    "eslint-plugin-vue": "^6.2.2",
     "parcel": "^1.12.4",
+    "postcss": "^7.0.14",
+    "prettier": "^2.1.2",
+    "pretty-quick": "^3.1.0",
     "sass": "^1.30.0",
+    "vue-hot-reload-api": "^2.3.4",
     "vue-template-compiler": "^2.6.12"
   },
   "dependencies": {
-    "@codemirror/commands": "^0.17.3",
-    "@codemirror/highlight": "^0.17.2",
+    "@codemirror/commands": "^0.17.5",
+    "@codemirror/comment": "^0.17.3",
+    "@codemirror/highlight": "^0.17.3",
     "@codemirror/history": "^0.17.2",
     "@codemirror/lang-markdown": "^0.17.2",
     "@codemirror/matchbrackets": "^0.17.2",
@@ -38,8 +40,67 @@
     "@codemirror/search": "^0.17.1",
     "@codemirror/state": "^0.17.1",
     "@codemirror/stream-parser": "^0.17.1",
-    "@codemirror/view": "^0.17.7",
-    "vue": "^2.6.12",
-    "vue-hot-reload-api": "^2.3.4"
-  }
+    "@codemirror/view": "^0.17.11",
+    "vue": "^2.6.12"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "eslint:recommended",
+      "plugin:cypress/recommended",
+      "plugin:vue/recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2017,
+      "parser": "babel-eslint"
+    },
+    "rules": {
+      "vue/require-default-prop": "off",
+      "vue/attributes-order": "error",
+      "vue/require-prop-types": "error",
+      "vue/max-attributes-per-line": [
+        "error",
+        {
+          "singleline": 3,
+          "multiline": {
+            "max": 1,
+            "allowFirstLine": false
+          }
+        }
+      ],
+      "vue/html-closing-bracket-newline": [
+        "error",
+        {
+          "singleline": "never",
+          "multiline": "always"
+        }
+      ]
+    },
+    "env": {
+      "node": true
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "posthtml": {
+    "recognizeSelfClosing": true
+  },
+  "browserslist": [
+    "last 2 Android versions",
+    "last 2 Chrome versions",
+    "last 2 ChromeAndroid versions",
+    "last 2 Edge versions",
+    "last 2 Firefox versions",
+    "last 2 FirefoxAndroid versions",
+    "last 2 iOS versions",
+    "last 2 KaiOS versions",
+    "last 2 Safari versions",
+    "last 2 Samsung versions",
+    "last 2 Opera versions",
+    "last 2 OperaMobile versions",
+    "last 2 UCAndroid versions"
+  ]
 }

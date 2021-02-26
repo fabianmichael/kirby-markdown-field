@@ -1,13 +1,10 @@
 import { EditorView } from "@codemirror/view"
-import { Extension } from "@codemirror/state"
+// import { Extension } from "@codemirror/state"
 import { HighlightStyle, Tag, tags as t } from "@codemirror/highlight"
-import { Decoration, themeClass } from "@codemirror/view"
-import { RangeSetBuilder } from "@codemirror/rangeset"
-import { ViewPlugin, DecorationSet, ViewUpdate } from "@codemirror/view"
-import { Facet } from "@codemirror/state"
-// https://github.com/codemirror/theme-one-dark/blob/main/src/one-dark.ts
-// https://github.com/codemirror/view/blob/main/src/theme.ts
-// https://github.com/codemirror/highlight/blob/main/src/highlight.ts
+// import { Decoration, themeClass } from "@codemirror/view"
+// import { RangeSetBuilder } from "@codemirror/rangeset"
+// import { ViewPlugin, DecorationSet, ViewUpdate } from "@codemirror/view"
+// import { Facet } from "@codemirror/state"
 
 const theme = EditorView.theme({
     "$": {
@@ -45,13 +42,16 @@ const theme = EditorView.theme({
         "color": "var(--color-focus)"
     },
     "$$focused $selectionBackground, $selectionBackground": {
-        backgroundColor: "hsla(195, 80%, 40%, .17)", // "rgba(66,113,174,0.15);",
+        backgroundColor: "hsla(195, 80%, 40%, .17)",
     },
+    "$$focused $matchingBracket > *": {
+        color: "currentColor !important", // force-override syntax highlighting color
+    }
 }, { dark: false });
 
 export { theme };
 
-export const markTag = Tag.define();
+// export const markTag = Tag.define();
 
 
 // // Using https://github.com/one-dark/vscode-one-dark-theme/ as reference for the colors
@@ -61,7 +61,7 @@ const chalky = "#e5c07b",
     cyan = "yan",
     invalid = "green",
     ivory = "orange",
-    stone = "silver", // Brightened compared to original to increase contrast
+    stone = "#999", // Brightened compared to original to increase contrast
     malibu = "brightgreen",
     sage = "darkred",
     whiskey = "tan",
@@ -136,7 +136,7 @@ const highlightStyle = HighlightStyle.define(
         color: violet
     },
     {
-        tag: [t.name, t.deleted, t.character, t.propertyName, t.macroName],
+        tag: [t.name, t.deleted, t.character, t.macroName],
         color: coral
     },
     {
@@ -147,23 +147,23 @@ const highlightStyle = HighlightStyle.define(
         tag: [t.constant(t.name), t.standard(t.name)],
         color: whiskey
     },
-    { // Marked text `==marked==`
-        tag: markTag, // t.color,
-        backgroundColor: "#FCE566",
-        padding: "2px",
-        margin: "-2px",
-        borderRadius: "3px",
-    },
+    // { // Marked text `==marked==`
+    //     tag: markTag, // t.color,
+    //     backgroundColor: "#FCE566",
+    //     padding: "2px",
+    //     margin: "-2px",
+    //     borderRadius: "3px",
+    // },
     {
         tag: [t.definition(t.name), t.separator],
         color: ivory
     },
     {
-        tag: [t.angleBracket, t.typeName, t.className, t.number, t.changed, t.annotation, t.modifier, t.self, t.namespace],
+        tag: [t.operator, t.angleBracket, t.typeName, t.className, t.number, t.changed, t.annotation, t.modifier, t.self, t.namespace,  t.propertyName],
         color: "#999" // HTML tag etc.
     },
     {
-        tag: [t.operator, t.operatorKeyword, t.url, t.escape, t.regexp, t.link, t.special(t.string)],
+        tag: [t.operatorKeyword, t.url, t.escape, t.regexp, t.link, t.special(t.string)],
         color: cyan
     },
     {
@@ -180,8 +180,8 @@ const highlightStyle = HighlightStyle.define(
     },
     {
         tag: t.link,
-        color: stone,
-        textDecoration: "underline"
+        // color: stone,
+        // textDecoration: "underline"
     },
     {
         tag: t.heading,
@@ -193,12 +193,17 @@ const highlightStyle = HighlightStyle.define(
     },
     {
         tag: [t.processingInstruction, t.string, t.inserted],
-        color: "#999",
+        color: stone, // "#999",
     },
     {
         tag: t.deleted,
         textDecoration: "line-through",
     },
+    {
+        tag: t.url,
+        color: stone,
+        textDecoration: "underline",
+    }
 );
 //   {tag: [t.definition(t.name), t.separator],
 //    color: ivory},

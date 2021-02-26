@@ -84,11 +84,17 @@ $options = A::merge($options, [
         'size' => function($size = null) {
             return $size ?? option('community.markdown-field.size');
         },
+        'placeholder' => function($placeholder = null) {
+            return $placeholder;
+        },
         'query' => function($query = null) {
         	$queryOptions = option('community.markdown-field.query');
         	$queryOptions = $query ? A::merge($queryOptions, $query) : $queryOptions;
 
         	return $queryOptions;
+        },
+        'highlights' => function ($highlights = null) {
+            return $highlights ?? option('community.markdown-field.highlights', true);
         }
     ],
     'computed' => [
@@ -101,12 +107,25 @@ $options = A::merge($options, [
             $tags = array_keys(kirby()->extensions('tags'));
             return $tags;
         },
-        'extra' => function() {
-            return option('markdown.extra', false);
-        },
         'breaks' => function() {
             return option('markdown.breaks', true);
         },
+        'customHighlights' => function() {
+            $highlights = [];
+            $resolve = function($highlight) {
+                return is_callable($highlight) ? $highlight() : $highlight;
+            };
+
+            foreach (kirby()->plugins() as $plugin) {
+                $highlights = array_merge($highlights, array_map($resolve, $plugin->toArray()['extends']['community.markdown-field.customHighlights'] ?? []));
+            }
+
+            foreach (option('community.markdown-field.customHighlights', []) as $defs) {
+                $highlights = array_merge($highlights, array_map($resolve, $defs));
+            }
+
+            return $highlights;
+        }
     ],
     'api' => function () {
         return [

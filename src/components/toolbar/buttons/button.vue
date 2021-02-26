@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { toggleInlineFormat } from "../../../extensions/markdownCommands.js";
+import { toggleInlineFormat } from "../../../extensions/commands.js";
 
 export default {
   props: {
@@ -43,10 +43,10 @@ export default {
       return this.editorDoc ? this.editorDoc.getSelection() : undefined;
     },
     active() {
-      return (
-        this.currentTokenType !== null &&
-        this.currentTokenType.main == this.type
-      );
+      // return (
+      //   this.currentTokenType && this.currentTokenType.main == this.type
+      // );
+      return false;
     },
     disabled() {
       return false;

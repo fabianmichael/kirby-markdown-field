@@ -20,15 +20,25 @@
 export default {
   extends: "k-textarea-field",
   props: {
-    font: String,
-    modals: Boolean,
+    autofocus: Boolean,
     blank: Boolean,
-    disabled: Boolean,
-    invisibles: Boolean,
-    direction: Boolean,
-    kirbytags: Array,
-    extra: Boolean,
+    customHighlights: Array,
+    buttons: [Boolean, Array],
     breaks: Boolean,
+    direction: Boolean,
+    disabled: Boolean,
+    endpoints: Object,
+    font: Object,
+    invisibles: Boolean,
+    kirbytags: Array,
+    modals: Boolean,
+    highlights: [Boolean, Array],
+    kirbytags: Array,
+    placeholder: String,
+    size: String,
+    uploads: [Boolean, Object, Array],
+    value: String,
+    spellcheck: Boolean,
   },
   // below, code to refresh input within a newly expanded builder block
   computed: {
@@ -63,5 +73,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../../assets/css/styles.scss";
+@import "../assets/css/styles.scss";
 </style>

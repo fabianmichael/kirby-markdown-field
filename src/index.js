@@ -1,21 +1,19 @@
 /* Register icons
 -------------------------*/
 
-import './assets/icons/icons.js'
-
+import "./assets/icons/icons";
 
 /* Register components
 -------------------------*/
 
-import Markdown       from './components/field/Markdown.vue'
-import MarkdownInput  from './components/input/MarkdownInput.vue'
+import MarkdownField from "./components/MarkdownField.vue";
+import MarkdownInput from "./components/MarkdownInput.vue";
 
-panel.plugin('community/markdown-field', {
-    fields: {
-        markdown: Markdown,
-    },
-    components: {
-    	// Main components
-        'k-markdown-input': MarkdownInput,
-    }
+panel.plugin("community/markdown-field", {
+  components: {
+    "k-markdown-input": MarkdownInput,
+  },
+  fields: {
+    markdown: MarkdownField,
+  },
 });

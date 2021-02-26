@@ -1,23 +1,23 @@
 <script>
 export default {
-    extends: 'default',
-    data() {
-        return {
-            label: this.$t('toolbar.button.bold'),
-            icon: 'bold',
-            shortcut: 'Cmd-B',
-            type: 'bold',
-        }
+  extends: "default",
+  data() {
+    return {
+      label: this.$t("toolbar.button.bold"),
+      icon: "bold",
+      shortcut: "Mod-B",
+      type: "bold",
+    };
+  },
+  computed: {
+    active() {
+      return this.currentInlineFormat.includes("StrongEmphasis");
     },
-    computed: {
-        active() {
-            return this.currentInlineFormat.includes("StrongEmphasis");
-        },
+  },
+  methods: {
+    action() {
+      this.toggleInlineFormat("**");
     },
-    methods: {
-        action() {
-            this.toggleInlineFormat('**')
-        }
-    }
+  },
 };
 </script>
