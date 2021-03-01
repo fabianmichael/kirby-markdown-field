@@ -14,6 +14,8 @@ import specialChars from "./special-chars";
 import lineStyles from "./line-styles";
 import kirbytags from "./kirbytags";
 
+const isFirefox = /Firefox/.test(navigator.userAgent);
+
 const defaultConfig = {
   customHighlights: [],
   highlights: true,
@@ -48,9 +50,22 @@ export default function editorState(value, config, oldState = null) {
     extensions.push(specialChars());
   }
 
+  extensions.push(lineStyles);
+
+  if (isFirefox) {
+    /**
+     * Firefox has a known Bug, that casuses the caret to disappear,
+     * when text is dropped into an element with contenteditable="true".
+     * Because custom selections can cause on iOS devices and have a
+     * performance hit, they are only activates in Firefox, to mitiage
+     * this bug.
+     * 
+     * See https://bugzilla.mozilla.org/show_bug.cgi?id=1327834
+     */
+    extensions.push(drawSelection());
+  }
+
   extensions.push(
-    lineStyles,
-    drawSelection(),
     placeholder(config.placeholder ?? ""),
     theme,
   );

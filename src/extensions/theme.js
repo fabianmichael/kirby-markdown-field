@@ -1,11 +1,13 @@
 import { EditorView } from "@codemirror/view";
 import { HighlightStyle, tags as t } from "@codemirror/highlight";
-import { redo } from "@codemirror/history";
 
 const theme = EditorView.theme(
   {
     $$focused: {
       outline: "none",
+    },
+    "$$focused ::selection": {
+      background: "var(--cm-selection-background)",
     },
     $scroller: {
       fontFamily: "var(--font-family-mono)",
@@ -27,7 +29,7 @@ const theme = EditorView.theme(
       color: "var(--color-focus)",
     },
     "$$focused $selectionBackground, $selectionBackground": {
-      backgroundColor: "hsla(195, 80%, 40%, .17)",
+      backgroundColor: "var(--cm-selection-background)",
     },
     "$codeblock": {
         margin: "0 calc(.25 * var(--cm-line-margin))",
