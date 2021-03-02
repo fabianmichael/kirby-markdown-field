@@ -14551,7 +14551,7 @@ exports.drawSelection = drawSelection;
 exports.highlightActiveLine = highlightActiveLine;
 exports.highlightSpecialChars = highlightSpecialChars;
 exports.logException = logException;
-exports.placeholder = placeholder$1;
+exports.placeholder = placeholder;
 exports.runScopeHandlers = runScopeHandlers;
 exports.themeClass = themeClass;
 Object.defineProperty(exports, "Range", {
@@ -14858,7 +14858,7 @@ class DOMPos {
 
 }
 
-const none = [];
+const none$3 = [];
 
 class ContentView {
   constructor() {
@@ -15063,7 +15063,7 @@ class ContentView {
     }
   }
 
-  replaceChildren(from, to, children = none) {
+  replaceChildren(from, to, children = none$3) {
     this.markDirty();
 
     for (let i = from; i < to; i++) this.children[i].parent = null;
@@ -15135,7 +15135,7 @@ class ChildCursor {
 
 }
 
-const none$1 = [];
+const none$2 = [];
 
 class InlineView extends ContentView {
   /// Return true when this view is equivalent to `other` and can take
@@ -15153,7 +15153,7 @@ class InlineView extends ContentView {
 
 }
 
-InlineView.prototype.children = none$1;
+InlineView.prototype.children = none$2;
 const MaxJoinLen = 256;
 
 class TextView extends InlineView {
@@ -15243,7 +15243,7 @@ class MarkView extends InlineView {
 
   merge(from, to, source, openStart, openEnd) {
     if (source && (!(source instanceof MarkView && source.mark.eq(this.mark)) || from && openStart <= 0 || to < this.length && openEnd <= 0)) return false;
-    mergeInlineChildren(this, from, to, source ? source.children : none$1, openStart - 1, openEnd - 1);
+    mergeInlineChildren(this, from, to, source ? source.children : none$2, openStart - 1, openEnd - 1);
     this.markDirty();
     return true;
   }
@@ -15888,7 +15888,7 @@ function buildTheme(main, spec) {
 
     extend(template, sel) {
       template = expandThemeClasses(template);
-      return sel.slice(0, main.length + 1) == main + " " ? main + " " + template.replace(/&/, sel.slice(main.length + 1)) : template.replace(/&/, sel);
+      return sel.slice(0, main.length + 1) == main + " " ? main + " " + template.replace(/&/g, sel.slice(main.length + 1)) : template.replace(/&/g, sel);
     }
 
   });
@@ -16091,7 +16091,7 @@ class LineView extends ContentView {
     }
 
     if (takeDeco) this.setDeco(source ? source.attrs : null);
-    mergeInlineChildren(this, from, to, source ? source.children : none$2, openStart, openEnd);
+    mergeInlineChildren(this, from, to, source ? source.children : none$1, openStart, openEnd);
     return true;
   }
 
@@ -16225,7 +16225,7 @@ class LineView extends ContentView {
 
 }
 
-const none$2 = [];
+const none$1 = [];
 
 class BlockWidgetView extends ContentView {
   constructor(widget, length, type) {
@@ -16253,7 +16253,7 @@ class BlockWidgetView extends ContentView {
   }
 
   get children() {
-    return none$2;
+    return none$1;
   }
 
   sync() {
@@ -16439,11 +16439,11 @@ class NullWidget extends WidgetType {
 
 }
 
-const none$3 = [];
+const none = [];
 
 const clickAddsSelectionRange = _state.Facet.define();
 
-const dragMovesSelection = _state.Facet.define();
+const dragMovesSelection$1 = _state.Facet.define();
 
 const mouseSelectionStyle = _state.Facet.define();
 
@@ -16709,7 +16709,7 @@ class ViewUpdate {
   constructor( /// The editor view that the update is associated with.
   view, /// The new editor state.
   state, /// The transactions involved in the update. May be empty.
-  transactions = none$3) {
+  transactions = none) {
     this.view = view;
     this.state = state;
     this.transactions = transactions; /// @internal
@@ -17349,7 +17349,7 @@ function nextToUneditable(node, offset) {
   : 0);
 }
 
-class DecorationComparator {
+class DecorationComparator$1 {
   constructor() {
     this.changes = [];
   }
@@ -17365,7 +17365,7 @@ class DecorationComparator {
 }
 
 function findChangedDeco(a, b, diff) {
-  let comp = new DecorationComparator();
+  let comp = new DecorationComparator$1();
 
   _rangeset.RangeSet.compare(a, b, diff, comp);
 
@@ -18197,7 +18197,7 @@ class MouseSelection {
     doc.addEventListener("mouseup", this.up = this.up.bind(this));
     this.extend = startEvent.shiftKey;
     this.multiple = view.state.facet(_state.EditorState.allowMultipleSelections) && addsSelectionRange(view, startEvent);
-    this.dragMove = dragMovesSelection$1(view, startEvent);
+    this.dragMove = dragMovesSelection(view, startEvent);
     this.dragging = isInPrimarySelection(view, startEvent) ? null : false; // When clicking outside of the selection, immediately apply the
     // effect of starting the selection
 
@@ -18247,8 +18247,8 @@ function addsSelectionRange(view, event) {
   return facet.length ? facet[0](event) : browser.mac ? event.metaKey : event.ctrlKey;
 }
 
-function dragMovesSelection$1(view, event) {
-  let facet = view.state.facet(dragMovesSelection);
+function dragMovesSelection(view, event) {
+  let facet = view.state.facet(dragMovesSelection$1);
   return facet.length ? facet[0](event) : browser.mac ? !event.altKey : !event.ctrlKey;
 }
 
@@ -18378,11 +18378,25 @@ handlers.keydown = (view, event) => {
   view.inputState.setSelectionOrigin("keyboardselection");
 };
 
-handlers.touchdown = handlers.touchmove = view => {
+let lastTouch = 0;
+
+function mouseLikeTouchEvent(e) {
+  return e.touches.length == 1 && e.touches[0].radiusX <= 1 && e.touches[0].radiusY <= 1;
+}
+
+handlers.touchstart = (view, e) => {
+  if (!mouseLikeTouchEvent(e)) lastTouch = Date.now();
+  view.inputState.setSelectionOrigin("pointerselection");
+};
+
+handlers.touchmove = view => {
   view.inputState.setSelectionOrigin("pointerselection");
 };
 
 handlers.mousedown = (view, event) => {
+  view.observer.flush();
+  if (lastTouch < Date.now() - 10) return; // Ignore touch interaction
+
   let style = null;
 
   for (let makeStyle of view.state.facet(mouseSelectionStyle)) {
@@ -19405,14 +19419,14 @@ class NodeBuilder {
 }
 
 function heightRelevantDecoChanges(a, b, diff) {
-  let comp = new DecorationComparator$1();
+  let comp = new DecorationComparator();
 
   _rangeset.RangeSet.compare(a, b, diff, comp, 0);
 
   return comp.changes;
 }
 
-class DecorationComparator$1 {
+class DecorationComparator {
   constructor() {
     this.changes = [];
   }
@@ -21293,7 +21307,7 @@ EditorView.mouseSelectionStyle = mouseSelectionStyle; /// Facet used to configur
 /// called with the `mousedown` event, and can return `true` when
 /// the drag should move the content.
 
-EditorView.dragMovesSelection = dragMovesSelection; /// Facet used to configure whether a given selecting click adds
+EditorView.dragMovesSelection = dragMovesSelection$1; /// Facet used to configure whether a given selecting click adds
 /// a new range to the existing selection or replaces it entirely.
 
 EditorView.clickAddsSelectionRange = clickAddsSelectionRange; /// A facet that determines which [decorations](#view.Decoration)
@@ -22036,7 +22050,7 @@ function specialCharPlugin() {
 const DefaultPlaceholder = "\u2022"; // Assigns placeholder characters from the Control Pictures block to
 // ASCII control characters
 
-function placeholder(code) {
+function placeholder$1(code) {
   if (code >= 32) return DefaultPlaceholder;
   if (code == 10) return "\u2424";
   return String.fromCharCode(9216 + code);
@@ -22054,7 +22068,7 @@ class SpecialCharWidget extends WidgetType {
   }
 
   toDOM(view) {
-    let ph = placeholder(this.code);
+    let ph = placeholder$1(this.code);
     let desc = view.state.phrase("Control character ") + (Names[this.code] || "0x" + this.code.toString(16));
     let custom = this.options.render && this.options.render(this.code, desc, ph);
     if (custom) return custom;
@@ -22160,7 +22174,7 @@ class Placeholder extends WidgetType {
 /// to show when the editor is empty.
 
 
-function placeholder$1(content) {
+function placeholder(content) {
   return ViewPlugin.fromClass(class {
     constructor(view) {
       this.view = view;
@@ -40125,7 +40139,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56660" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56387" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
