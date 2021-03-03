@@ -32,7 +32,7 @@
     "@codemirror/search": "^0.17.1",
     "@codemirror/state": "^0.17.1",
     "@codemirror/stream-parser": "^0.17.1",
-    "@codemirror/view": "^0.17.12",
+    "@codemirror/view": "^0.17.13",
     "vue": "^2.6.12",
     "vue-hot-reload-api": "^2.3.4"
   },

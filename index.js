@@ -16992,7 +16992,15 @@ class DocView extends ContentView {
     let main = this.view.state.selection.main; // FIXME need to handle the case where the selection falls inside a block range
 
     let anchor = this.domAtPos(main.anchor);
-    let head = this.domAtPos(main.head);
+    let head = main.empty ? anchor : this.domAtPos(main.head);
+
+    if (browser.gecko && main.empty && betweenUneditable(anchor)) {
+      let dummy = document.createTextNode("");
+      this.view.observer.ignore(() => anchor.node.insertBefore(dummy, anchor.node.childNodes[anchor.offset] || null));
+      anchor = head = new DOMPos(dummy, 0);
+      force = true;
+    }
+
     let domSel = getSelection(this.root); // If the selection is already here, or in an equivalent position, don't touch it
 
     if (force || !domSel.focusNode || browser.gecko && main.empty && nextToUneditable(domSel.focusNode, domSel.focusOffset) || !isEquivalentPosition(anchor.node, anchor.offset, domSel.anchorNode, domSel.anchorOffset) || !isEquivalentPosition(head.node, head.offset, domSel.focusNode, domSel.focusOffset)) {
@@ -17225,6 +17233,10 @@ class DocView extends ContentView {
     });
   }
 
+}
+
+function betweenUneditable(pos) {
+  return pos.node.nodeType == 1 && pos.node.firstChild && (pos.offset == 0 || pos.node.childNodes[pos.offset - 1].contentEditable == "false") && (pos.offset < pos.node.childNodes.length || pos.node.childNodes[pos.offset].contentEditable == "false");
 }
 
 class BlockGapWidget extends WidgetType {
@@ -18395,7 +18407,7 @@ handlers.touchmove = view => {
 
 handlers.mousedown = (view, event) => {
   view.observer.flush();
-  if (lastTouch < Date.now() - 10) return; // Ignore touch interaction
+  if (lastTouch > Date.now() - 50) return; // Ignore touch interaction
 
   let style = null;
 
@@ -40139,7 +40151,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56387" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60100" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
