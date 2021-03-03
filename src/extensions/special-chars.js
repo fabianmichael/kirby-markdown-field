@@ -1,4 +1,4 @@
-import { highlightSpecialChars, themeClass } from "@codemirror/view";
+import { highlightSpecialChars } from "@codemirror/view";
 
 const UnicodeRegexpSupport = /x/.unicode != null ? "gu" : "g"
 const SpecialChars = [
@@ -47,7 +47,7 @@ export default () => highlightSpecialChars({
       span.setAttribute("aria-label", label);
     }
     span.setAttribute("data-code", code);
-    span.className = themeClass("specialChar");
+    span.className = "cm-specialChar";
     return span;
   },
   specialChars: SpecialsRegexp,

@@ -1,62 +1,62 @@
-import { Decoration, themeClass } from "@codemirror/view";
+import { Decoration } from "@codemirror/view";
 import { RangeSetBuilder } from "@codemirror/rangeset";
 import { ViewPlugin } from "@codemirror/view";
 import { getBlockName } from "./commands";
 
 const blockStyles = {
   FencedCode: Decoration.line({
-    attributes: { class: themeClass("codeblock") },
+    attributes: { class: "cm-codeblock" },
   }),
   HorizontalRule: Decoration.line({
-    attributes: { class: themeClass("hr") },
+    attributes: { class: "cm-hr" },
   }),
   Blockquote: Decoration.line({
-    attributes: { class: themeClass("blockquote") },
+    attributes: { class: "cm-blockquote" },
   }),
   ATXHeading1: Decoration.line({
     attributes: {
-      class: themeClass("heading"),
+      class: "cm-heading",
       style: "--cm-indent: 1",
     },
   }),
   ATXHeading2: Decoration.line({
     attributes: {
-      class: themeClass("heading"),
+      class: "cm-heading",
       style: "--cm-indent: 2",
     },
   }),
   ATXHeading3: Decoration.line({
     attributes: {
-      class: themeClass("heading"),
+      class: "cm-heading",
       style: "--cm-indent: 3",
     },
   }),
   ATXHeading4: Decoration.line({
     attributes: {
-      class: themeClass("heading"),
+      class: "cm-heading",
       style: "--cm-indent: 4",
     },
   }),
   ATXHeading5: Decoration.line({
     attributes: {
-      class: themeClass("heading"),
+      class: "cm-heading",
       style: "--cm-indent: 5",
     },
   }),
   ATXHeading6: Decoration.line({
     attributes: {
-      class: themeClass("heading"),
+      class: "cm-heading",
       style: "--cm-indent: 6",
     },
   }),
   BulletList: Decoration.line({
     attributes: {
-      class: themeClass("ul"),
+      class: "cm-ul",
     },
   }),
   OrderedList: Decoration.line({
     attributes: {
-      class: themeClass("ol"),
+      class: "cm-ol",
     },
   }),
 };

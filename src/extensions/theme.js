@@ -3,35 +3,36 @@ import { HighlightStyle, tags as t } from "@codemirror/highlight";
 
 const theme = EditorView.theme(
   {
-    $$focused: {
+    "&.cm-focused": {
       outline: "none",
     },
-    "$$focused ::selection": {
+    "&.focused ::selection": {
       background: "var(--cm-selection-background)",
     },
-    $scroller: {
+   ".cm-scroller": {
       fontFamily: "var(--font-family-mono)",
       lineHeight: "var(--cm-line-height)",
       fontSize: "var(--font-size-medium)",
     },
-    $content: {
+    ".cm-content": {
       whiteSpace: "pre-wrap",
     },
-    "$content $line": {
+    ".cm-line": {
       margin: "0 var(--cm-line-margin)",
+      padding: "0",
     },
-    $cursor: {
+    ".cm-cursor": {
       position: "absolute",
       borderLeft: ".125rem solid currentColor",
       marginLeft: "-.0625rem",
     },
-    "$$focused $cursor": {
+    "&.cm-focused .cm-cursor": {
       color: "var(--color-focus)",
     },
-    "$$focused $selectionBackground, $selectionBackground": {
+    "&.cm-focused .cm-selectionBackground, .cm-selectionBackground": {
       backgroundColor: "var(--cm-selection-background)",
     },
-    "$codeblock": {
+    ".cm-codeblock": {
         margin: "0 calc(.25 * var(--cm-line-margin))",
         padding: "0 calc(.75 * var(--cm-line-margin))",
     },
@@ -44,7 +45,7 @@ const theme = EditorView.theme(
 
 export { theme };
 
-const highlightStyle = HighlightStyle.define(
+const highlightStyle = HighlightStyle.define([
   {
     tag: [
       t.name,
@@ -95,7 +96,7 @@ const highlightStyle = HighlightStyle.define(
     tag: t.character, // HTML Entity
     color: "currentColor",
   }
-);
+]);
 
 /// Extension to enable the One Dark theme (both the editor theme and
 /// the highlight style).

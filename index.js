@@ -11335,14 +11335,13 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.combineConfig = combineConfig;
-exports.tagExtension = tagExtension;
 Object.defineProperty(exports, "Text", {
   enumerable: true,
   get: function () {
     return _text.Text;
   }
 });
-exports.Transaction = exports.StateField = exports.StateEffectType = exports.StateEffect = exports.SelectionRange = exports.Prec = exports.MapMode = exports.Facet = exports.EditorState = exports.EditorSelection = exports.CharCategory = exports.ChangeSet = exports.ChangeDesc = exports.AnnotationType = exports.Annotation = void 0;
+exports.Transaction = exports.StateField = exports.StateEffectType = exports.StateEffect = exports.SelectionRange = exports.Prec = exports.MapMode = exports.Facet = exports.EditorState = exports.EditorSelection = exports.Compartment = exports.CharCategory = exports.ChangeSet = exports.ChangeDesc = exports.AnnotationType = exports.Annotation = void 0;
 
 var _text = require("@codemirror/text");
 
@@ -12308,7 +12307,7 @@ class FacetProvider {
     }
 
     return (state, tr) => {
-      if (!tr || tr.reconfigure) {
+      if (!tr || tr.reconfigured) {
         state.values[idx] = getter(state);
         return 1
         /* Changed */
@@ -12345,7 +12344,7 @@ function dynamicFacetSlot(addresses, facet, providers) {
   let dynamic = providerAddrs.filter(p => !(p & 1));
   let idx = addresses[facet.id] >> 1;
   return (state, tr) => {
-    let oldAddr = !tr ? null : tr.reconfigure ? tr.startState.config.address[facet.id] : idx << 1;
+    let oldAddr = !tr ? null : tr.reconfigured ? tr.startState.config.address[facet.id] : idx << 1;
     let changed = oldAddr == null;
 
     for (let dynAddr of dynamic) {
@@ -12422,7 +12421,7 @@ class StateField {
       let oldVal,
           changed = 0;
 
-      if (tr.reconfigure) {
+      if (tr.reconfigured) {
         let oldIdx = maybeIndex(tr.startState, this.id);
         oldVal = oldIdx == null ? this.create(tr.startState) : tr.startState.values[oldIdx];
         changed = 1
@@ -12493,29 +12492,45 @@ class PrecExtension {
     this.prec = prec;
   }
 
+} /// Extension compartments can be used to make a configuration
+/// dynamic. By [wrapping](#state.Compartment.of) part of your
+/// configuration in a compartment, you can later
+/// [replace](#state.Compartment.reconfigure) that part through a
+/// transaction.
+
+
+class Compartment {
+  /// Create an instance of this compartment to add to your [state
+  /// configuration](#state.EditorStateConfig.extensions).
+  of(ext) {
+    return new CompartmentInstance(this, ext);
+  } /// Create an [effect](#state.TransactionSpec.effects) that
+  /// reconfigures this compartment.
+
+
+  reconfigure(content) {
+    return Compartment.reconfigure.of({
+      compartment: this,
+      extension: content
+    });
+  }
+
 }
 
-class TaggedExtension {
-  constructor(tag, inner) {
-    this.tag = tag;
+exports.Compartment = Compartment;
+
+class CompartmentInstance {
+  constructor(compartment, inner) {
+    this.compartment = compartment;
     this.inner = inner;
   }
 
-} /// Tagged extensions can be used to make a configuration dynamic.
-/// Tagging an extension allows you to later
-/// [replace](#state.TransactionSpec.reconfigure) it with
-/// another extension. A given tag may only occur once within a given
-/// configuration.
-
-
-function tagExtension(tag, extension) {
-  return new TaggedExtension(tag, extension);
 }
 
 class Configuration {
-  constructor(source, replacements, dynamicSlots, address, staticValues) {
-    this.source = source;
-    this.replacements = replacements;
+  constructor(base, compartments, dynamicSlots, address, staticValues) {
+    this.base = base;
+    this.compartments = compartments;
     this.dynamicSlots = dynamicSlots;
     this.address = address;
     this.staticValues = staticValues;
@@ -12531,11 +12546,12 @@ class Configuration {
     return addr == null ? facet.default : this.staticValues[addr >> 1];
   }
 
-  static resolve(extension, replacements = Object.create(null), oldState) {
+  static resolve(base, compartments, oldState) {
     let fields = [];
     let facets = Object.create(null);
+    let usedCompartments = new Set();
 
-    for (let ext of flatten(extension, replacements)) {
+    for (let ext of flatten(base, compartments, usedCompartments)) {
       if (ext instanceof StateField) fields.push(ext);else (facets[ext.facet.id] || (facets[ext.facet.id] = [])).push(ext);
     }
 
@@ -12583,19 +12599,27 @@ class Configuration {
       }
     }
 
-    return new Configuration(extension, replacements, dynamicSlots.map(f => f(address)), address, staticValues);
+    return new Configuration(base, removeUnused(compartments, usedCompartments), dynamicSlots.map(f => f(address)), address, staticValues);
   }
 
 }
 
-function allKeys(obj) {
-  return (Object.getOwnPropertySymbols ? Object.getOwnPropertySymbols(obj) : []).concat(Object.keys(obj));
+function removeUnused(compartments, usedCompartments) {
+  let dropped = [];
+  compartments.forEach((_, c) => {
+    if (!usedCompartments.has(c)) dropped.push(c);
+  });
+  if (!dropped.length) return compartments;
+  let newCompartments = new Map();
+  compartments.forEach((e, c) => {
+    if (dropped.indexOf(c) < 0) newCompartments.set(c, e);
+  });
+  return newCompartments;
 }
 
-function flatten(extension, replacements) {
+function flatten(extension, compartments, compartmentsSeen) {
   let result = [[], [], [], []];
   let seen = new Map();
-  let tagsSeen = Object.create(null);
 
   function inner(ext, prec) {
     let known = seen.get(ext);
@@ -12604,16 +12628,17 @@ function flatten(extension, replacements) {
       if (known >= prec) return;
       let found = result[known].indexOf(ext);
       if (found > -1) result[known].splice(found, 1);
+      if (ext instanceof CompartmentInstance) compartmentsSeen.delete(ext.compartment);
     }
 
     seen.set(ext, prec);
 
     if (Array.isArray(ext)) {
       for (let e of ext) inner(e, prec);
-    } else if (ext instanceof TaggedExtension) {
-      if (ext.tag in tagsSeen) throw new RangeError(`Duplicate use of tag '${String(ext.tag)}' in extensions`);
-      tagsSeen[ext.tag] = true;
-      inner(replacements[ext.tag] || ext.inner, prec);
+    } else if (ext instanceof CompartmentInstance) {
+      if (compartmentsSeen.has(ext.compartment)) throw new RangeError(`Duplicate use of compartment in extensions`);
+      compartmentsSeen.add(ext.compartment);
+      inner(compartments.get(ext.compartment) || ext.inner, prec);
     } else if (ext instanceof PrecExtension) {
       inner(ext.inner, ext.prec);
     } else if (ext instanceof StateField) {
@@ -12623,17 +12648,13 @@ function flatten(extension, replacements) {
       result[prec].push(ext);
       if (ext.facet.extensions) inner(ext.facet.extensions, prec);
     } else {
-      inner(ext.extension, prec);
+      let content = ext.extension;
+      if (!content) throw new Error(`Unrecognized extension value in extension set (${ext}). This sometimes happens because multiple instances of @codemirror/state are loaded, breaking instanceof checks.`);
+      inner(content, prec);
     }
   }
 
   inner(extension, Prec_.default);
-
-  for (let key of allKeys(replacements)) if (!(key in tagsSeen) && key != "full" && replacements[key]) {
-    tagsSeen[key] = true;
-    inner(replacements[key], Prec_.default);
-  }
-
   return result.reduce((a, b) => a.concat(b));
 }
 
@@ -12706,6 +12727,29 @@ class AnnotationType {
     return new Annotation(this, value);
   }
 
+} /// Representation of a type of state effect. Defined with
+/// [`StateEffect.define`](#state.StateEffect^define).
+
+
+exports.AnnotationType = AnnotationType;
+
+class StateEffectType {
+  /// @internal
+  constructor( // The `any` types in these function types are there to work
+  // around TypeScript issue #37631, where the type guard on
+  // `StateEffect.is` mysteriously stops working when these properly
+  // have type `Value`.
+  /// @internal
+  map) {
+    this.map = map;
+  } /// Create a [state effect](#state.StateEffect) instance of this
+  /// type.
+
+
+  of(value) {
+    return new StateEffect(this, value);
+  }
+
 } /// State effects can be used to represent additional effects
 /// associated with a [transaction](#state.Transaction.effects). They
 /// are often useful to model changes to custom [state
@@ -12713,7 +12757,7 @@ class AnnotationType {
 /// document or selection changes.
 
 
-exports.AnnotationType = AnnotationType;
+exports.StateEffectType = StateEffectType;
 
 class StateEffect {
   /// @internal
@@ -12756,37 +12800,21 @@ class StateEffect {
     return result;
   }
 
-} /// Representation of a type of state effect. Defined with
-/// [`StateEffect.define`](#state.StateEffect^define).
+} /// This effect can be used to reconfigure the root extensions of
+/// the editor. Doing this will discard any extensions
+/// [appended](#state.StateEffect^appendConfig), but does not reset
+/// the content of [reconfigured](#state.Compartment.reconfigure)
+/// compartments.
 
 
 exports.StateEffect = StateEffect;
+StateEffect.reconfigure = StateEffect.define(); /// Append extensions to the top-level configuration of the editor.
 
-class StateEffectType {
-  /// @internal
-  constructor( // The `any` types in these function types are there to work
-  // around TypeScript issue #37631, where the type guard on
-  // `StateEffect.is` mysteriously stops working when these properly
-  // have type `Value`.
-  /// @internal
-  map) {
-    this.map = map;
-  } /// Create a [state effect](#state.StateEffect) instance of this
-  /// type.
-
-
-  of(value) {
-    return new StateEffect(this, value);
-  }
-
-} /// Changes to the editor state are grouped into transactions.
+StateEffect.appendConfig = StateEffect.define(); /// Changes to the editor state are grouped into transactions.
 /// Typically, a user action creates a single transaction, which may
 /// contain any number of document changes, may change the selection,
 /// or have other effects. Create a transaction by calling
 /// [`EditorState.update`](#state.EditorState.update).
-
-
-exports.StateEffectType = StateEffectType;
 
 class Transaction {
   /// @internal
@@ -12796,9 +12824,7 @@ class Transaction {
   /// doesn't explicitly set a selection.
   selection, /// The effects added to the transaction.
   effects, /// @internal
-  annotations, /// Holds an object when this transaction
-  /// [reconfigures](#state.ReconfigurationSpec) the state.
-  reconfigure, /// Whether the selection should be scrolled into view after this
+  annotations, /// Whether the selection should be scrolled into view after this
   /// transaction is dispatched.
   scrollIntoView) {
     this.startState = startState;
@@ -12806,7 +12832,6 @@ class Transaction {
     this.selection = selection;
     this.effects = effects;
     this.annotations = annotations;
-    this.reconfigure = reconfigure;
     this.scrollIntoView = scrollIntoView; /// @internal
 
     this._doc = null; /// @internal
@@ -12853,6 +12878,14 @@ class Transaction {
 
   get docChanged() {
     return !this.changes.empty;
+  } /// Indicates whether this transaction reconfigures the state
+  /// (through a [configuration compartment](#state.Compartment) or
+  /// with a top-level configuration
+  /// [effect](#state.StateEffect^reconfigure).
+
+
+  get reconfigured() {
+    return this.startState.config != this.state.config;
   }
 
 } /// Annotation used to store transaction timestamps.
@@ -12913,29 +12946,18 @@ function mergeTransaction(a, b, sequential) {
     selection: b.selection ? b.selection.map(mapForB) : (_a = a.selection) === null || _a === void 0 ? void 0 : _a.map(mapForA),
     effects: StateEffect.mapEffects(a.effects, mapForA).concat(StateEffect.mapEffects(b.effects, mapForB)),
     annotations: a.annotations.length ? a.annotations.concat(b.annotations) : b.annotations,
-    scrollIntoView: a.scrollIntoView || b.scrollIntoView,
-    reconfigure: !b.reconfigure ? a.reconfigure : b.reconfigure.full || !a.reconfigure ? b.reconfigure : Object.assign({}, a.reconfigure, b.reconfigure)
+    scrollIntoView: a.scrollIntoView || b.scrollIntoView
   };
 }
 
 function resolveTransactionInner(state, spec, docSize) {
-  let reconf = spec.reconfigure;
-
-  if (reconf && reconf.append) {
-    reconf = Object.assign({}, reconf);
-    let tag = typeof Symbol == "undefined" ? "__append" + Math.floor(Math.random() * 0xffffffff) : Symbol("appendConf");
-    reconf[tag] = reconf.append;
-    reconf.append = undefined;
-  }
-
   let sel = spec.selection;
   return {
     changes: spec.changes instanceof ChangeSet ? spec.changes : ChangeSet.of(spec.changes || [], docSize, state.facet(lineSeparator)),
     selection: sel && (sel instanceof EditorSelection ? sel : EditorSelection.single(sel.anchor, sel.head)),
     effects: asArray(spec.effects),
     annotations: asArray(spec.annotations),
-    scrollIntoView: !!spec.scrollIntoView,
-    reconfigure: reconf
+    scrollIntoView: !!spec.scrollIntoView
   };
 }
 
@@ -12949,7 +12971,7 @@ function resolveTransaction(state, specs, filter) {
     s = mergeTransaction(s, resolveTransactionInner(state, specs[i], seq ? s.changes.newLength : state.doc.length), seq);
   }
 
-  let tr = new Transaction(state, s.changes, s.selection, s.effects, s.annotations, s.reconfigure, s.scrollIntoView);
+  let tr = new Transaction(state, s.changes, s.selection, s.effects, s.annotations, s.scrollIntoView);
   return extendTransaction(filter ? filterTransaction(tr) : tr);
 } // Finish a transaction by applying filters if necessary.
 
@@ -12982,7 +13004,7 @@ function filterTransaction(tr) {
       back = filtered.filtered.invertedDesc;
     }
 
-    tr = new Transaction(state, changes, tr.selection && tr.selection.map(back), StateEffect.mapEffects(tr.effects, back), tr.annotations, tr.reconfigure, tr.scrollIntoView);
+    tr = new Transaction(state, changes, tr.selection && tr.selection.map(back), StateEffect.mapEffects(tr.effects, back), tr.annotations, tr.scrollIntoView);
   } // Transaction filters
 
 
@@ -13006,7 +13028,7 @@ function extendTransaction(tr) {
     if (extension && Object.keys(extension).length) spec = mergeTransaction(tr, resolveTransactionInner(state, extension, tr.changes.newLength), true);
   }
 
-  return spec == tr ? tr : new Transaction(state, tr.changes, tr.selection, spec.effects, spec.annotations, spec.reconfigure, spec.scrollIntoView);
+  return spec == tr ? tr : new Transaction(state, tr.changes, tr.selection, spec.effects, spec.annotations, spec.scrollIntoView);
 }
 
 const none = [];
@@ -13079,7 +13101,7 @@ class EditorState {
     this.applying = null;
     this.status = config.statusTemplate.slice();
 
-    if (tr && !tr.reconfigure) {
+    if (tr && tr.startState.config == config) {
       this.values = tr.startState.values.slice();
     } else {
       this.values = config.dynamicSlots.map(_ => null); // Copy over old values for shared facets/fields if this is a reconfigure
@@ -13122,9 +13144,7 @@ class EditorState {
   /// [effects](#state.TransactionSpec.effects) are assumed to refer
   /// to the document created by its _own_ changes. The resulting
   /// transaction contains the combined effect of all the different
-  /// specs. For things like
-  /// [selection](#state.TransactionSpec.selection) or
-  /// [reconfiguration](#state.TransactionSpec.reconfigure), later
+  /// specs. For [selection](#state.TransactionSpec.selection), later
   /// specs take precedence over earlier ones.
 
 
@@ -13134,11 +13154,31 @@ class EditorState {
 
 
   applyTransaction(tr) {
-    let conf = this.config;
-    if (tr.reconfigure) conf = Configuration.resolve(tr.reconfigure.full || conf.source, Object.assign(conf.replacements, tr.reconfigure, {
-      full: undefined
-    }), this);
-    new EditorState(conf, tr.newDoc, tr.newSelection, tr);
+    let conf = this.config,
+        {
+      base,
+      compartments
+    } = conf;
+
+    for (let effect of tr.effects) {
+      if (effect.is(Compartment.reconfigure)) {
+        if (conf) {
+          compartments = new Map();
+          conf.compartments.forEach((val, key) => compartments.set(key, val));
+          conf = null;
+        }
+
+        compartments.set(effect.value.compartment, effect.value.extension);
+      } else if (effect.is(StateEffect.reconfigure)) {
+        conf = null;
+        base = effect.value;
+      } else if (effect.is(StateEffect.appendConfig)) {
+        conf = null;
+        base = asArray(base).concat(effect.value);
+      }
+    }
+
+    new EditorState(conf || Configuration.resolve(base, compartments, this), tr.newDoc, tr.newSelection, tr);
   } /// Create a [transaction spec](#state.TransactionSpec) that
   /// replaces every selection range with the given content.
 
@@ -13255,7 +13295,7 @@ class EditorState {
 
 
   static create(config = {}) {
-    let configuration = Configuration.resolve(config.extensions || []);
+    let configuration = Configuration.resolve(config.extensions || [], new Map());
     let doc = config.doc instanceof _text.Text ? config.doc : _text.Text.of((config.doc || "").split(configuration.staticFacet(EditorState.lineSeparator) || DefaultSplit));
     let selection = !config.selection ? EditorSelection.single(0) : config.selection instanceof EditorSelection ? config.selection : EditorSelection.single(config.selection.anchor, config.selection.head);
     checkSelection(selection, doc.length);
@@ -13375,17 +13415,17 @@ EditorState.changeFilter = changeFilter; /// Facet used to register a hook that 
 EditorState.transactionFilter = transactionFilter; /// This is a more limited form of
 /// [`transactionFilter`](#state.EditorState^transactionFilter),
 /// which can only add
-/// [annotations](#state.TransactionSpec.annotations),
-/// [effects](#state.TransactionSpec.effects), and
-/// [configuration](#state.TransactionSpec.reconfigure) info. _But_,
-/// this type of filter runs even the transaction has disabled
-/// regular [filtering](#state.TransactionSpec.filter), making it
-/// suitable for effects that don't need to touch the changes or
-/// selection, but do want to process every transaction.
+/// [annotations](#state.TransactionSpec.annotations) and
+/// [effects](#state.TransactionSpec.effects). _But_, this type
+/// of filter runs even the transaction has disabled regular
+/// [filtering](#state.TransactionSpec.filter), making it suitable
+/// for effects that don't need to touch the changes or selection,
+/// but do want to process every transaction.
 ///
 /// Extenders run _after_ filters, when both are applied.
 
-EditorState.transactionExtender = transactionExtender; /// Utility function for combining behaviors to fill in a config
+EditorState.transactionExtender = transactionExtender;
+Compartment.reconfigure = StateEffect.define(); /// Utility function for combining behaviors to fill in a config
 /// object from an array of provided configs. Will, by default, error
 /// when a field gets two values that aren't `===`-equal, but you can
 /// provide combine functions per field to do something else.
@@ -13406,7 +13446,6 @@ combine = {}) {
   return result;
 }
 },{"@codemirror/text":"../node_modules/@codemirror/text/dist/index.js","process":"../../../../../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/process/browser.js"}],"../node_modules/style-mod/src/style-mod.js":[function(require,module,exports) {
-var process = require("process");
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13427,50 +13466,46 @@ const top = typeof globalThis != "undefined" ? globalThis : typeof window != "un
 // create these dynamically, but treat them as one-time allocations.
 
 class StyleModule {
-  // :: (Object<Style>, ?{process: (string) → string, extend: (string, string) → string})
+  // :: (Object<Style>, ?{finish: ?(string) → string})
   // Create a style module from the given spec.
   //
-  // When `process` is given, it is called on regular (non-`@`)
-  // selector properties to provide the actual selector. When `extend`
-  // is given, it is called when a property containing an `&` is
-  // found, and should somehow combine the `&`-template (its first
-  // argument) with the selector (its second argument) to produce an
-  // extended selector.
+  // When `finish` is given, it is called on regular (non-`@`)
+  // selectors (after `&` expansion) to compute the final selector.
   constructor(spec, options) {
     this.rules = [];
     let {
-      process,
-      extend
+      finish
     } = options || {};
 
-    function processSelector(selector) {
-      if (/^@/.test(selector)) return [selector];
-      let selectors = selector.split(",");
-      return process ? selectors.map(process) : selectors;
+    function splitSelector(selector) {
+      return /^@/.test(selector) ? [selector] : selector.split(/,\s*/);
     }
 
-    function render(selectors, spec, target) {
+    function render(selectors, spec, target, isKeyframes) {
       let local = [],
-          isAt = /^@(\w+)\b/.exec(selectors[0]);
+          isAt = /^@(\w+)\b/.exec(selectors[0]),
+          keyframes = isAt && isAt[1] == "keyframes";
       if (isAt && spec == null) return target.push(selectors[0] + ";");
 
       for (let prop in spec) {
         let value = spec[prop];
 
         if (/&/.test(prop)) {
-          render(selectors.map(s => extend ? extend(prop, s) : prop.replace(/&/, s)), value, target);
+          render(prop.split(/,\s*/).map(part => selectors.map(sel => part.replace(/&/, sel))).reduce((a, b) => a.concat(b)), value, target);
         } else if (value && typeof value == "object") {
           if (!isAt) throw new RangeError("The value of a property (" + prop + ") should be a primitive value.");
-          render(isAt[1] == "keyframes" ? [prop] : processSelector(prop), value, local);
+          render(splitSelector(prop), value, local, keyframes);
         } else if (value != null) {
           local.push(prop.replace(/_.*/, "").replace(/[A-Z]/g, l => "-" + l.toLowerCase()) + ": " + value + ";");
         }
       }
 
-      if (local.length || isAt && isAt[1] == "keyframes") target.push(selectors.join(",") + " {" + local.join(" ") + "}");
+      if (local.length || keyframes) {
+        target.push((finish && !isAt && !isKeyframes ? selectors.map(finish) : selectors).join(", ") + " {" + local.join(" ") + "}");
+      }
     }
 
-    for (let prop in spec) render(processSelector(prop), spec[prop], this.rules);
+    for (let prop in spec) render(splitSelector(prop), spec[prop], this.rules);
   } // :: () → string
   // Returns a string containing the module's CSS rules.
 
@@ -13594,7 +13629,7 @@ class StyleSet {
 // styles defined inside the object that's the property's value. For
 // example to create a media query you can do `{"@media screen and
 // (min-width: 400px)": {...}}`.
-},{"process":"../../../../../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/process/browser.js"}],"../node_modules/@codemirror/rangeset/dist/index.js":[function(require,module,exports) {
+},{}],"../node_modules/@codemirror/rangeset/dist/index.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14551,9 +14586,8 @@ exports.drawSelection = drawSelection;
 exports.highlightActiveLine = highlightActiveLine;
 exports.highlightSpecialChars = highlightSpecialChars;
 exports.logException = logException;
-exports.placeholder = placeholder;
+exports.placeholder = placeholder$1;
 exports.runScopeHandlers = runScopeHandlers;
-exports.themeClass = themeClass;
 Object.defineProperty(exports, "Range", {
   enumerable: true,
   get: function () {
@@ -14858,7 +14892,7 @@ class DOMPos {
 
 }
 
-const none$3 = [];
+const none = [];
 
 class ContentView {
   constructor() {
@@ -15063,7 +15097,7 @@ class ContentView {
     }
   }
 
-  replaceChildren(from, to, children = none$3) {
+  replaceChildren(from, to, children = none) {
     this.markDirty();
 
     for (let i = from; i < to; i++) this.children[i].parent = null;
@@ -15135,7 +15169,7 @@ class ChildCursor {
 
 }
 
-const none$2 = [];
+const none$1 = [];
 
 class InlineView extends ContentView {
   /// Return true when this view is equivalent to `other` and can take
@@ -15153,7 +15187,7 @@ class InlineView extends ContentView {
 
 }
 
-InlineView.prototype.children = none$2;
+InlineView.prototype.children = none$1;
 const MaxJoinLen = 256;
 
 class TextView extends InlineView {
@@ -15243,7 +15277,7 @@ class MarkView extends InlineView {
 
   merge(from, to, source, openStart, openEnd) {
     if (source && (!(source instanceof MarkView && source.mark.eq(this.mark)) || from && openStart <= 0 || to < this.length && openEnd <= 0)) return false;
-    mergeInlineChildren(this, from, to, source ? source.children : none$2, openStart - 1, openEnd - 1);
+    mergeInlineChildren(this, from, to, source ? source.children : none$1, openStart - 1, openEnd - 1);
     this.markDirty();
     return true;
   }
@@ -15858,221 +15892,6 @@ function addRange(from, to, ranges, margin = 0) {
   if (last >= 0 && ranges[last] + margin > from) ranges[last] = Math.max(ranges[last], to);else ranges.push(from, to);
 }
 
-const theme = _state.Facet.define({
-  combine: strs => strs.join(" ")
-});
-
-const darkTheme = _state.Facet.define({
-  combine: values => values.indexOf(true) > -1
-});
-
-const baseThemeID = _styleMod.StyleModule.newName();
-
-function expandThemeClasses(sel) {
-  return sel.replace(/\$\w[\w\.]*/g, cls => {
-    let parts = cls.slice(1).split("."),
-        result = "";
-
-    for (let i = 1; i <= parts.length; i++) result += ".cm-" + parts.slice(0, i).join("-");
-
-    return result;
-  });
-}
-
-function buildTheme(main, spec) {
-  return new _styleMod.StyleModule(spec, {
-    process(sel) {
-      sel = expandThemeClasses(sel);
-      return /\$/.test(sel) ? sel.replace(/\$/, main) : main + " " + sel;
-    },
-
-    extend(template, sel) {
-      template = expandThemeClasses(template);
-      return sel.slice(0, main.length + 1) == main + " " ? main + " " + template.replace(/&/g, sel.slice(main.length + 1)) : template.replace(/&/g, sel);
-    }
-
-  });
-} /// Create a set of CSS class names for the given theme class, which
-/// can be added to a DOM element within an editor to make themes able
-/// to style it. Theme classes can be single words or words separated
-/// by dot characters. In the latter case, the returned classes
-/// combine those that match the full name and those that match some
-/// prefix—for example `"panel.search"` will match both the theme
-/// styles specified as `"panel.search"` and those with just
-/// `"panel"`. More specific theme classes (with more dots) take
-/// precedence over less specific ones.
-
-
-function themeClass(selector) {
-  if (selector.indexOf(".") < 0) return "cm-" + selector;
-  let parts = selector.split("."),
-      result = "";
-
-  for (let i = 1; i <= parts.length; i++) result += (result ? " " : "") + "cm-" + parts.slice(0, i).join("-");
-
-  return result;
-}
-
-const baseTheme = buildTheme("." + baseThemeID, {
-  $: {
-    position: "relative !important",
-    boxSizing: "border-box",
-    "&$focused": {
-      // FIXME it would be great if we could directly use the browser's
-      // default focus outline, but it appears we can't, so this tries to
-      // approximate that
-      outline_fallback: "1px dotted #212121",
-      outline: "5px auto -webkit-focus-ring-color"
-    },
-    display: "flex !important",
-    flexDirection: "column"
-  },
-  $scroller: {
-    display: "flex !important",
-    alignItems: "flex-start !important",
-    fontFamily: "monospace",
-    lineHeight: 1.4,
-    height: "100%",
-    overflowX: "auto",
-    position: "relative",
-    zIndex: 0
-  },
-  $content: {
-    margin: 0,
-    flexGrow: 2,
-    minHeight: "100%",
-    display: "block",
-    whiteSpace: "pre",
-    boxSizing: "border-box",
-    padding: "4px 0",
-    outline: "none"
-  },
-  "$$light $content": {
-    caretColor: "black"
-  },
-  "$$dark $content": {
-    caretColor: "white"
-  },
-  $line: {
-    display: "block",
-    padding: "0 2px 0 4px"
-  },
-  $selectionLayer: {
-    zIndex: -1,
-    contain: "size style"
-  },
-  $selectionBackground: {
-    position: "absolute"
-  },
-  "$$light $selectionBackground": {
-    background: "#d9d9d9"
-  },
-  "$$dark $selectionBackground": {
-    background: "#222"
-  },
-  "$$focused$light $selectionBackground": {
-    background: "#d7d4f0"
-  },
-  "$$focused$dark $selectionBackground": {
-    background: "#233"
-  },
-  $cursorLayer: {
-    zIndex: 100,
-    contain: "size style",
-    pointerEvents: "none"
-  },
-  "$$focused $cursorLayer": {
-    animation: "steps(1) cm-blink 1.2s infinite"
-  },
-  // Two animations defined so that we can switch between them to
-  // restart the animation without forcing another style
-  // recomputation.
-  "@keyframes cm-blink": {
-    "0%": {},
-    "50%": {
-      visibility: "hidden"
-    },
-    "100%": {}
-  },
-  "@keyframes cm-blink2": {
-    "0%": {},
-    "50%": {
-      visibility: "hidden"
-    },
-    "100%": {}
-  },
-  $cursor: {
-    position: "absolute",
-    borderLeft: "1.2px solid black",
-    marginLeft: "-0.6px",
-    pointerEvents: "none",
-    display: "none"
-  },
-  "$$dark $cursor": {
-    borderLeftColor: "#444"
-  },
-  "$$focused $cursor": {
-    display: "block"
-  },
-  "$$light $activeLine": {
-    backgroundColor: "#f3f9ff"
-  },
-  "$$dark $activeLine": {
-    backgroundColor: "#223039"
-  },
-  "$$light $specialChar": {
-    color: "red"
-  },
-  "$$dark $specialChar": {
-    color: "#f78"
-  },
-  "$tab": {
-    display: "inline-block",
-    overflow: "hidden",
-    verticalAlign: "bottom"
-  },
-  $placeholder: {
-    color: "#888",
-    display: "inline-block"
-  },
-  $button: {
-    verticalAlign: "middle",
-    color: "inherit",
-    fontSize: "70%",
-    padding: ".2em 1em",
-    borderRadius: "3px"
-  },
-  "$$light $button": {
-    backgroundImage: "linear-gradient(#eff1f5, #d9d9df)",
-    border: "1px solid #888",
-    "&:active": {
-      backgroundImage: "linear-gradient(#b4b4b4, #d0d3d6)"
-    }
-  },
-  "$$dark $button": {
-    backgroundImage: "linear-gradient(#555, #111)",
-    border: "1px solid #888",
-    "&:active": {
-      backgroundImage: "linear-gradient(#111, #333)"
-    }
-  },
-  $textfield: {
-    verticalAlign: "middle",
-    color: "inherit",
-    fontSize: "70%",
-    border: "1px solid silver",
-    padding: ".2em .5em"
-  },
-  "$$light $textfield": {
-    backgroundColor: "white"
-  },
-  "$$dark $textfield": {
-    border: "1px solid #555",
-    backgroundColor: "inherit"
-  }
-});
-const LineClass = themeClass("line");
-
 class LineView extends ContentView {
   constructor() {
     super(...arguments);
@@ -16091,7 +15910,7 @@ class LineView extends ContentView {
     }
 
     if (takeDeco) this.setDeco(source ? source.attrs : null);
-    mergeInlineChildren(this, from, to, source ? source.children : none$1, openStart, openEnd);
+    mergeInlineChildren(this, from, to, source ? source.children : none$2, openStart, openEnd);
     return true;
   }
 
@@ -16160,13 +15979,13 @@ class LineView extends ContentView {
   sync(track) {
     if (!this.dom) {
       this.setDOM(document.createElement("div"));
-      this.dom.className = LineClass;
+      this.dom.className = "cm-line";
       this.prevAttrs = this.attrs ? null : undefined;
     }
 
     if (this.prevAttrs !== undefined) {
       updateAttrs(this.dom, this.prevAttrs, this.attrs);
-      this.dom.classList.add(LineClass);
+      this.dom.classList.add("cm-line");
       this.prevAttrs = undefined;
     }
 
@@ -16225,7 +16044,7 @@ class LineView extends ContentView {
 
 }
 
-const none$1 = [];
+const none$2 = [];
 
 class BlockWidgetView extends ContentView {
   constructor(widget, length, type) {
@@ -16253,7 +16072,7 @@ class BlockWidgetView extends ContentView {
   }
 
   get children() {
-    return none$1;
+    return none$2;
   }
 
   sync() {
@@ -16439,11 +16258,11 @@ class NullWidget extends WidgetType {
 
 }
 
-const none = [];
+const none$3 = [];
 
 const clickAddsSelectionRange = _state.Facet.define();
 
-const dragMovesSelection$1 = _state.Facet.define();
+const dragMovesSelection = _state.Facet.define();
 
 const mouseSelectionStyle = _state.Facet.define();
 
@@ -16709,7 +16528,7 @@ class ViewUpdate {
   constructor( /// The editor view that the update is associated with.
   view, /// The new editor state.
   state, /// The transactions involved in the update. May be empty.
-  transactions = none) {
+  transactions = none$3) {
     this.view = view;
     this.state = state;
     this.transactions = transactions; /// @internal
@@ -17361,7 +17180,7 @@ function nextToUneditable(node, offset) {
   : 0);
 }
 
-class DecorationComparator$1 {
+class DecorationComparator {
   constructor() {
     this.changes = [];
   }
@@ -17377,7 +17196,7 @@ class DecorationComparator$1 {
 }
 
 function findChangedDeco(a, b, diff) {
-  let comp = new DecorationComparator$1();
+  let comp = new DecorationComparator();
 
   _rangeset.RangeSet.compare(a, b, diff, comp);
 
@@ -18209,7 +18028,7 @@ class MouseSelection {
     doc.addEventListener("mouseup", this.up = this.up.bind(this));
     this.extend = startEvent.shiftKey;
     this.multiple = view.state.facet(_state.EditorState.allowMultipleSelections) && addsSelectionRange(view, startEvent);
-    this.dragMove = dragMovesSelection(view, startEvent);
+    this.dragMove = dragMovesSelection$1(view, startEvent);
     this.dragging = isInPrimarySelection(view, startEvent) ? null : false; // When clicking outside of the selection, immediately apply the
     // effect of starting the selection
 
@@ -18259,8 +18078,8 @@ function addsSelectionRange(view, event) {
   return facet.length ? facet[0](event) : browser.mac ? event.metaKey : event.ctrlKey;
 }
 
-function dragMovesSelection(view, event) {
-  let facet = view.state.facet(dragMovesSelection$1);
+function dragMovesSelection$1(view, event) {
+  let facet = view.state.facet(dragMovesSelection);
   return facet.length ? facet[0](event) : browser.mac ? !event.altKey : !event.ctrlKey;
 }
 
@@ -19431,14 +19250,14 @@ class NodeBuilder {
 }
 
 function heightRelevantDecoChanges(a, b, diff) {
-  let comp = new DecorationComparator();
+  let comp = new DecorationComparator$1();
 
   _rangeset.RangeSet.compare(a, b, diff, comp, 0);
 
   return comp.changes;
 }
 
-class DecorationComparator {
+class DecorationComparator$1 {
   constructor() {
     this.changes = [];
   }
@@ -20139,6 +19958,198 @@ function scaleBlock(block, scaler, top) {
   return new BlockInfo(block.from, block.length, bTop, bBottom - bTop, Array.isArray(block.type) ? block.type.map(b => scaleBlock(b, scaler, top)) : block.type);
 }
 
+const theme = _state.Facet.define({
+  combine: strs => strs.join(" ")
+});
+
+const darkTheme = _state.Facet.define({
+  combine: values => values.indexOf(true) > -1
+});
+
+const baseThemeID = _styleMod.StyleModule.newName(),
+      baseLightID = _styleMod.StyleModule.newName(),
+      baseDarkID = _styleMod.StyleModule.newName();
+
+const lightDarkIDs = {
+  "&light": "." + baseLightID,
+  "&dark": "." + baseDarkID
+};
+
+function buildTheme(main, spec, scopes) {
+  return new _styleMod.StyleModule(spec, {
+    finish(sel) {
+      return /&/.test(sel) ? sel.replace(/&\w*/, m => {
+        if (m == "&") return main;
+        if (!scopes || !scopes[m]) throw new RangeError(`Unsupported selector: ${m}`);
+        return scopes[m];
+      }) : main + " " + sel;
+    }
+
+  });
+}
+
+const baseTheme = buildTheme("." + baseThemeID, {
+  "&": {
+    position: "relative !important",
+    boxSizing: "border-box",
+    "&.cm-focused": {
+      // FIXME it would be great if we could directly use the browser's
+      // default focus outline, but it appears we can't, so this tries to
+      // approximate that
+      outline_fallback: "1px dotted #212121",
+      outline: "5px auto -webkit-focus-ring-color"
+    },
+    display: "flex !important",
+    flexDirection: "column"
+  },
+  ".cm-scroller": {
+    display: "flex !important",
+    alignItems: "flex-start !important",
+    fontFamily: "monospace",
+    lineHeight: 1.4,
+    height: "100%",
+    overflowX: "auto",
+    position: "relative",
+    zIndex: 0
+  },
+  ".cm-content": {
+    margin: 0,
+    flexGrow: 2,
+    minHeight: "100%",
+    display: "block",
+    whiteSpace: "pre",
+    boxSizing: "border-box",
+    padding: "4px 0",
+    outline: "none"
+  },
+  ".cm-lineWrapping": {
+    whiteSpace: "pre-wrap",
+    overflowWrap: "anywhere"
+  },
+  "&light .cm-content": {
+    caretColor: "black"
+  },
+  "&dark .cm-content": {
+    caretColor: "white"
+  },
+  ".cm-line": {
+    display: "block",
+    padding: "0 2px 0 4px"
+  },
+  ".cm-selectionLayer": {
+    zIndex: -1,
+    contain: "size style"
+  },
+  ".cm-selectionBackground": {
+    position: "absolute"
+  },
+  "&light .cm-selectionBackground": {
+    background: "#d9d9d9"
+  },
+  "&dark .cm-selectionBackground": {
+    background: "#222"
+  },
+  "&light.cm-focused .cm-selectionBackground": {
+    background: "#d7d4f0"
+  },
+  "&dark.cm-focused .cm-selectionBackground": {
+    background: "#233"
+  },
+  ".cm-cursorLayer": {
+    zIndex: 100,
+    contain: "size style",
+    pointerEvents: "none"
+  },
+  "&.cm-focused .cm-cursorLayer": {
+    animation: "steps(1) cm-blink 1.2s infinite"
+  },
+  // Two animations defined so that we can switch between them to
+  // restart the animation without forcing another style
+  // recomputation.
+  "@keyframes cm-blink": {
+    "0%": {},
+    "50%": {
+      visibility: "hidden"
+    },
+    "100%": {}
+  },
+  "@keyframes cm-blink2": {
+    "0%": {},
+    "50%": {
+      visibility: "hidden"
+    },
+    "100%": {}
+  },
+  ".cm-cursor": {
+    position: "absolute",
+    borderLeft: "1.2px solid black",
+    marginLeft: "-0.6px",
+    pointerEvents: "none",
+    display: "none"
+  },
+  "&dark .cm-cursor": {
+    borderLeftColor: "#444"
+  },
+  "&.cm-focused .cm-cursor": {
+    display: "block"
+  },
+  "&light .cm-activeLine": {
+    backgroundColor: "#f3f9ff"
+  },
+  "&dark .cm-activeLine": {
+    backgroundColor: "#223039"
+  },
+  "&light .cm-specialChar": {
+    color: "red"
+  },
+  "&dark .cm-specialChar": {
+    color: "#f78"
+  },
+  ".cm-tab": {
+    display: "inline-block",
+    overflow: "hidden",
+    verticalAlign: "bottom"
+  },
+  ".cm-placeholder": {
+    color: "#888",
+    display: "inline-block"
+  },
+  ".cm-button": {
+    verticalAlign: "middle",
+    color: "inherit",
+    fontSize: "70%",
+    padding: ".2em 1em",
+    borderRadius: "3px"
+  },
+  "&light .cm-button": {
+    backgroundImage: "linear-gradient(#eff1f5, #d9d9df)",
+    border: "1px solid #888",
+    "&:active": {
+      backgroundImage: "linear-gradient(#b4b4b4, #d0d3d6)"
+    }
+  },
+  "&dark .cm-button": {
+    backgroundImage: "linear-gradient(#393939, #111)",
+    border: "1px solid #888",
+    "&:active": {
+      backgroundImage: "linear-gradient(#111, #333)"
+    }
+  },
+  ".cm-textfield": {
+    verticalAlign: "middle",
+    color: "inherit",
+    fontSize: "70%",
+    border: "1px solid silver",
+    padding: ".2em .5em"
+  },
+  "&light .cm-textfield": {
+    backgroundColor: "white"
+  },
+  "&dark .cm-textfield": {
+    border: "1px solid #555",
+    backgroundColor: "inherit"
+  }
+}, lightDarkIDs);
 const observeOptions = {
   childList: true,
   characterData: true,
@@ -20672,7 +20683,7 @@ class EditorView {
     this.contentDOM = document.createElement("div");
     this.scrollDOM = document.createElement("div");
     this.scrollDOM.tabIndex = -1;
-    this.scrollDOM.className = themeClass("scroller");
+    this.scrollDOM.className = "cm-scroller";
     this.scrollDOM.appendChild(this.contentDOM);
     this.announceDOM = document.createElement("div");
     this.announceDOM.style.cssText = "position: absolute; top: -10000px";
@@ -20921,19 +20932,19 @@ class EditorView {
 
 
   get themeClasses() {
-    return baseThemeID + " " + (this.state.facet(darkTheme) ? "cm-dark" : "cm-light") + " " + this.state.facet(theme);
+    return baseThemeID + " " + (this.state.facet(darkTheme) ? baseDarkID : baseLightID) + " " + this.state.facet(theme);
   }
 
   updateAttrs() {
     let editorAttrs = combineAttrs(this.state.facet(editorAttributes), {
-      class: themeClass("wrap") + (this.hasFocus ? " cm-focused " : " ") + this.themeClasses
+      class: "cm-wrap" + (this.hasFocus ? " cm-focused " : " ") + this.themeClasses
     });
     updateAttrs(this.dom, this.editorAttrs, editorAttrs);
     this.editorAttrs = editorAttrs;
     let contentAttrs = combineAttrs(this.state.facet(contentAttributes), {
       spellcheck: "false",
       contenteditable: String(this.state.facet(editable)),
-      class: themeClass("content"),
+      class: "cm-content",
       style: `${browser.tabSize}: ${this.state.tabSize}`,
       role: "textbox",
       "aria-multiline": "true"
@@ -21241,42 +21252,34 @@ class EditorView {
   /// style spec providing the styles for the theme. These will be
   /// prefixed with a generated class for the style.
   ///
-  /// It is highly recommended you use _theme classes_, rather than
-  /// regular CSS classes, in your selectors. These are prefixed with
-  /// a `$` instead of a `.`, and will be expanded (as with
-  /// [`themeClass`](#view.themeClass)) to one or more prefixed class
-  /// names. So for example `$content` targets the editor's [content
-  /// element](#view.EditorView.contentDOM).
-  ///
   /// Because the selectors will be prefixed with a scope class, rule
   /// that directly match the editor's [wrapper
-  /// element](#view.EditorView.dom)—to which the scope
-  /// class will be added—need to be explicitly differentiated by
-  /// adding an additional `$` to the front of the pattern. For
-  /// example `$$focused $panel` will expand to something like
-  /// `.[scope].cm-focused .cm-panel`.
+  /// element](#view.EditorView.dom)—to which the scope class will be
+  /// added—need to be explicitly differentiated by adding an `&` to
+  /// the selector for that element—for example
+  /// `&.cm-focused`.
   ///
   /// When `dark` is set to true, the theme will be marked as dark,
-  /// which will add the `$dark` selector to the wrapper element (as
-  /// opposed to `$light` when a light theme is active).
+  /// which will cause the `&dark` rules from [base
+  /// themes](#view.EditorView^baseTheme) to be used (as opposed to
+  /// `&light` when a light theme is active).
 
 
   static theme(spec, options) {
     let prefix = _styleMod.StyleModule.newName();
 
-    let result = [theme.of(prefix), styleModule.of(buildTheme(`.${baseThemeID}.${prefix}`, spec))];
+    let result = [theme.of(prefix), styleModule.of(buildTheme(`.${prefix}`, spec))];
     if (options && options.dark) result.push(darkTheme.of(true));
     return result;
-  } /// Create an extension that adds styles to the base theme. The
-  /// given object works much like the one passed to
-  /// [`theme`](#view.EditorView^theme). You'll often want to qualify
-  /// base styles with `$dark` or `$light` so they only apply when
-  /// there is a dark or light theme active. For example `"$$dark
-  /// $myHighlight"`.
+  } /// Create an extension that adds styles to the base theme. Like
+  /// with [`theme`](#view.EditorView^theme), use `&` to indicate the
+  /// place of the editor wrapper element when directly targeting
+  /// that. You can also use `&dark` or `&light` instead to only
+  /// target editors with a dark or light theme.
 
 
   static baseTheme(spec) {
-    return _state.Prec.fallback(styleModule.of(buildTheme("." + baseThemeID, spec)));
+    return _state.Prec.fallback(styleModule.of(buildTheme("." + baseThemeID, spec, lightDarkIDs)));
   }
 
 } /// Facet to add a [style
@@ -21319,7 +21322,7 @@ EditorView.mouseSelectionStyle = mouseSelectionStyle; /// Facet used to configur
 /// called with the `mousedown` event, and can return `true` when
 /// the drag should move the content.
 
-EditorView.dragMovesSelection = dragMovesSelection$1; /// Facet used to configure whether a given selecting click adds
+EditorView.dragMovesSelection = dragMovesSelection; /// Facet used to configure whether a given selecting click adds
 /// a new range to the existing selection or replaces it entirely.
 
 EditorView.clickAddsSelectionRange = clickAddsSelectionRange; /// A facet that determines which [decorations](#view.Decoration)
@@ -21327,21 +21330,18 @@ EditorView.clickAddsSelectionRange = clickAddsSelectionRange; /// A facet that d
 /// plugins](#view.EditorView^decorations), which have a separate
 /// mechanism for providing decorations.
 
-EditorView.decorations = decorations; /// An extension that enables line wrapping in the editor (by
-/// setting CSS `white-space` to `pre-wrap` in the content).
-
-EditorView.lineWrapping = EditorView.theme({
-  $content: {
-    whiteSpace: "pre-wrap",
-    overflowWrap: "anywhere"
-  }
-}); /// Facet that provides additional DOM attributes for the editor's
+EditorView.decorations = decorations; /// Facet that provides additional DOM attributes for the editor's
 /// editable DOM element.
 
 EditorView.contentAttributes = contentAttributes; /// Facet that provides DOM attributes for the editor's outer
 /// element.
 
-EditorView.editorAttributes = editorAttributes; /// State effect used to include screen reader announcements in a
+EditorView.editorAttributes = editorAttributes; /// An extension that enables line wrapping in the editor (by
+/// setting CSS `white-space` to `pre-wrap` in the content).
+
+EditorView.lineWrapping = EditorView.contentAttributes.of({
+  "class": "cm-lineWrapping"
+}); /// State effect used to include screen reader announcements in a
 /// transaction. These will be added to the DOM in a visually hidden
 /// element with `aria-live="polite"` set, and should be used to
 /// describe effects that are visually obvious but may not be
@@ -21573,9 +21573,9 @@ const selectionConfig = _state.Facet.define({
 
 }); /// Returns an extension that hides the browser's native selection and
 /// cursor, replacing the selection with a background behind the text
-/// (labeled with the `$selectionBackground` theme class), and the
+/// (with the `cm-selectionBackground` class), and the
 /// cursors with elements overlaid over the code (using
-/// `$cursor.primary` and `$cursor.secondary`).
+/// `cm-cursor-primary` and `cm-cursor-secondary`).
 ///
 /// This allows the editor to display secondary selection ranges, and
 /// tends to produce a type of selection more in line with that users
@@ -21632,10 +21632,10 @@ const drawSelectionPlugin = ViewPlugin.fromClass(class {
       write: this.drawSel.bind(this)
     };
     this.selectionLayer = view.scrollDOM.appendChild(document.createElement("div"));
-    this.selectionLayer.className = themeClass("selectionLayer");
+    this.selectionLayer.className = "cm-selectionLayer";
     this.selectionLayer.setAttribute("aria-hidden", "true");
     this.cursorLayer = view.scrollDOM.appendChild(document.createElement("div"));
-    this.cursorLayer.className = themeClass("cursorLayer");
+    this.cursorLayer.className = "cm-cursorLayer";
     this.cursorLayer.setAttribute("aria-hidden", "true");
     view.requestMeasure(this.measureReq);
     this.setBlinkRate();
@@ -21709,7 +21709,7 @@ const drawSelectionPlugin = ViewPlugin.fromClass(class {
 
 });
 const themeSpec = {
-  $line: {
+  ".cm-line": {
     "& ::selection": {
       backgroundColor: "transparent !important"
     },
@@ -21718,11 +21718,9 @@ const themeSpec = {
     }
   }
 };
-if (CanHidePrimary) themeSpec.$line.caretColor = "transparent !important";
+if (CanHidePrimary) themeSpec[".cm-line"].caretColor = "transparent !important";
 
 const hideNativeSelection = _state.Prec.override(EditorView.theme(themeSpec));
-
-const selectionClass = themeClass("selectionBackground");
 
 function getBase(view) {
   let rect = view.scrollDOM.getBoundingClientRect();
@@ -21772,7 +21770,7 @@ function measureRange(view, range) {
   }
 
   function piece(left, top, right, bottom) {
-    return new Piece(left - base.left, top - base.top, right - left, bottom - top, selectionClass);
+    return new Piece(left - base.left, top - base.top, right - left, bottom - top, "cm-selectionBackground");
   }
 
   function pieces({
@@ -21834,14 +21832,11 @@ function measureRange(view, range) {
   }
 }
 
-const primaryCursorClass = themeClass("cursor.primary");
-const cursorClass = themeClass("cursor.secondary");
-
 function measureCursor(view, cursor, primary) {
   let pos = view.coordsAtPos(cursor.head, cursor.assoc || 1);
   if (!pos) return null;
   let base = getBase(view);
-  return new Piece(pos.left - base.left, pos.top - base.top, -1, pos.bottom - pos.top, primary ? primaryCursorClass : cursorClass);
+  return new Piece(pos.left - base.left, pos.top - base.top, -1, pos.bottom - pos.top, primary ? "cm-cursor cm-cursor-primary" : "cm-cursor cm-cursor-secondary");
 }
 
 function iterMatches(doc, re, from, to, f) {
@@ -22062,7 +22057,7 @@ function specialCharPlugin() {
 const DefaultPlaceholder = "\u2022"; // Assigns placeholder characters from the Control Pictures block to
 // ASCII control characters
 
-function placeholder$1(code) {
+function placeholder(code) {
   if (code >= 32) return DefaultPlaceholder;
   if (code == 10) return "\u2424";
   return String.fromCharCode(9216 + code);
@@ -22080,7 +22075,7 @@ class SpecialCharWidget extends WidgetType {
   }
 
   toDOM(view) {
-    let ph = placeholder$1(this.code);
+    let ph = placeholder(this.code);
     let desc = view.state.phrase("Control character ") + (Names[this.code] || "0x" + this.code.toString(16));
     let custom = this.options.render && this.options.render(this.code, desc, ph);
     if (custom) return custom;
@@ -22088,7 +22083,7 @@ class SpecialCharWidget extends WidgetType {
     span.textContent = ph;
     span.title = desc;
     span.setAttribute("aria-label", desc);
-    span.className = themeClass("specialChar");
+    span.className = "cm-specialChar";
     return span;
   }
 
@@ -22111,7 +22106,7 @@ class TabWidget extends WidgetType {
   toDOM() {
     let span = document.createElement("span");
     span.textContent = "\t";
-    span.className = themeClass("tab");
+    span.className = "cm-tab";
     span.style.width = this.width + "px";
     return span;
   }
@@ -22120,8 +22115,8 @@ class TabWidget extends WidgetType {
     return false;
   }
 
-} /// Mark lines that have a cursor on them with the `$activeLine`
-/// theme class.
+} /// Mark lines that have a cursor on them with the `"cm-activeLine"`
+/// DOM class.
 
 
 function highlightActiveLine() {
@@ -22130,7 +22125,7 @@ function highlightActiveLine() {
 
 const lineDeco = Decoration.line({
   attributes: {
-    class: themeClass("activeLine")
+    class: "cm-activeLine"
   }
 });
 const activeLineHighlighter = ViewPlugin.fromClass(class {
@@ -22171,7 +22166,7 @@ class Placeholder extends WidgetType {
 
   toDOM() {
     let wrap = document.createElement("span");
-    wrap.className = themeClass("placeholder");
+    wrap.className = "cm-placeholder";
     wrap.style.pointerEvents = "none";
     wrap.appendChild(typeof this.content == "string" ? document.createTextNode(this.content) : this.content);
     if (typeof this.content == "string") wrap.setAttribute("aria-label", "placeholder " + this.content);else wrap.setAttribute("aria-hidden", "true");
@@ -22186,7 +22181,7 @@ class Placeholder extends WidgetType {
 /// to show when the editor is empty.
 
 
-function placeholder(content) {
+function placeholder$1(content) {
   return ViewPlugin.fromClass(class {
     constructor(view) {
       this.view = view;
@@ -22274,8 +22269,10 @@ class Language {
   /// the first argument.
   constructor( /// The [language data](#state.EditorState.languageDataAt) data
   /// facet used for this language.
-  data, parser, extraExtensions = []) {
-    this.data = data; // Kludge to define EditorState.tree as a debugging helper,
+  data, parser, /// The node type of the top node of trees produced by this parser.
+  topNode, extraExtensions = []) {
+    this.data = data;
+    this.topNode = topNode; // Kludge to define EditorState.tree as a debugging helper,
     // without the EditorState package actually knowing about
     // languages and lezer trees.
 
@@ -22371,7 +22368,7 @@ function languageDataFacetAt(state, pos) {
 
 class LezerLanguage extends Language {
   constructor(data, parser) {
-    super(data, parser);
+    super(data, parser, parser.topNode);
     this.parser = parser;
   } /// Define a language from a parser.
 
@@ -23062,12 +23059,7 @@ function syntaxIndentation(cx, ast, pos) {
     }
   }
 
-  for (; tree; tree = tree.parent) {
-    let strategy = indentStrategy(tree);
-    if (strategy) return strategy(new TreeIndentContext(cx, pos, tree));
-  }
-
-  return null;
+  return indentFrom(tree, pos, cx);
 }
 
 function ignoreClosed(cx) {
@@ -23091,6 +23083,15 @@ function indentStrategy(tree) {
   return tree.parent == null ? topIndent : null;
 }
 
+function indentFrom(node, pos, base) {
+  for (; node; node = node.parent) {
+    let strategy = indentStrategy(node);
+    if (strategy) return strategy(new TreeIndentContext(base, pos, node));
+  }
+
+  return null;
+}
+
 function topIndent() {
   return 0;
 } /// Objects of this type provide context information and helper
@@ -23104,6 +23105,7 @@ class TreeIndentContext extends IndentContext {
   /// applies.
   node) {
     super(base.state, base.options);
+    this.base = base;
     this.pos = pos;
     this.node = node;
   } /// Get the text directly after `this.pos`, either the entire line
@@ -23132,6 +23134,13 @@ class TreeIndentContext extends IndentContext {
     }
 
     return this.lineIndent(line);
+  } /// Continue looking for indentations in the node's parent nodes,
+  /// and return the result of that.
+
+
+  continue() {
+    let parent = this.node.parent;
+    return parent ? indentFrom(parent, this.pos, this.base) : 0;
   }
 
 }
@@ -26203,10 +26212,10 @@ var _view = require("@codemirror/view");
 var _lezerTree = require("lezer-tree");
 
 const baseTheme = _view.EditorView.baseTheme({
-  $matchingBracket: {
+  ".cm-matchingBracket": {
     color: "#0b0"
   },
-  $nonmatchingBracket: {
+  ".cm-nonmatchingBracket": {
     color: "#a22"
   }
 });
@@ -26226,10 +26235,10 @@ const bracketMatchingConfig = _state2.Facet.define({
 });
 
 const matchingMark = _view.Decoration.mark({
-  class: (0, _view.themeClass)("matchingBracket")
+  class: "cm-matchingBracket"
 }),
       nonmatchingMark = _view.Decoration.mark({
-  class: (0, _view.themeClass)("nonmatchingBracket")
+  class: "cm-nonmatchingBracket"
 });
 
 const bracketMatchingState = _state2.StateField.define({
@@ -27699,7 +27708,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.highlightTree = highlightTree;
 exports.styleTags = styleTags;
-exports.tags = exports.defaultHighlightStyle = exports.Tag = exports.HighlightStyle = void 0;
+exports.tags = exports.defaultHighlightStyle = exports.classHighlightStyle = exports.Tag = exports.HighlightStyle = void 0;
 
 var _lezerTree = require("lezer-tree");
 
@@ -27923,9 +27932,16 @@ function styleTags(spec) {
 
 const ruleNodeProp = new _lezerTree.NodeProp();
 
-const highlightStyleProp = _state.Facet.define({
+const highlightStyle = _state.Facet.define({
   combine(stylings) {
-    return stylings.length ? stylings[0] : null;
+    return stylings.length ? HighlightStyle.combinedMatch(stylings) : null;
+  }
+
+});
+
+const fallbackHighlightStyle = _state.Facet.define({
+  combine(values) {
+    return values.length ? values[0].match : null;
   }
 
 });
@@ -27957,46 +27973,80 @@ class Rule {
 
 
 class HighlightStyle {
-  constructor(spec) {
+  constructor(spec, options) {
     this.map = Object.create(null);
-    let modSpec = Object.create(null);
+    let modSpec;
 
-    for (let style of spec) {
+    function def(spec) {
       let cls = _styleMod.StyleModule.newName();
 
-      modSpec["." + cls] = Object.assign({}, style, {
-        tag: null
-      });
-      let tags = style.tag;
-      if (!Array.isArray(tags)) tags = [tags];
-
-      for (let tag of tags) this.map[tag.id] = cls;
+      (modSpec || (modSpec = Object.create(null)))["." + cls] = spec;
+      return cls;
     }
 
-    this.module = new _styleMod.StyleModule(modSpec);
+    this.all = typeof options.all == "string" ? options.all : options.all ? def(options.all) : null;
+
+    for (let style of spec) {
+      let cls = (style.class || def(Object.assign({}, style, {
+        tag: null
+      }))) + (this.all ? " " + this.all : "");
+      let tags = style.tag;
+      if (!Array.isArray(tags)) this.map[tags.id] = cls;else for (let tag of tags) this.map[tag.id] = cls;
+    }
+
+    this.module = modSpec ? new _styleMod.StyleModule(modSpec) : null;
+    this.scope = options.scope || null;
     this.match = this.match.bind(this);
-    this.extension = [treeHighlighter, highlightStyleProp.of(this), _view.EditorView.styleModule.of(this.module)];
+    let ext = [treeHighlighter];
+    if (this.module) ext.push(_view.EditorView.styleModule.of(this.module));
+    this.extension = ext.concat(highlightStyle.of(this));
+    this.fallback = ext.concat(fallbackHighlightStyle.of(this));
   } /// Returns the CSS class associated with the given tag, if any.
   /// This method is bound to the instance by the constructor.
 
 
-  match(tag) {
+  match(tag, scope) {
+    if (this.scope && scope != this.scope) return null;
+
     for (let t of tag.set) {
       let match = this.map[t.id];
 
-      if (match) {
+      if (match !== undefined) {
         if (t != tag) this.map[tag.id] = match;
         return match;
       }
     }
 
-    return this.map[tag.id] = null;
+    return this.map[tag.id] = this.all;
+  } /// Combines an array of highlight styles into a single match
+  /// function that returns all of the classes assigned by the styles
+  /// for a given tag.
+
+
+  static combinedMatch(styles) {
+    if (styles.length == 1) return styles[0].match;
+    let cache = styles.some(s => s.scope) ? undefined : Object.create(null);
+    return (tag, scope) => {
+      let cached = cache && cache[tag.id];
+      if (cached !== undefined) return cached;
+      let result = null;
+
+      for (let style of styles) {
+        let value = style.match(tag, scope);
+        if (value) result = result ? result + " " + value : value;
+      }
+
+      if (cache) cache[tag.id] = result;
+      return result;
+    };
   } /// Create a highlighter style that associates the given styles to
   /// the given tags. The spec must be objects that hold a style tag
-  /// or array of tags in their `tag` property, and
+  /// or array of tags in their `tag` property, and either a single
+  /// `class` property providing a static CSS class (for highlighters
+  /// like [`classHighlightStyle`](#highlight.classHighlightStyle)
+  /// that rely on external styling), or a
   /// [`style-mod`](https://github.com/marijnh/style-mod#documentation)-style
-  /// CSS properties in further properties (which define the styling
-  /// for those tags).
+  /// set of CSS properties (which define the styling for those tags).
   ///
   /// The CSS rules created for a highlighter will be emitted in the
   /// order of the spec's properties. That means that for elements that
@@ -28005,8 +28055,8 @@ class HighlightStyle {
   /// defined earlier.
 
 
-  static define(...specs) {
-    return new HighlightStyle(specs);
+  static define(specs, options) {
+    return new HighlightStyle(specs, options || {});
   }
 
 } /// Given a string of code and a language, parse the code in that
@@ -28031,13 +28081,13 @@ class TreeHighlighter {
   constructor(view) {
     this.markCache = Object.create(null);
     this.tree = (0, _language.syntaxTree)(view.state);
-    this.decorations = this.buildDeco(view, view.state.facet(highlightStyleProp));
+    this.decorations = this.buildDeco(view, view.state.facet(highlightStyle) || view.state.facet(fallbackHighlightStyle));
   }
 
   update(update) {
     let tree = (0, _language.syntaxTree)(update.state),
-        style = update.state.facet(highlightStyleProp);
-    let styleChange = style != update.startState.facet(highlightStyleProp);
+        style = update.state.facet(highlightStyle);
+    let styleChange = style != update.startState.facet(highlightStyle);
 
     if (tree.length < update.view.viewport.to && !styleChange) {
       this.decorations = this.decorations.map(update.changes);
@@ -28047,15 +28097,15 @@ class TreeHighlighter {
     }
   }
 
-  buildDeco(view, style) {
-    if (!style || !this.tree.length) return _view.Decoration.none;
+  buildDeco(view, match) {
+    if (!match || !this.tree.length) return _view.Decoration.none;
     let builder = new _rangeset.RangeSetBuilder();
 
     for (let {
       from,
       to
     } of view.visibleRanges) {
-      highlightTreeRange(this.tree, from, to, style.match, (from, to, style) => {
+      highlightTreeRange(this.tree, from, to, match, (from, to, style) => {
         builder.add(from, to, this.markCache[style] || (this.markCache[style] = _view.Decoration.mark({
           class: style
         })));
@@ -28071,77 +28121,72 @@ class TreeHighlighter {
 
 const treeHighlighter = _state.Prec.fallback(_view.ViewPlugin.fromClass(TreeHighlighter, {
   decorations: v => v.decorations
-})); // Reused stacks for highlightTreeRange
+}));
 
-
-const nodeStack = [""],
-      classStack = [""],
-      inheritStack = [""];
+const nodeStack = [""];
 
 function highlightTreeRange(tree, from, to, style, span) {
   let spanStart = from,
-      spanClass = "",
-      depth = 0;
-  tree.iterate({
-    from,
-    to,
-    enter: (type, start) => {
-      depth++;
-      let inheritedClass = inheritStack[depth - 1];
-      let cls = inheritedClass;
-      let rule = type.prop(ruleNodeProp),
-          opaque = false;
+      spanClass = "";
+  let cursor = tree.topNode.cursor;
 
-      while (rule) {
-        if (!rule.context || matchContext(rule.context, nodeStack, depth)) {
-          for (let tag of rule.tags) {
-            let st = style(tag);
+  function node(inheritedClass, depth, scope) {
+    let {
+      type,
+      from: start
+    } = cursor;
+    nodeStack[depth] = type.name;
+    let cls = inheritedClass;
+    if (type.isTop) scope = type;
+    let rule = type.prop(ruleNodeProp),
+        opaque = false;
 
-            if (st) {
-              if (cls) cls += " ";
-              cls += st;
-              if (rule.mode == 1
-              /* Inherit */
-              ) inheritedClass = cls;else if (rule.mode == 0
-              /* Opaque */
-              ) opaque = true;
-            }
+    while (rule) {
+      if (!rule.context || matchContext(rule.context, nodeStack, depth)) {
+        for (let tag of rule.tags) {
+          let st = style(tag, scope);
+
+          if (st) {
+            if (cls) cls += " ";
+            cls += st;
+            if (rule.mode == 1
+            /* Inherit */
+            ) inheritedClass += (inheritedClass ? " " : "") + st;else if (rule.mode == 0
+            /* Opaque */
+            ) opaque = true;
           }
-
-          break;
         }
 
-        rule = rule.next;
+        break;
       }
 
-      if (cls != spanClass) {
-        if (start > spanStart && spanClass) span(spanStart, start, spanClass);
-        spanStart = start;
-        spanClass = cls;
-      }
-
-      if (opaque) {
-        depth--;
-        return false;
-      }
-
-      classStack[depth] = cls;
-      inheritStack[depth] = inheritedClass;
-      nodeStack[depth] = type.name;
-      return undefined;
-    },
-    leave: (_t, _s, end) => {
-      depth--;
-      let backTo = classStack[depth];
-
-      if (backTo != spanClass) {
-        let pos = Math.min(to, end);
-        if (pos > spanStart && spanClass) span(spanStart, pos, spanClass);
-        spanStart = pos;
-        spanClass = backTo;
-      }
+      rule = rule.next;
     }
-  });
+
+    if (cls != spanClass) {
+      if (start > spanStart && spanClass) span(spanStart, cursor.from, spanClass);
+      spanStart = start;
+      spanClass = cls;
+    }
+
+    if (!opaque && cursor.firstChild()) {
+      do {
+        let end = cursor.to;
+        node(inheritedClass, depth + 1, scope);
+
+        if (spanClass != cls) {
+          let pos = Math.min(to, end);
+          if (pos > spanStart && spanClass) span(spanStart, pos, spanClass);
+          spanStart = pos;
+          spanClass = cls;
+        }
+      } while (cursor.nextSibling());
+
+      cursor.parent();
+    }
+  }
+
+  node("", 0, tree.type);
 }
 
 function matchContext(context, stack, depth) {
@@ -28378,7 +28423,7 @@ const tags = {
 }; /// A default highlight style (works well with light themes).
 
 exports.tags = tags;
-const defaultHighlightStyle = HighlightStyle.define({
+const defaultHighlightStyle = HighlightStyle.define([{
   tag: tags.link,
   textDecoration: "underline"
 }, {
@@ -28419,7 +28464,7 @@ const defaultHighlightStyle = HighlightStyle.define({
   tag: tags.className,
   color: "#167"
 }, {
-  tag: [tags.special(tags.variableName), tags.macroName, tags.local(tags.variableName)],
+  tag: [tags.special(tags.variableName), tags.macroName],
   color: "#256"
 }, {
   tag: tags.definition(tags.propertyName),
@@ -28433,8 +28478,136 @@ const defaultHighlightStyle = HighlightStyle.define({
 }, {
   tag: tags.invalid,
   color: "#f00"
-});
+}]); /// This is a highlight style that adds stable, predictable classes to
+/// tokens, for styling with external CSS.
+///
+/// These tags are mapped to their name prefixed with `"cmt-"` (for
+/// example `"cmt-comment"`):
+///
+/// * [`link`](#highlight.tags.link)
+/// * [`heading`](#highlight.tags.heading)
+/// * [`emphasis`](#highlight.tags.emphasis)
+/// * [`strong`](#highlight.tags.strong)
+/// * [`keyword`](#highlight.tags.keyword)
+/// * [`atom`](#highlight.tags.atom) [`bool`](#highlight.tags.bool)
+/// * [`url`](#highlight.tags.url)
+/// * [`labelName`](#highlight.tags.labelName)
+/// * [`inserted`](#highlight.tags.inserted)
+/// * [`deleted`](#highlight.tags.deleted)
+/// * [`literal`](#highlight.tags.literal)
+/// * [`string`](#highlight.tags.string)
+/// * [`number`](#highlight.tags.number)
+/// * [`variableName`](#highlight.tags.variableName)
+/// * [`typeName`](#highlight.tags.typeName)
+/// * [`namespace`](#highlight.tags.namespace)
+/// * [`macroName`](#highlight.tags.macroName)
+/// * [`propertyName`](#highlight.tags.propertyName)
+/// * [`operator`](#highlight.tags.operator)
+/// * [`comment`](#highlight.tags.comment)
+/// * [`meta`](#highlight.tags.meta)
+/// * [`punctuation`](#highlight.tags.puncutation)
+/// * [`invalid`](#highlight.tags.invalid)
+///
+/// In addition, these mappings are provided:
+///
+/// * [`regexp`](#highlight.tags.regexp),
+///   [`escape`](#highlight.tags.escape), and
+///   [`special`](#highlight.tags.special)[`(string)`](#highlight.tags.string)
+///   are mapped to `"cmt-string2"`
+/// * [`special`](#highlight.tags.special)[`(variableName)`](#highlight.tags.variableName)
+///   to `"cmt-variableName2"`
+/// * [`local`](#highlight.tags.local)[`(variableName)`](#highlight.tags.variableName)
+///   to `"cmt-variableName cmt-local"`
+/// * [`definition`](#highlight.tags.definition)[`(variableName)`](#highlight.tags.variableName)
+///   to `"cmt-variableName cmt-definition"`
+
 exports.defaultHighlightStyle = defaultHighlightStyle;
+const classHighlightStyle = HighlightStyle.define([{
+  tag: tags.link,
+  class: "cmt-link"
+}, {
+  tag: tags.heading,
+  class: "cmt-heading"
+}, {
+  tag: tags.emphasis,
+  class: "cmt-emphasis"
+}, {
+  tag: tags.strong,
+  class: "cmt-strong"
+}, {
+  tag: tags.keyword,
+  class: "cmt-keyword"
+}, {
+  tag: tags.atom,
+  class: "cmt-atom"
+}, {
+  tag: tags.bool,
+  class: "cmt-bool"
+}, {
+  tag: tags.url,
+  class: "cmt-url"
+}, {
+  tag: tags.labelName,
+  class: "cmt-labelName"
+}, {
+  tag: tags.inserted,
+  class: "cmt-inserted"
+}, {
+  tag: tags.deleted,
+  class: "cmt-deleted"
+}, {
+  tag: tags.literal,
+  class: "cmt-literal"
+}, {
+  tag: tags.string,
+  class: "cmt-string"
+}, {
+  tag: tags.number,
+  class: "cmt-number"
+}, {
+  tag: [tags.regexp, tags.escape, tags.special(tags.string)],
+  class: "cmt-string2"
+}, {
+  tag: tags.variableName,
+  class: "cmt-variableName"
+}, {
+  tag: tags.local(tags.variableName),
+  class: "cmt-variableName cmt-local"
+}, {
+  tag: tags.definition(tags.variableName),
+  class: "cmt-variableName cmt-definition"
+}, {
+  tag: tags.special(tags.variableName),
+  class: "cmt-variableName2"
+}, {
+  tag: tags.typeName,
+  class: "cmt-typeName"
+}, {
+  tag: tags.namespace,
+  class: "cmt-namespace"
+}, {
+  tag: tags.macroName,
+  class: "cmt-macroName"
+}, {
+  tag: tags.propertyName,
+  class: "cmt-propertyName"
+}, {
+  tag: tags.operator,
+  class: "cmt-operator"
+}, {
+  tag: tags.comment,
+  class: "cmt-comment"
+}, {
+  tag: tags.meta,
+  class: "cmt-meta"
+}, {
+  tag: tags.invalid,
+  class: "cmt-invalid"
+}, {
+  tag: tags.punctuation,
+  class: "cmt-punctuation"
+}]);
+exports.classHighlightStyle = classHighlightStyle;
 },{"lezer-tree":"../node_modules/lezer-tree/dist/tree.es.js","style-mod":"../node_modules/style-mod/src/style-mod.js","@codemirror/view":"../node_modules/@codemirror/view/dist/index.js","@codemirror/state":"../node_modules/@codemirror/state/dist/index.js","@codemirror/language":"../node_modules/@codemirror/language/dist/index.js","@codemirror/rangeset":"../node_modules/@codemirror/rangeset/dist/index.js"}],"../../../../../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/base64-js/index.js":[function(require,module,exports) {
 'use strict'
 
@@ -34442,6 +34615,11 @@ class Parser {
 
   get hasNested() {
     return this.nested.length > 0;
+  } /// The type of top node produced by the parser.
+
+
+  get topNode() {
+    return this.nodeSet.types[this.top[1]];
   } /// @internal
 
 
@@ -35119,13 +35297,7 @@ const cssLanguage = _language.LezerLanguage.define({
     props: [_language.indentNodeProp.add({
       Declaration: (0, _language.continuedIndent)()
     }), _language.foldNodeProp.add({
-      Block(subtree) {
-        return {
-          from: subtree.from + 1,
-          to: subtree.to - 1
-        };
-      }
-
+      Block: _language.foldInside
     }), (0, _highlight.styleTags)({
       "import charset namespace keyframes": _highlight.tags.definitionKeyword,
       "media supports": _highlight.tags.controlKeyword,
@@ -35481,7 +35653,8 @@ const tooltipPlugin = _view.ViewPlugin.fromClass(class {
 
   createTooltip(tooltip) {
     let tooltipView = tooltip.create(this.view);
-    tooltipView.dom.className = (0, _view.themeClass)("tooltip" + (tooltip.style ? "." + tooltip.style : ""));
+    tooltipView.dom.classList.add("cm-tooltip");
+    if (tooltip.class) tooltipView.dom.classList.add(tooltip.class);
     this.view.dom.appendChild(tooltipView.dom);
     if (tooltipView.mount) tooltipView.mount(this.view);
     return tooltipView;
@@ -35562,7 +35735,7 @@ const tooltipPlugin = _view.ViewPlugin.fromClass(class {
 });
 
 const baseTheme = _view.EditorView.baseTheme({
-  $tooltip: {
+  ".cm-tooltip": {
     position: "fixed",
     border: "1px solid #ddd",
     backgroundColor: "#f5f5f5",
@@ -36119,7 +36292,7 @@ const completionConfig = _state.Facet.define({
 const MaxInfoWidth = 300;
 
 const baseTheme = _view.EditorView.baseTheme({
-  "$tooltip.autocomplete": {
+  ".cm-tooltip.cm-tooltip-autocomplete": {
     "& > ul": {
       fontFamily: "monospace",
       overflowY: "auto",
@@ -36141,45 +36314,45 @@ const baseTheme = _view.EditorView.baseTheme({
       }
     }
   },
-  "$completionListIncompleteTop:before, $completionListIncompleteBottom:after": {
+  ".cm-completionListIncompleteTop:before, .cm-completionListIncompleteBottom:after": {
     content: '"···"',
     opacity: 0.5,
     display: "block",
     textAlign: "center"
   },
-  "$tooltip.completionInfo": {
+  ".cm-tooltip.cm-completionInfo": {
     position: "absolute",
     padding: "3px 9px",
     width: "max-content",
     maxWidth: MaxInfoWidth + "px"
   },
-  "$tooltip.completionInfo.left": {
+  ".cm-completionInfo.cm-completionInfo-left": {
     right: "100%"
   },
-  "$tooltip.completionInfo.right": {
+  ".cm-completionInfo.cm-completionInfo-right": {
     left: "100%"
   },
-  "$$light $snippetField": {
+  "&light .cm-snippetField": {
     backgroundColor: "#00000022"
   },
-  "$$dark $snippetField": {
+  "&dark .cm-snippetField": {
     backgroundColor: "#ffffff22"
   },
-  "$snippetFieldPosition": {
+  ".cm-snippetFieldPosition": {
     verticalAlign: "text-top",
     width: 0,
     height: "1.15em",
     margin: "0 -0.7px -.7em",
     borderLeft: "1.4px dotted #888"
   },
-  $completionMatchedText: {
+  ".cm-completionMatchedText": {
     textDecoration: "underline"
   },
-  $completionDetail: {
+  ".cm-completionDetail": {
     marginLeft: "0.5em",
     fontStyle: "italic"
   },
-  $completionIcon: {
+  ".cm-completionIcon": {
     fontSize: "90%",
     width: ".8em",
     display: "inline-block",
@@ -36187,58 +36360,58 @@ const baseTheme = _view.EditorView.baseTheme({
     paddingRight: ".6em",
     opacity: "0.6"
   },
-  "$completionIcon.function, $completionIcon.method": {
+  ".cm-completionIcon-function, .cm-completionIcon-method": {
     "&:after": {
       content: "'ƒ'"
     }
   },
-  "$completionIcon.class": {
+  ".cm-completionIcon-class": {
     "&:after": {
       content: "'○'"
     }
   },
-  "$completionIcon.interface": {
+  ".cm-completionIcon-interface": {
     "&:after": {
       content: "'◌'"
     }
   },
-  "$completionIcon.variable": {
+  ".cm-completionIcon-variable": {
     "&:after": {
       content: "'𝑥'"
     }
   },
-  "$completionIcon.constant": {
+  ".cm-completionIcon-constant": {
     "&:after": {
       content: "'𝐶'"
     }
   },
-  "$completionIcon.type": {
+  ".cm-completionIcon-type": {
     "&:after": {
       content: "'𝑡'"
     }
   },
-  "$completionIcon.enum": {
+  ".cm-completionIcon-enum": {
     "&:after": {
       content: "'∪'"
     }
   },
-  "$completionIcon.property": {
+  ".cm-completionIcon-property": {
     "&:after": {
       content: "'□'"
     }
   },
-  "$completionIcon.keyword": {
+  ".cm-completionIcon-keyword": {
     "&:after": {
       content: "'🔑\uFE0E'"
     } // Disable emoji rendering
 
   },
-  "$completionIcon.namespace": {
+  ".cm-completionIcon-namespace": {
     "&:after": {
       content: "'▢'"
     }
   },
-  "$completionIcon.text": {
+  ".cm-completionIcon-text": {
     "&:after": {
       content: "'abc'",
       fontSize: "50%",
@@ -36261,10 +36434,11 @@ function createListBox(options, id, range) {
     const li = ul.appendChild(document.createElement("li"));
     li.id = id + "-" + i;
     let icon = li.appendChild(document.createElement("div"));
-    icon.className = (0, _view.themeClass)("completionIcon" + (completion.type ? "." + completion.type : ""));
+    icon.classList.add("cm-completionIcon");
+    if (completion.type) icon.classList.add("cm-completionIcon-" + completion.type);
     icon.setAttribute("aria-hidden", "true");
     let labelElt = li.appendChild(document.createElement("span"));
-    labelElt.className = (0, _view.themeClass)("completionLabel");
+    labelElt.className = "cm-completionLabel";
     let {
       label,
       detail
@@ -36277,7 +36451,7 @@ function createListBox(options, id, range) {
       if (from > off) labelElt.appendChild(document.createTextNode(label.slice(off, from)));
       let span = labelElt.appendChild(document.createElement("span"));
       span.appendChild(document.createTextNode(label.slice(from, to)));
-      span.className = (0, _view.themeClass)("completionMatchedText");
+      span.className = "cm-completionMatchedText";
       off = to;
     }
 
@@ -36285,21 +36459,21 @@ function createListBox(options, id, range) {
 
     if (detail) {
       let detailElt = li.appendChild(document.createElement("span"));
-      detailElt.className = (0, _view.themeClass)("completionDetail");
+      detailElt.className = "cm-completionDetail";
       detailElt.textContent = detail;
     }
 
     li.setAttribute("role", "option");
   }
 
-  if (range.from) ul.classList.add((0, _view.themeClass)("completionListIncompleteTop"));
-  if (range.to < options.length) ul.classList.add((0, _view.themeClass)("completionListIncompleteBottom"));
+  if (range.from) ul.classList.add("cm-completionListIncompleteTop");
+  if (range.to < options.length) ul.classList.add("cm-completionListIncompleteBottom");
   return ul;
 }
 
 function createInfoDialog(option) {
   let dom = document.createElement("div");
-  dom.className = (0, _view.themeClass)("tooltip.completionInfo");
+  dom.className = "cm-tooltip cm-completionInfo";
   let {
     info
   } = option.completion;
@@ -36438,8 +36612,8 @@ class CompletionTooltip {
   positionInfo(pos) {
     if (this.info && pos) {
       this.info.style.top = pos.top + "px";
-      this.info.classList.toggle("cm-tooltip-completionInfo-left", pos.left);
-      this.info.classList.toggle("cm-tooltip-completionInfo-right", !pos.left);
+      this.info.classList.toggle("cm-completionInfo-left", pos.left);
+      this.info.classList.toggle("cm-completionInfo-right", !pos.left);
     }
   }
 
@@ -36508,7 +36682,7 @@ class CompletionDialog {
     if (!options.length) return null;
     let selected = 0;
 
-    if (prev) {
+    if (prev && prev.selected) {
       let selectedValue = prev.options[prev.selected].completion;
 
       for (let i = 0; i < options.length && !selected; i++) {
@@ -36518,7 +36692,7 @@ class CompletionDialog {
 
     return new CompletionDialog(options, makeAttrs(id, selected), [{
       pos: active.reduce((a, b) => b.hasResult() ? Math.min(a, b.from) : a, 1e8),
-      style: "autocomplete",
+      class: "cm-tooltip-autocomplete",
       create: completionTooltip(completionState)
     }], prev ? prev.timestamp : Date.now(), selected);
   }
@@ -37072,7 +37246,7 @@ let fieldMarker = _view.Decoration.widget({
   widget: new class extends _view.WidgetType {
     toDOM() {
       let span = document.createElement("span");
-      span.className = (0, _view.themeClass)("snippetFieldPosition");
+      span.className = "cm-snippetFieldPosition";
       return span;
     }
 
@@ -37084,7 +37258,7 @@ let fieldMarker = _view.Decoration.widget({
 });
 
 let fieldRange = _view.Decoration.mark({
-  class: (0, _view.themeClass)("snippetField")
+  class: "cm-snippetField"
 });
 
 class ActiveSnippet {
@@ -37176,10 +37350,8 @@ function snippet(template) {
     if (ranges.length) spec.selection = fieldSelection(ranges, 0);
 
     if (ranges.length > 1) {
-      spec.effects = setActive.of(new ActiveSnippet(ranges, 0));
-      if (editor.state.field(snippetState, false) === undefined) spec.reconfigure = {
-        append: [snippetState, addSnippetKeymap, snippetPointerHandler, baseTheme]
-      };
+      let effects = spec.effects = [setActive.of(new ActiveSnippet(ranges, 0))];
+      if (editor.state.field(snippetState, false) === undefined) effects.push(_state.StateEffect.appendConfig.of([snippetState, addSnippetKeymap, snippetPointerHandler, baseTheme]));
     }
 
     editor.dispatch(editor.state.update(spec));
@@ -37465,6 +37637,7 @@ const javascriptLanguage = _language.LezerLanguage.define({
       Block: (0, _language.delimitedIndent)({
         closing: "}"
       }),
+      ArrowFunction: cx => cx.baseIndent + cx.unit,
       "TemplateString BlockComment": () => -1,
       "Statement Property": (0, _language.continuedIndent)({
         except: /^{/
@@ -37485,12 +37658,7 @@ const javascriptLanguage = _language.LezerLanguage.define({
       }
 
     }), _language.foldNodeProp.add({
-      "Block ClassBody SwitchBody EnumBody ObjectExpression ArrayExpression"(tree) {
-        return {
-          from: tree.from + 1,
-          to: tree.to - 1
-        };
-      },
+      "Block ClassBody SwitchBody EnumBody ObjectExpression ArrayExpression": _language.foldInside,
 
       BlockComment(tree) {
         return {
@@ -37545,7 +37713,7 @@ const javascriptLanguage = _language.LezerLanguage.define({
       JSXAttributeValue: _highlight.tags.string,
       JSXText: _highlight.tags.content,
       "JSXStartTag JSXStartCloseTag JSXSelfCloseEndTag JSXEndTag": _highlight.tags.angleBracket,
-      "JSXIdentifier JSXNameSpacedName": _highlight.tags.typeName,
+      "JSXIdentifier JSXNameSpacedName": _highlight.tags.tagName,
       "JSXAttribute/JSXIdentifier JSXAttribute/JSXNameSpacedName": _highlight.tags.propertyName
     })]
   }),
@@ -37560,7 +37728,7 @@ const javascriptLanguage = _language.LezerLanguage.define({
         close: "*/"
       }
     },
-    indentOnInput: /^\s*(?:case |default:|\{|\})$/,
+    indentOnInput: /^\s*(?:case |default:|\{|\}|<\/)$/,
     wordChars: "$"
   }
 }); /// A language provider for TypeScript.
@@ -38470,12 +38638,28 @@ const htmlLanguage = _language.LezerLanguage.define({
   parser: _lezerHtml.parser.configure({
     props: [_language.indentNodeProp.add({
       Element(context) {
-        let closed = /^\s*<\//.test(context.textAfter);
-        return context.lineIndent(context.state.doc.lineAt(context.node.from)) + (closed ? 0 : context.unit);
+        let after = /^(\s*)(<\/)?/.exec(context.textAfter);
+        if (context.node.to <= context.pos + after[0].length) return context.continue();
+        return context.lineIndent(context.state.doc.lineAt(context.node.from)) + (after[1] ? 0 : context.unit);
       },
 
       "OpenTag CloseTag SelfClosingTag"(context) {
         return context.column(context.node.from) + context.unit;
+      },
+
+      Document(context) {
+        if (context.pos + /\s*/.exec(context.textAfter)[0].length < context.node.to) return context.continue();
+        let endElt = null,
+            close;
+
+        for (let cur = context.node;;) {
+          let last = cur.lastChild;
+          if (!last || last.name != "Element" || last.to != cur.to) break;
+          endElt = cur = last;
+        }
+
+        if (endElt && !((close = endElt.lastChild) && (close.name == "CloseTag" || close.name == "SelfClosingTag"))) return context.lineIndent(context.state.doc.lineAt(endElt.from)) + context.unit;
+        return null;
       }
 
     }), _language.foldNodeProp.add({
@@ -38493,8 +38677,8 @@ const htmlLanguage = _language.LezerLanguage.define({
       AttributeValue: _highlight.tags.string,
       "Text RawText": _highlight.tags.content,
       "StartTag StartCloseTag SelfCloserEndTag EndTag SelfCloseEndTag": _highlight.tags.angleBracket,
-      TagName: _highlight.tags.typeName,
-      "MismatchedCloseTag/TagName": [_highlight.tags.typeName, _highlight.tags.invalid],
+      TagName: _highlight.tags.tagName,
+      "MismatchedCloseTag/TagName": [_highlight.tags.tagName, _highlight.tags.invalid],
       AttributeName: _highlight.tags.propertyName,
       UnquotedAttributeValue: _highlight.tags.string,
       Is: _highlight.tags.definitionOperator,
@@ -38596,7 +38780,8 @@ const commonmark = _lezerMarkdown.parser.configure({
     URL: _highlight.tags.url,
     "HeaderMark HardBreak QuoteMark ListMark LinkMark EmphasisMark CodeMark": _highlight.tags.processingInstruction,
     "CodeInfo LinkLabel": _highlight.tags.labelName,
-    LinkTitle: _highlight.tags.string
+    LinkTitle: _highlight.tags.string,
+    Paragraph: _highlight.tags.content
   }), _language.foldNodeProp.add(type => {
     if (!type.is("Block") || type.is("Document")) return undefined;
     return (tree, state) => ({
@@ -38621,9 +38806,11 @@ const extended = commonmark.configure([_lezerMarkdown.GFM, _lezerMarkdown.Subscr
     "TableDelimiter SubscriptMark SuperscriptMark StrikethroughMark": _highlight.tags.processingInstruction,
     "TableHeader/...": _highlight.tags.heading,
     "Strikethrough/...": _highlight.tags.deleted,
-    "TaskMarker": _highlight.tags.atom,
-    "Emoji": _highlight.tags.character,
-    "Subscript Superscript": _highlight.tags.special(_highlight.tags.content)
+    TaskMarker: _highlight.tags.atom,
+    Task: _highlight.tags.list,
+    Emoji: _highlight.tags.character,
+    "Subscript Superscript": _highlight.tags.special(_highlight.tags.content),
+    TableCell: _highlight.tags.content
   })]
 }]); /// Language support for [GFM](https://github.github.com/gfm/) plus
 /// subscript, superscript, and emoji syntax.
@@ -38632,7 +38819,7 @@ const markdownLanguage = mkLang(extended);
 exports.markdownLanguage = markdownLanguage;
 
 function mkLang(parser) {
-  return new _language.Language(data, parser);
+  return new _language.Language(data, parser, parser.nodeSet.types.find(t => t.name == "Document"));
 } // Create an instance of the Markdown language that will, for code
 // blocks, try to find a language that matches the block's info
 // string in `languages` or, if none if found, use `defaultLanguage`
@@ -38905,35 +39092,36 @@ var _view = require("@codemirror/view");
 var _highlight = require("@codemirror/highlight");
 
 var theme = _view.EditorView.theme({
-  $$focused: {
+  "&.cm-focused": {
     outline: "none"
   },
-  "$$focused ::selection": {
+  "&.focused ::selection": {
     background: "var(--cm-selection-background)"
   },
-  $scroller: {
+  ".cm-scroller": {
     fontFamily: "var(--font-family-mono)",
     lineHeight: "var(--cm-line-height)",
     fontSize: "var(--font-size-medium)"
   },
-  $content: {
+  ".cm-content": {
     whiteSpace: "pre-wrap"
   },
-  "$content $line": {
-    margin: "0 var(--cm-line-margin)"
+  ".cm-line": {
+    margin: "0 var(--cm-line-margin)",
+    padding: "0"
   },
-  $cursor: {
+  ".cm-cursor": {
     position: "absolute",
     borderLeft: ".125rem solid currentColor",
     marginLeft: "-.0625rem"
   },
-  "$$focused $cursor": {
+  "&.cm-focused .cm-cursor": {
     color: "var(--color-focus)"
   },
-  "$$focused $selectionBackground, $selectionBackground": {
+  "&.cm-focused .cm-selectionBackground, .cm-selectionBackground": {
     backgroundColor: "var(--cm-selection-background)"
   },
-  "$codeblock": {
+  ".cm-codeblock": {
     margin: "0 calc(.25 * var(--cm-line-margin))",
     padding: "0 calc(.75 * var(--cm-line-margin))"
   } // "$kirbytag": {
@@ -38946,7 +39134,7 @@ var theme = _view.EditorView.theme({
 
 exports.theme = theme;
 
-var highlightStyle = _highlight.HighlightStyle.define({
+var highlightStyle = _highlight.HighlightStyle.define([{
   tag: [_highlight.tags.name, _highlight.tags.angleBracket, _highlight.tags.operator, _highlight.tags.meta, _highlight.tags.comment, _highlight.tags.processingInstruction, _highlight.tags.string, _highlight.tags.inserted],
   color: "var(--cm-color-meta)"
 }, {
@@ -38979,7 +39167,7 @@ var highlightStyle = _highlight.HighlightStyle.define({
   tag: _highlight.tags.character,
   // HTML Entity
   color: "currentColor"
-}); /// Extension to enable the One Dark theme (both the editor theme and
+}]); /// Extension to enable the One Dark theme (both the editor theme and
 /// the highlight style).
 
 
@@ -39146,7 +39334,7 @@ var _default = function _default() {
       }
 
       span.setAttribute("data-code", code);
-      span.className = (0, _view.themeClass)("specialChar");
+      span.className = "cm-specialChar";
       return span;
     },
     specialChars: SpecialsRegexp
@@ -39183,63 +39371,63 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 var blockStyles = {
   FencedCode: _view.Decoration.line({
     attributes: {
-      class: (0, _view.themeClass)("codeblock")
+      class: "cm-codeblock"
     }
   }),
   HorizontalRule: _view.Decoration.line({
     attributes: {
-      class: (0, _view.themeClass)("hr")
+      class: "cm-hr"
     }
   }),
   Blockquote: _view.Decoration.line({
     attributes: {
-      class: (0, _view.themeClass)("blockquote")
+      class: "cm-blockquote"
     }
   }),
   ATXHeading1: _view.Decoration.line({
     attributes: {
-      class: (0, _view.themeClass)("heading"),
+      class: "cm-heading",
       style: "--cm-indent: 1"
     }
   }),
   ATXHeading2: _view.Decoration.line({
     attributes: {
-      class: (0, _view.themeClass)("heading"),
+      class: "cm-heading",
       style: "--cm-indent: 2"
     }
   }),
   ATXHeading3: _view.Decoration.line({
     attributes: {
-      class: (0, _view.themeClass)("heading"),
+      class: "cm-heading",
       style: "--cm-indent: 3"
     }
   }),
   ATXHeading4: _view.Decoration.line({
     attributes: {
-      class: (0, _view.themeClass)("heading"),
+      class: "cm-heading",
       style: "--cm-indent: 4"
     }
   }),
   ATXHeading5: _view.Decoration.line({
     attributes: {
-      class: (0, _view.themeClass)("heading"),
+      class: "cm-heading",
       style: "--cm-indent: 5"
     }
   }),
   ATXHeading6: _view.Decoration.line({
     attributes: {
-      class: (0, _view.themeClass)("heading"),
+      class: "cm-heading",
       style: "--cm-indent: 6"
     }
   }),
   BulletList: _view.Decoration.line({
     attributes: {
-      class: (0, _view.themeClass)("ul")
+      class: "cm-ul"
     }
   }),
   OrderedList: _view.Decoration.line({
     attributes: {
-      class: (0, _view.themeClass)("ol")
+      class: "cm-ol"
     }
   })
 };
@@ -40151,7 +40339,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60100" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62815" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
