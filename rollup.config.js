@@ -6,11 +6,15 @@ import postcss from 'rollup-plugin-postcss'
 import autoprefixer from 'autoprefixer'
 import cssnano from 'cssnano';
 
+
+const production = !process.env.ROLLUP_WATCH;
+
 export default {
   input: "./src/index.js",
   output: {
     file: "./index.js",
-    format: "iife"
+    format: "iife",
+    sourcemap: false,
   },
   plugins: [
     nodeResolve(),
@@ -19,10 +23,10 @@ export default {
       extract: true,
       plugins: [
         autoprefixer(),
-        cssnano(),
+        production && cssnano(),
       ],
     }),
     vue({ css: false }),
-    terser(),
+    production && terser(),
   ],
 }
