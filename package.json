@@ -11,7 +11,7 @@
   },
   "scripts": {
     "dev": "parcel watch src/index.js --no-source-maps -d ./",
-    "build": "parcel build src/index.js --no-source-maps --experimental-scope-hoisting -d ./"
+    "build": "rollup -c"
   },
   "devDependencies": {
     "@vue/component-compiler-utils": "^3.2.0",
