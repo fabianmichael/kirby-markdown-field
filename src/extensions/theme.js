@@ -45,7 +45,7 @@ const theme = EditorView.theme(
 
 export { theme };
 
-const highlightStyle = HighlightStyle.define([
+const styleDef = HighlightStyle.define([
   {
     tag: [
       t.name,
@@ -98,6 +98,6 @@ const highlightStyle = HighlightStyle.define([
   }
 ]);
 
-/// Extension to enable the One Dark theme (both the editor theme and
-/// the highlight style).
+const highlightStyle = () => styleDef;
+
 export { highlightStyle };

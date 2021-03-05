@@ -16,17 +16,8 @@
         :modals="modals"
         :id="id"
         v-on="$listeners"
+        :class="button === 'invisibles' ? 'k-markdown-toolbar-buttons-right': null"
       />
-      <div v-if="invisibles" class="k-markdown-toolbar-buttons-right">
-        <k-markdown-button-invisibles
-          button="invisibles"
-          name="invisibles"
-          buttonIndex="100"
-          :editor="editor"
-          :modals="modals"
-          v-on="$listeners"
-        />
-      </div>
     </div>
   </nav>
 </template>
@@ -42,9 +33,9 @@ export default {
     editor: Object,
     modals: Boolean,
     invisibles: Boolean,
-    currentTokenType: String,
-    currentTokens: Array,
-    currentInlineFormat: Array,
+    // currentTokenType: String,
+    // currentTokens: Array,
+    // currentInlineFormat: Array,
     uploads: [Boolean, Object, Array],
     specialChars: Boolean,
   },
@@ -78,6 +69,14 @@ export default {
           return button;
         }
       });
+
+      // Ensure, that the special chars button is always appears last, if enabled
+      sortedButtons = sortedButtons.sort((a, b) => {
+        if (a === "invisibles") return 1;
+        if (b === "invisibles") return -1;
+        return 0;
+      });
+
       return sortedButtons;
     },
   },

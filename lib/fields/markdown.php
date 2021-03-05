@@ -67,12 +67,6 @@ $options = A::merge($options, [
             return $blank ?? option('community.markdown-field.blank');
         },
         /**
-         * Whether the 'invisibles' button should be displayed. Boolean.
-         */
-        'invisibles' => function($invisibles = null) {
-            return $invisibles ?? option('community.markdown-field.invisibles');
-        },
-        /**
          * Whether the current language direction should be checked on init. Boolean.
          */
         'direction' => function($direction = null) {

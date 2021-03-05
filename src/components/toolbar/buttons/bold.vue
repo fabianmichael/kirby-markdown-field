@@ -1,6 +1,7 @@
 <script>
 export default {
   extends: "default",
+
   data() {
     return {
       label: this.$t("toolbar.button.bold"),
@@ -11,7 +12,7 @@ export default {
   },
   computed: {
     active() {
-      return this.currentInlineFormat.includes("StrongEmphasis");
+      return false; // this.currentInlineFormat.includes("StrongEmphasis");
     },
   },
   methods: {

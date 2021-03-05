@@ -31,7 +31,7 @@ export default function editorState(value, config, oldState = null) {
   };
 
   const extensions = [
-    history(),
+    // history(),
     keymap.of([
       ...standardKeymap,
       ...historyKeymap,
@@ -59,7 +59,7 @@ export default function editorState(value, config, oldState = null) {
      * Because custom selections can cause on iOS devices and have a
      * performance hit, they are only activates in Firefox, to mitiage
      * this bug.
-     * 
+     *
      * See https://bugzilla.mozilla.org/show_bug.cgi?id=1327834
      */
     extensions.push(drawSelection());

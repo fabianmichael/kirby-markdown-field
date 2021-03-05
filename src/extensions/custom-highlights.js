@@ -13,7 +13,7 @@ function mark(def) {
   });
 }
 
-export default function (highlightDefinitions, active, config) {
+export default function (highlightDefinitions, active) {
   const plugins = [];
 
   if (active === false) {

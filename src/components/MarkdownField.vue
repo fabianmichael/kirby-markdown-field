@@ -30,7 +30,6 @@ export default {
     endpoints: Object,
     font: Object,
     highlights: [Boolean, Array],
-    invisibles: Boolean,
     kirbytags: Array,
     kirbytags: Array,
     modals: Boolean,

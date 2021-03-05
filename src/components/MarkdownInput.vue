@@ -14,11 +14,8 @@
         :id="id"
         :modals="modals"
         :editor="editor"
-        :invisibles="invisibles"
-        :currentTokenType="currentTokenType"
-        :currentTokens="currentTokens"
-        :currentInlineFormat="currentInlineFormat"
         :uploads="uploads"
+        :active-marks="activeMarks"
         :buttons="buttons"
         @command="onCommand"
         @mousedown.native.prevent
@@ -78,14 +75,12 @@
 <script>
 import Field from "./MarkdownField.vue";
 import Toolbar from "./toolbar/MarkdownToolbar.vue";
-import LinkDialog from "./toolbar/dialogs/link-dialog.vue";
-import EmailDialog from "./toolbar/dialogs/email-dialog.vue";
+import LinkDialog from "./dialogs/link-dialog.vue";
+import EmailDialog from "./dialogs/email-dialog.vue";
 
 import { syntaxTree } from "@codemirror/language";
-import { EditorView } from "@codemirror/view";
 
-import { getCurrentInlineTokens } from "../extensions/commands.js";
-import editorState from "../extensions/editor-state";
+import Editor from './Editor.js';
 
 export default {
   components: {
@@ -98,26 +93,10 @@ export default {
       editor: Object,
       skipNextChangeEvent: false,
       currentDialog: null,
-
-      currentTokenType: null,
-      currentTokenNode: null,
-      currentTokens: [],
-      currentInlineFormat: [],
-      over: false,
+      activeMarks: [],
+      isDragOver: false,
       specialChars: false,
-
-      // dialogs: [],
-      // dialogsDefs: [
-      //   {
-      //     id: "link",
-      //     is: "k-markdown-link-dialog",
-
-      //   },
-      //   {
-      //     id: "email",
-      //     is: "k-markdown-email-dialog",
-      //   }
-      // ],
+      toolbar: false
     };
   },
   props: {
@@ -130,54 +109,37 @@ export default {
   },
   watch: {
     value(newVal, oldVal) {
-      if (newVal !== undefined && newVal !== this.getEditorValue()) {
+      if (newVal !== undefined && newVal !== this.editor.value) {
         // this.skipNextChangeEvent = true
         // let scrollInfo = this.editor.getScrollInfo()
         // set the new value as the editor's content
         // this.editor.setValue(newVal)
         // restore scroll position
         // this.editor.scrollTo(scrollInfo.left, scrollInfo.top)
-        this.setEditorValue(newVal);
+        this.editor.setValue(newVal);
       }
-      // // force refresh
-      // this.refresh()
     },
     specialChars(newVal, oldVal) {
-      if (newVal === oldVal) {
-        return;
-      }
-      this.editor.setState(this.createState(this.value, this.editor.state));
+      this.editor.setSpecialChars(this.specialChars);
     },
   },
   mounted() {
-    const _this = this;
-
-    this.editor = new EditorView({
-      state: this.createState(this.value),
-      parent: this.$refs.input,
-      editable: !this.dispatch,
-      dispatch: function (transaction) {
-        this.update([transaction]);
-        // https://discuss.codemirror.net/t/codemirror-6-proper-way-to-listen-for-changes/2395/6
-        _this.onInput();
-        _this.setTokenType();
-        _this.currentInlineFormat = getCurrentInlineTokens(_this.editor);
-        // console.log("dd", this.domAtPos(this.state.selection.main.head).node)
-      },
+    this.editor = new Editor(this.value, {
+      autofocus: this.autofocus,
+      editable: !this.disabled,
+      element: this.$refs.input,
+      placeholder: this.placeholder,
+      specialChars: this.specialChars,
+      spellcheck: this.spellcheck,
+      kirbytags: this.kirbytags,
+      customHighlights: this.customHighlights,
+      highlights: this.highlights,
+      events: {
+        update: (value) => {
+          this.$emit("input", value);
+        },
+      }
     });
-
-    // Enable spell-checking to enable browser extensions, such as Language Tool
-    if (this.spellcheck) {
-      this.editor.contentDOM.setAttribute("spellcheck", "true");
-    }
-
-    // Custom autofocus: place the cursor at the end of current value
-    if (this.autofocus && !this.disabled) {
-      this.editor.focus();
-      this.editor.dispatch({
-        selection: { anchor: this.editor.state.doc.length },
-      });
-    }
 
     // console.log("diags", this.$refs.dialogs.find(item => item.$options._componentTag === 'k-markdown-link-dialog'))
 
@@ -212,30 +174,12 @@ export default {
     // // Accept dragText from Kirby sections
     // this.editor.on('drop', this.onDrop.bind(this))
   },
+
   beforeDestroy() {
     this.editor.destroy();
   },
-  methods: {
-    createState(value, oldState = null) {
-      return editorState(
-        value,
-        {
-          customHighlights: this.customHighlights,
-          kirbytags: this.kirbytags,
-          highlights: this.highlights,
-          placeholder: this.placeholder,
-          specialChars: this.specialChars,
-        },
-        oldState
-      );
-    },
 
-    refresh() {
-      // this.$nextTick(() => this.editor.refresh())
-    },
-    /**
-     * Close any open dialog and bring focus back to the editor
-     */
+  methods: {
     cancel() {
       this.editorFocus();
       this.currentDialog = null;
@@ -257,13 +201,13 @@ export default {
      */
     insertFile(files) {
       if (files && files.length > 0) {
-        this.insert(files.map((file) => file.dragText).join("\n\n"));
+        this.editor.insert(files.map((file) => file.dragText).join("\n\n"));
       }
     },
 
     insertUpload(files, response) {
       console.log("insert Upload");
-      this.insert(response.map((file) => file.dragText).join("\n\n"));
+      this.editor.insert(response.map((file) => file.dragText).join("\n\n"));
       this.$events.$emit("model.update");
     },
 
@@ -273,26 +217,12 @@ export default {
         multiple: false,
       });
     },
+
     uploadFile() {
       this.$refs.fileUpload.open({
         url: "/api/" + this.endpoints.field + "/upload",
         multiple: false,
       });
-    },
-
-    /**
-     * Insert text at the cursor's position
-     */
-    insert(text, incr = 0) {
-      const transaction = this.editor.state.replaceSelection(text);
-      this.editor.dispatch(transaction);
-      // replace current selection
-      // this.editor.getDoc().replaceSelection(str)
-      // move caret if needed
-      // let pos = this.editor.getCursor()
-      // this.editor.setCursor({line: pos.line, ch: pos.ch - incr})
-      // bring the focus back to the editor
-      this.editorFocus();
     },
 
     /**
@@ -305,7 +235,7 @@ export default {
       //     let text      = selection.length > 0 ? selection : page.text || page.title
       //     let lang      = this.currentLanguage && !this.currentLanguage.default ? ' lang: '+ this.currentLanguage.code : ''
       //     let tag       = '(link: '+ page.id +' text: '+ text + lang +')'
-      //     this.insert(tag, 1)
+      //     this.editor.insert(tag, 1)
       //     this.currentDialog = null
       // }
       // else {
@@ -313,42 +243,27 @@ export default {
       // }
     },
 
-    /**
-     * Set focus within the editor
-     */
-    editorFocus() {
-      setTimeout(() => {
-        this.$refs.input.focus();
-        this.editor.focus();
-      });
-    },
-
     focus() {
       this.editor.focus();
     },
 
-    getEditorValue() {
-      return this.editor.state.doc.toString();
-    },
+    // getEditorValue() {
+    //   return this.editor.state.doc.toString();
+    // },
 
-    setEditorValue(value) {
-      this.editor.dispatch({
-        changes: {
-          from: 0,
-          to: this.editor.state.doc.length,
-          insert: value,
-        },
-      });
-    },
+    // setEditorValue(value) {
+    //   this.editor.dispatch({
+    //     changes: {
+    //       from: 0,
+    //       to: this.editor.state.doc.length,
+    //       insert: value,
+    //     },
+    //   });
+    // },
 
-    onSpecialChars() {
-      console.log("sp");
-      this.specialChars = !this.specialChars;
-    },
-
-    onInput() {
-      this.$emit("input", this.getEditorValue());
-    },
+    // onInput() {
+    //   this.$emit("input", this.getEditorValue());
+    // },
 
     /**
      * Set the token type of current cursor position
@@ -482,7 +397,7 @@ export default {
 
       // if (drag && drag.type === "text") {
       //     this.editorFocus()
-      //     this.insert(drag.data)
+      //     this.editor.insert(drag.data)
       //     e.preventDefault()
       // }
       console.log("drop");
@@ -490,20 +405,20 @@ export default {
       // dropping text
       const drag = this.$store.state.drag;
       if (drag && drag.type === "text") {
-        this.insert(drag.data);
+        this.editor.insert(drag.data);
         this.focus();
       }
     },
     onDragLeave() {
       this.$refs.input.blur();
-      this.over = false;
+      this.isDragOver = false;
     },
     onDragOver($event) {
       // drag & drop for files
       if (this.uploads && this.$helper.isUploadEvent($event)) {
         $event.dataTransfer.dropEffect = "copy";
         this.focus();
-        this.over = true;
+        this.isDragOver = true;
         console.log("upload?");
         return;
       }
@@ -512,7 +427,7 @@ export default {
       if (drag && drag.type === "text") {
         $event.dataTransfer.dropEffect = "copy";
         this.focus();
-        this.over = true;
+        this.isDragOver = true;
       }
     },
     onSubmit($event) {

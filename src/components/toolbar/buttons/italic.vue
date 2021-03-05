@@ -11,7 +11,7 @@ export default {
     },
     computed: {
         active() {
-            return this.currentInlineFormat.includes("Emphasis");
+            return false; //this.currentInlineFormat.includes("Emphasis");
         },
     },
     methods: {
