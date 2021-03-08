@@ -10,10 +10,8 @@ import {
 
 import markdownCommands from "../extensions/commands";
 import { theme, highlightStyle } from "../extensions/theme";
-import customHighlights from "../extensions/custom-highlights";
 import specialChars from "../extensions/special-chars";
 import lineStyles from "../extensions/line-styles";
-import kirbytags from "../extensions/kirbytags";
 
 import { EditorView } from "@codemirror/view";
 
@@ -22,6 +20,7 @@ import { getCurrentInlineTokens } from "../extensions/commands.js";
 const isFirefox = /Firefox/.test(navigator.userAgent);
 
 import Emitter from "./Emitter.js";
+import Extensions from "./Extensions.js";
 
 export default class Editor extends Emitter {
 
@@ -32,21 +31,26 @@ export default class Editor extends Emitter {
 
     this.defaults = {
       autofocus: false,
-      value: "",
-      placeholder: null,
       editable: true,
       element: null,
-      spellcheck: true,
       events: {},
+      extensions: [],
+      placeholder: null,
       specialChars: false,
-      kirbytags: [],
-      customHighlights: [],
-      highlights: [],
-
-      // extensions: [],
+      spellcheck: true,
+      value: "",
     };
 
     this.init(value, options);
+  }
+
+  createKeymap() {
+    return keymap.of([
+      ...standardKeymap,
+      ...historyKeymap,
+      ...markdownKeymap,
+      ...markdownCommands,
+    ]);
   }
 
   createEvents() {
@@ -59,21 +63,20 @@ export default class Editor extends Emitter {
     return events;
   }
 
+  createExtensions() {
+    return new Extensions(this.options.extensions, this);
+  }
+
   createState(value) {
     const extensions = [
       history(),
-      keymap.of([
-        ...standardKeymap,
-        ...historyKeymap,
-        ...markdownKeymap,
-        ...markdownCommands,
-      ]),
+      this.keymap,
       highlightStyle(),
-      kirbytags(this.options.kirbytags),
+      ...this.kirbytags,
       markdown({ base: markdownLanguage }),
-      ...customHighlights(this.options.customHighlights, this.options.highlights),
+      ...this.highlights,
       this.options.specialChars && specialChars(),
-      lineStyles,
+      lineStyles(),
       /**
        * Firefox has a known Bug, that casuses the caret to disappear,
        * when text is dropped into an element with contenteditable="true".
@@ -144,7 +147,6 @@ export default class Editor extends Emitter {
     if (this.view.hasFocus || this.options.editable === false) {
       return;
     }
-
     this.view.focus();
   }
 
@@ -155,15 +157,14 @@ export default class Editor extends Emitter {
     };
 
     this.events         = this.createEvents();
-    // this.extensions = this.createExtensions();
+    this.extensions     = this.createExtensions();
+    this.kirbytags      = this.extensions.getFromKirbytags();
+    this.highlights     = this.extensions.getFromHighlights();
+    this.keymap        = this.createKeymap();
     // this.nodes      = this.createNodes();
     // this.marks      = this.createMarks();
-    // this.keymaps    = this.createKeymaps();
-    // this.inputRules = this.createInputRules();
-    // this.pasteRules = this.createPasteRules();
-    // this.plugins    = this.createPlugins();
+
     this.view          = this.createView(value);
-    // this.commands   = this.createCommands();
 
     // this.setActiveNodesAndMarks();
 
@@ -173,6 +174,7 @@ export default class Editor extends Emitter {
     }
 
     if (this.options.autofocus !== false && this.options.editable) {
+      // TODO: Fix autofocus
       this.focus();
       // Custom autofocus: place the cursor at the end of current value
       this.dispatch({

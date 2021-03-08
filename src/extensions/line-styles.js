@@ -82,21 +82,21 @@ function stripeDeco(view) {
   return builder.finish();
 }
 
-const lineStyles = ViewPlugin.fromClass(
-  class {
-    constructor(view) {
-      this.decorations = stripeDeco(view);
-    }
-
-    update(update) {
-      if (update.docChanged || update.viewportChanged) {
-        this.decorations = stripeDeco(update.view);
+export default function lineStyles() {
+  return ViewPlugin.fromClass(
+    class {
+      constructor(view) {
+        this.decorations = stripeDeco(view);
       }
-    }
-  },
-  {
-    decorations: (v) => v.decorations,
-  }
-);
 
-export default lineStyles;
+      update(update) {
+        if (update.docChanged || update.viewportChanged) {
+          this.decorations = stripeDeco(update.view);
+        }
+      }
+    },
+    {
+      decorations: (v) => v.decorations,
+    }
+  );
+};

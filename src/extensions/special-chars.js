@@ -33,7 +33,7 @@ function specialCharLabel(code) {
     173: "Bedingter Trennstrich",
   }
 
-  return labels[code] ?? null;
+  return labels[code] || null;
 }
 
 export default () => highlightSpecialChars({

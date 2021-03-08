@@ -81,6 +81,8 @@ import EmailDialog from "./dialogs/email-dialog.vue";
 import { syntaxTree } from "@codemirror/language";
 
 import Editor from './Editor.js';
+import Highlight from "./Extensions/Highlight.js";
+import Kirbytags from "./Extensions/Kirbytags.js";
 
 export default {
   components: {
@@ -128,12 +130,14 @@ export default {
       autofocus: this.autofocus,
       editable: !this.disabled,
       element: this.$refs.input,
+      kirbytags: this.kirbytags,
       placeholder: this.placeholder,
       specialChars: this.specialChars,
       spellcheck: this.spellcheck,
-      kirbytags: this.kirbytags,
-      customHighlights: this.customHighlights,
-      highlights: this.highlights,
+      extensions: [
+        ...this.createKirbytags(),
+        ...this.createHighlights(),
+      ],
       events: {
         update: (value) => {
           this.$emit("input", value);
@@ -180,6 +184,42 @@ export default {
   },
 
   methods: {
+    filterExtensions(available, allowed, postFilter) {
+      return available;
+      // if (allowed === false) {
+      //   allowed = [];
+      // } else if (allowed === true || Array.isArray(allowed) === false) {
+      //   allowed = Object.keys(available);
+      // }
+      // let installed = [];
+      // allowed.forEach(allowed => {
+      //   if (available[allowed]) {
+      //     installed.push(available[allowed]);
+      //   }
+      // });
+      // if (typeof postFilter === "function") {
+      //   installed = postFilter(allowed, installed);
+      // }
+      // return installed;
+    },
+
+    createMarks() {
+      return this.filterExtensions({
+        bold: new Bold,
+        italic: new Italic,
+      }, this.buttons);
+    },
+
+    createHighlights() {
+      if (this.highlights === false) return [];
+      let highlights = this.customHighlights.filter(definition => this.highlights === true || Array.isArray(this.highlights) && this.highlights.includes(definition.name));
+      return highlights.map(definition => new Highlight(definition));
+    },
+
+    createKirbytags() {
+      return [new Kirbytags({ tags: this.kirbytags })];
+    },
+
     cancel() {
       this.editorFocus();
       this.currentDialog = null;

@@ -89,7 +89,7 @@ $options = A::merge($options, [
         },
         'highlights' => function ($highlights = null) {
             return $highlights ?? option('community.markdown-field.highlights', true);
-        }
+        },
     ],
     'computed' => [
         /**

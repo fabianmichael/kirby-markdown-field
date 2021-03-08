@@ -1,26 +1,26 @@
-@import 
+@import
   'abstracts/variables.scss';
 
-@import 
+@import
   'field/markdown-field.scss';
 
 :root {
   --cm-line-margin: .375rem;
   --cm-line-height: 1.5;
-  
+
   --cm-color-meta: #aaa;
   --cm-color-light-gray: rgba(0,0,0,.1);
   --cm-selection-background: hsla(195, 80%, 40%, .16);
 }
 
-// @import 
+// @import
 //   'themes/default.scss',
 //   'themes/custom.scss',
 //   'themes/options.scss';
 
 .cm-codeblock {
   background: rgba(0, 0, 0, .04);
-  
+
 }
 
 .cm-heading {
@@ -61,34 +61,30 @@
   padding: 0 1ch;
 }
 
-.kirbytag {
+.cm-kirbytag {
   padding: 1px 0 1px;
   margin: -1px 0 0px;
-  /* border-radius: .125em; */
   background: rgba(66,113,174,.15);
   border: 1px solid rgba(66,113,174,.3);
   border-width: 1px 0;
-  box-decoration-break: clone;            
+  box-decoration-break: clone;
 }
 
-// .cm-badge {
-//   padding: 1px 0 1px;
-//   margin: -1px 0 0px;
-//   background: rgba(66,113,174,.15);
-//   border: 1px solid rgba(66,113,174,.3);
-// }
+/**
+ * 1. Override highlighting colors inside Kirbytags to ensure,
+ *    that there’s enough contrast between text and the tag background.
+ */
+.cm-kirbytag * {
+  color: currentColor; /* 1 */
+}
 
-// /* .cm-selectionMatch .kirbytag {
-//   background: #d7fdc2;
-// } */
-
-.kirbytag-open {
+.cm-kirbytag-open {
   border-left-width: 1px;
   margin-left: -1px;
   border-radius: 2px 0 0 2px;
 }
 
-.kirbytag-close {
+.cm-kirbytag-close {
   border-right-width: 1px;
   margin-right: -1px;
   border-radius: 0 2px 2px 0;
@@ -97,23 +93,30 @@
 /**
  * Custom highlights
  */
-
-.cm-badge {
+[class*=" cm-token-"],
+[class^="cm-token-"] {
   padding: 1px 0;
   margin: -2px -1px;
   border-radius: 2px;
-  background: var(--badge-background, rgba(0,0,0,.05));
-  border: 1px solid var(--badge-border, rgba(0,0,0,.1));
+  background: var(--token-background, rgba(0,0,0,.05));
+  border: 1px solid var(--token-border, rgba(0,0,0,.1));
   color: var(--color-text, #000);
 
   > * {
-    color: inherit;
+    color: currentColor;
   }
 }
 
-.cm-badge.cm-red {
-  --badge-background: rgba(255, 0, 0, .12);
-  --badge-border: rgba(255, 0, 0, .25);
+// https://github.com/getkirby/getkirby.com/blob/master/src/scss/variables.scss
+
+.cm-token-red {
+  --token-background: rgba(255, 0, 0, .12);
+  --token-border: rgba(255, 0, 0, .25);
+}
+
+.cm-token-purple {
+  --token-background: hsla(285, 44%, 50%, .17);
+  --token-border: hsla(285, 44%, 50%, .4);
 }
 
 /**
