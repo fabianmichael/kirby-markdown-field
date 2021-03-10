@@ -31,7 +31,7 @@ export default {
     font: Object,
     highlights: [Boolean, Array],
     kirbytags: Array,
-    kirbytags: Array,
+    knownKirbytags: Array,
     modals: Boolean,
     placeholder: String,
     size: String,

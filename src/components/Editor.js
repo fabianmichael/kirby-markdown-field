@@ -7,6 +7,7 @@ import {
   markdownKeymap,
   markdownLanguage,
 } from "@codemirror/lang-markdown";
+import {styleTags, tags as t} from "@codemirror/highlight"
 
 import markdownCommands from "../extensions/commands";
 import { theme, highlightStyle } from "../extensions/theme";
@@ -16,6 +17,7 @@ import lineStyles from "../extensions/line-styles";
 import { EditorView } from "@codemirror/view";
 
 import { getCurrentInlineTokens } from "../extensions/commands.js";
+import { getActiveTokensAt } from "./utils.js";
 
 const isFirefox = /Firefox/.test(navigator.userAgent);
 
@@ -30,7 +32,6 @@ export default class Editor extends Emitter {
     this.preventUpdate = false;
 
     this.defaults = {
-      autofocus: false,
       editable: true,
       element: null,
       events: {},
@@ -45,11 +46,14 @@ export default class Editor extends Emitter {
   }
 
   createKeymap() {
+    const customKeymap = this.extensions.getKeymap();
+    console.log("c", ...customKeymap)
+
     return keymap.of([
       ...standardKeymap,
       ...historyKeymap,
-      ...markdownKeymap,
-      ...markdownCommands,
+      // ...markdownKeymap,
+      ...customKeymap,
     ]);
   }
 
@@ -115,8 +119,10 @@ export default class Editor extends Emitter {
           return;
         }
 
+        const active = getActiveTokensAt(this.view, this.tokens, this.state.selection);
+        console.log("aa", active);
         // this.emit("update", this, transaction);
-        this.emit("update", this.view.state.doc.toString());
+        this.emit("update", this.view.state.doc.toString(), active);
 
         // https://discuss.codemirror.net/t/codemirror-6-proper-way-to-listen-for-changes/2395/6
         // _this.onInput();
@@ -158,13 +164,12 @@ export default class Editor extends Emitter {
 
     this.events         = this.createEvents();
     this.extensions     = this.createExtensions();
-    this.kirbytags      = this.extensions.getFromKirbytags();
-    this.highlights     = this.extensions.getFromHighlights();
-    this.keymap        = this.createKeymap();
-    // this.nodes      = this.createNodes();
-    // this.marks      = this.createMarks();
-
-    this.view          = this.createView(value);
+    this.kirbytags      = this.extensions.getHighlightPlugins();
+    this.highlights     = this.extensions.getKirbytagsPlugins();
+    this.keymap         = this.createKeymap();
+    this.buttons        = this.extensions.getButtons();
+    this.tokens         = this.extensions.getTokens();
+    this.view           = this.createView(value);
 
     // this.setActiveNodesAndMarks();
 
@@ -174,7 +179,6 @@ export default class Editor extends Emitter {
     }
 
     if (this.options.autofocus !== false && this.options.editable) {
-      // TODO: Fix autofocus
       this.focus();
       // Custom autofocus: place the cursor at the end of current value
       this.dispatch({
@@ -198,12 +202,12 @@ export default class Editor extends Emitter {
     this.focus();
   }
 
-  setSpecialChars(value) {
-    if (value === this.options.specialChars) {
+  toggleSpecialChars(force = null) {
+    if (force === this.options.specialChars) {
       return;
     }
 
-    this.options.specialChars = value;
+    this.options.specialChars = typeof force === "boolean" ? force : !this.options.specialChars;
     this.updateState();
   }
 

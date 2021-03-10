@@ -11,12 +11,8 @@
       <k-markdown-toolbar
         v-if="buttons && !disabled"
         ref="toolbar"
-        :id="id"
-        :modals="modals"
-        :editor="editor"
-        :uploads="uploads"
-        :active-marks="activeMarks"
-        :buttons="buttons"
+        :buttons="toolbarButtons"
+        :active="active"
         @command="onCommand"
         @mousedown.native.prevent
       />
@@ -74,7 +70,8 @@
 
 <script>
 import Field from "./MarkdownField.vue";
-import Toolbar from "./toolbar/MarkdownToolbar.vue";
+import Toolbar from "./MarkdownToolbar.vue";
+
 import LinkDialog from "./dialogs/link-dialog.vue";
 import EmailDialog from "./dialogs/email-dialog.vue";
 
@@ -83,6 +80,21 @@ import { syntaxTree } from "@codemirror/language";
 import Editor from './Editor.js';
 import Highlight from "./Extensions/Highlight.js";
 import Kirbytags from "./Extensions/Kirbytags.js";
+
+import {
+  Blockquote,
+  BulletList,
+  Divider,
+  Emphasis,
+  Headlines,
+  HorizontalRule,
+  InlineCode,
+  Invisibles,
+  Italic,
+  OrderedList,
+  SpecialChars,
+  StrongEmphasis,
+} from "./Buttons/index.js";
 
 export default {
   components: {
@@ -98,7 +110,8 @@ export default {
       activeMarks: [],
       isDragOver: false,
       specialChars: false,
-      toolbar: false
+      toolbarButtons: [],
+      active: [],
     };
   },
   props: {
@@ -130,20 +143,24 @@ export default {
       autofocus: this.autofocus,
       editable: !this.disabled,
       element: this.$refs.input,
-      kirbytags: this.kirbytags,
       placeholder: this.placeholder,
       specialChars: this.specialChars,
       spellcheck: this.spellcheck,
       extensions: [
         ...this.createKirbytags(),
         ...this.createHighlights(),
+        ...this.createToolbarButtons(),
       ],
       events: {
-        update: (value) => {
+        update: (value, active) => {
           this.$emit("input", value);
+          this.active = active;
+          // this.setTokenType();
         },
       }
     });
+
+    this.toolbarButtons = this.editor.buttons;
 
     // console.log("diags", this.$refs.dialogs.find(item => item.$options._componentTag === 'k-markdown-link-dialog'))
 
@@ -179,6 +196,10 @@ export default {
     // this.editor.on('drop', this.onDrop.bind(this))
   },
 
+  // setTokenType() {
+  //   // getTokenTypeAt(this.editor.view, this.editor.view.state.selection.main.head);
+  // },
+
   beforeDestroy() {
     this.editor.destroy();
   },
@@ -203,11 +224,20 @@ export default {
       // return installed;
     },
 
-    createMarks() {
-      return this.filterExtensions({
-        bold: new Bold,
-        italic: new Italic,
-      }, this.buttons);
+    createToolbarButtons() {
+      return [
+        new Blockquote(),
+        new BulletList(),
+        new Divider(),
+        new Emphasis(),
+        new Headlines(),
+        new HorizontalRule(),
+        new InlineCode(),
+        new Invisibles(),
+        new OrderedList(),
+        new SpecialChars(),
+        new StrongEmphasis(),
+      ]
     },
 
     createHighlights() {
@@ -217,7 +247,9 @@ export default {
     },
 
     createKirbytags() {
-      return [new Kirbytags({ tags: this.kirbytags })];
+      return this.kirbytags
+        ? [new Kirbytags({ tags: this.knownKirbytags })]
+        : [];
     },
 
     cancel() {
@@ -304,128 +336,6 @@ export default {
     // onInput() {
     //   this.$emit("input", this.getEditorValue());
     // },
-
-    /**
-     * Set the token type of current cursor position
-     */
-    setTokenType(tokenType, pos) {
-      const state = this.editor.state;
-
-      // const gatherMarkup = function (node, line, doc) {
-      //     let nodes = []
-      //     for (let cur = node; cur && cur.name != "Document"; cur = cur.parent) {
-      //         // if (cur.name == "ListItem" || cur.name == "Blockquote")
-      //         nodes.push(cur)
-      //     }
-      //     let markup = [], pos = 0
-      //     for (let i = nodes.length - 1; i >= 0; i--) {
-      //         // consolde.log("node", i, nodes[i]);
-      //         // let node = nodes[i], match
-      //         // if (node.name == "Blockquote" && (match = /^\s*> ?/.exec(line.slice(pos)))) {
-      //         // markup.push({from: pos, string: match[0], node})
-      //         // pos += match[0].length
-      //         // } else if (node.name == "ListItem" && node.parent && node.parent.name == "OrderedList" &&
-      //         //         (match = /^\s*\d+([.)])\s*/.exec(nodeStart(node, doc)))) {
-      //         // let len = match[1].length >= 4 ? match[0].length - match[1].length + 1 : match[0].length
-      //         // markup.push({from: pos, string: line.slice(pos, pos + len).replace(/\S/g, " "), node})
-      //         // pos += len
-      //         // } else if (node.name == "ListItem" && node.parent && node.parent.name == "BulletList" &&
-      //         //         (match = /^\s*[-+*] (\s*)/.exec(nodeStart(node, doc)))) {
-      //         // let len = match[1].length >= 4 ? match[0].length - match[1].length : match[0].length
-      //         // markup.push({from: pos, string: line.slice(pos, pos + len).replace(/\S/g, " "), node})
-      //         // pos += len
-      //         // }
-      //         nodes.push(nodes[i])
-      //     }
-      //     return markup
-      // }
-
-      // const line = state.doc.lineAt(state.selection.main.head);
-      //  .resolve(state.selection.main.head);
-
-      // Need to get both line at cursor position and at cursor itself for line style.
-
-      const tree = syntaxTree(state);
-      let inlineFormat = null;
-      let inlineNode = null;
-
-      const trees = [
-        tree.resolve(state.selection.main.head, -1),
-        tree.resolve(state.selection.main.head, 1),
-      ];
-
-      // let n = treeBefore;
-      let tags = [];
-
-      const marks = {
-        StrongEmphasis: "bold",
-        Emphasis: "italic",
-        InlineCode: "code",
-      };
-
-      for (let n of trees) {
-        do {
-          tags.push(n.name);
-          if (marks[n.name]) {
-            inlineFormat = marks[n.name];
-            inlineNode = n;
-            break;
-          }
-        } while ((n = n.parent));
-      }
-
-      console.log("tags", tags);
-
-      // // init an object
-      // let main = undefined
-      // let secondary = undefined
-
-      // // Keep only the last two words of the token type for comparison,
-      // // because when preceding / wrapping characters are selected, formatting types are prepended.
-      // // header header-6 || formatting formatting-header formatting-header-6 [header header-6]
-      // let tokenTypes = tokenType.split(' ').slice(-2)
-
-      // tokenTypes.forEach(type => {
-      //     // main type
-      //     if(type == 'strong')             main = 'bold'
-      //     else if(type == 'em')            main = 'italic'
-      //     else if(type == 'quote')         main = 'quote'
-      //     else if(type == 'strikethrough') main = 'strikethrough'
-      //     else if(type == 'code')          main = 'code'
-      //     else if(type == 'hr')            main = 'horizontal-rule'
-      //     else if(type == 'kirbytag')      main = 'kirbytag'
-      //     else if(type == 'header')        main = 'headings'
-
-      //     // tricky types (ul, ol, codeblock)
-      //     else if(type == '') {
-      //         let text = this.editor.getDoc().getLine(pos.line)
-      //         // is it an ordered list?
-      //         if(/^\s*\d+\.\s/.test(text))              main = 'ordered-list'
-      //         // is it an unordered list?
-      //         else if(/^(\s*)(\*|\-|\+)\s+/.test(text)) main = 'unordered-list'
-      //         // is it a code block?
-      //         // somehow it doesnt get returned in the getTokenTypeAt call
-      //         else {
-      //             let token = this.editor.getTokenAt(pos)
-      //             if(token.type !== null) {
-      //                 if(token.type.endsWith('blockcode')) {
-      //                     main = 'code'
-      //                     secondary = 'block'
-      //                 }
-      //             }
-      //         }
-      //     }
-
-      //     // secondary type
-      //     else if(type.startsWith('header-') || type.startsWith('kirbytag-')) {
-      //         secondary = type.replace('header-', 'heading-')
-      //     }
-      // })
-
-      // // set the type object as current token type
-      // let type = { main: main, secondary: secondary }
-      // this.currentTokenType = type
-    },
 
     /**
      * Handles the drop event from CodeMirror

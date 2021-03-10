@@ -90,6 +90,9 @@ $options = A::merge($options, [
         'highlights' => function ($highlights = null) {
             return $highlights ?? option('community.markdown-field.highlights', true);
         },
+        'kirbytags' => function (bool $kirbytags = true) {
+          return $kirbytags;
+        },
     ],
     'computed' => [
         /**
@@ -97,7 +100,7 @@ $options = A::merge($options, [
          * Highlighting only known KirbyTags decreases the chance of false
          * positives.
          */
-        'kirbytags' => function() {
+        'knownKirbytags' => function() {
             $tags = array_keys(kirby()->extensions('tags'));
             return $tags;
         },

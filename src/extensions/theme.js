@@ -9,7 +9,7 @@ const theme = EditorView.theme(
     "&.focused ::selection": {
       background: "var(--cm-selection-background)",
     },
-   ".cm-scroller": {
+    ".cm-scroller": {
       fontFamily: "var(--font-family-mono)",
       lineHeight: "var(--cm-line-height)",
       fontSize: "var(--font-size-medium)",
@@ -18,7 +18,7 @@ const theme = EditorView.theme(
       whiteSpace: "pre-wrap",
     },
     ".cm-line": {
-      margin: "0 var(--cm-line-margin)",
+      margin: "0",
       padding: "0",
     },
     ".cm-cursor": {
@@ -33,12 +33,9 @@ const theme = EditorView.theme(
       backgroundColor: "var(--cm-selection-background)",
     },
     ".cm-codeblock": {
-        margin: "0 calc(.25 * var(--cm-line-margin))",
-        padding: "0 calc(.75 * var(--cm-line-margin))",
+      margin: "0 calc(.25 * var(--cm-line-margin))",
+      padding: "0 calc(.75 * var(--cm-line-margin))",
     },
-    // "$kirbytag": {
-    //     background: "cyan",
-    // },
   },
   { dark: false }
 );
@@ -60,9 +57,9 @@ const styleDef = HighlightStyle.define([
     color: "var(--cm-color-meta)",
   },
   {
-      tag: t.contentSeparator,
-      color: "currentColor",
-      fontWeight: "700",
+    tag: t.contentSeparator,
+    color: "currentColor",
+    fontWeight: "700",
   },
   {
     tag: t.strong,
@@ -74,8 +71,8 @@ const styleDef = HighlightStyle.define([
     color: "currentColor",
   },
   {
-      tag: t.heading, // table header
-      fontWeight: "700",
+    tag: t.heading, // table header
+    fontWeight: "700",
   },
   {
     tag: t.emphasis,
@@ -95,7 +92,11 @@ const styleDef = HighlightStyle.define([
   {
     tag: t.character, // HTML Entity
     color: "currentColor",
-  }
+  },
+  // {
+  //   tag: t.monospace, // Inline Code,
+  //   backgroundColor: "var(--cm-code-background)",
+  // }
 ]);
 
 const highlightStyle = () => styleDef;

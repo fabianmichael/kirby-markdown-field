@@ -125,7 +125,7 @@
   // }
 
   // active state of toolbar buttons
-  .k-markdown-button.active{
+  .k-markdown-button.active {
     // &::before {
     //   content: "";
     //   background: rgba($color-focus, .1);
@@ -151,4 +151,8 @@
 .k-markdown-toolbar-buttons-right {
   margin-left: auto;
   border-left: 1px solid $color-light;
+}
+
+.k-markdown-toolbar .k-button.k-dropdown-item[aria-current="true"] {
+  color: #aacfff;
 }

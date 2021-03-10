@@ -5,9 +5,10 @@
   'field/markdown-field.scss';
 
 :root {
-  --cm-line-margin: .375rem;
+  --cm-line-inset: .375rem;
   --cm-line-height: 1.5;
 
+  --cm-code-background: rgba(0, 0, 0, .05);
   --cm-color-meta: #aaa;
   --cm-color-light-gray: rgba(0,0,0,.1);
   --cm-selection-background: hsla(195, 80%, 40%, .16);
@@ -18,14 +19,18 @@
 //   'themes/custom.scss',
 //   'themes/options.scss';
 
+.k-markdown-field .cm-line {
+  padding: 0 var(--cm-line-inset);
+}
+
 .cm-codeblock {
-  background: rgba(0, 0, 0, .04);
+  background: var(--cm-code-background);
 
 }
 
 .cm-heading {
   text-indent: calc((var(--cm-indent) + 1) * -1ch);
-  padding-left: calc((var(--cm-indent) + 1) * 1ch) !important;
+  margin-left: calc((var(--cm-indent) + 1) * 1ch) !important;
 }
 
 .cm-blockquote {
