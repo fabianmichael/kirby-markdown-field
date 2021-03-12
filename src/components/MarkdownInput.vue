@@ -81,20 +81,19 @@ import Editor from './Editor.js';
 import Highlight from "./Extensions/Highlight.js";
 import Kirbytags from "./Extensions/Kirbytags.js";
 
-import {
-  Blockquote,
-  BulletList,
-  Divider,
-  Emphasis,
-  Headlines,
-  HorizontalRule,
-  InlineCode,
-  Invisibles,
-  Italic,
-  OrderedList,
-  SpecialChars,
-  StrongEmphasis,
-} from "./Buttons/index.js";
+import Blockquote from "./Buttons/Blockquote.js"
+import BulletList from "./Buttons/BulletList.js"
+import Divider from "./Buttons/Divider.js"
+import Emphasis from "./Buttons/Emphasis.js"
+import Footnote from "./Buttons/Footnote.js"
+import Headlines from "./Buttons/Headlines.js"
+import HorizontalRule from "./Buttons/HorizontalRule.js"
+import InlineCode from "./Buttons/InlineCode.js"
+import Invisibles from "./Buttons/Invisibles.js"
+import OrderedList from "./Buttons/OrderedList.js"
+import SpecialChars from "./Buttons/SpecialChars.js"
+import Strikethrough from "./Buttons/Strikethrough.js"
+import StrongEmphasis from "./Buttons/StrongEmphasis.js"
 
 export default {
   components: {
@@ -205,39 +204,69 @@ export default {
   },
 
   methods: {
-    filterExtensions(available, allowed, postFilter) {
+    filterExtensions(available, active, postFilter) {
       return available;
-      // if (allowed === false) {
-      //   allowed = [];
-      // } else if (allowed === true || Array.isArray(allowed) === false) {
-      //   allowed = Object.keys(available);
-      // }
-      // let installed = [];
-      // allowed.forEach(allowed => {
-      //   if (available[allowed]) {
-      //     installed.push(available[allowed]);
-      //   }
-      // });
-      // if (typeof postFilter === "function") {
-      //   installed = postFilter(allowed, installed);
-      // }
-      // return installed;
+
     },
 
     createToolbarButtons() {
-      return [
+      const available = [
         new Blockquote(),
         new BulletList(),
         new Divider(),
         new Emphasis(),
+        new Footnote(),
         new Headlines(),
         new HorizontalRule(),
         new InlineCode(),
         new Invisibles(),
         new OrderedList(),
         new SpecialChars(),
+        new Strikethrough(),
         new StrongEmphasis(),
-      ]
+      ];
+
+      const mapped = available.reduce((accumulator, extension) => ({
+        ...accumulator,
+        [extension.name]: extension
+      }), {});
+
+      const layout = [];
+
+      if (this.buttons === true) {
+        // default layout
+        this.buttons = [
+          "headlines",
+          "bold",
+          "italic",
+          "divider",
+          "link",
+          "email",
+          "file",
+          "code",
+          "divider",
+          "ul",
+          "ol",
+          "invisibles",
+        ]
+      }
+
+      if (Array.isArray(this.buttons)) {
+        this.buttons.forEach(item => {
+          console.log("ddiv", item)
+          if (Array.isArray(item)) {
+            // headlines item
+            mapped.headlines.configure({ levels: item })
+            layout.push(mapped.headlines);
+          } else if (mapped[item]) {
+            layout.push(mapped[item]);
+          } else {
+            console.info("skipped", item);
+          }
+        })
+      }
+
+      return layout;
     },
 
     createHighlights() {

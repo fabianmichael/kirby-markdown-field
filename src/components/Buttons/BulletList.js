@@ -6,11 +6,8 @@ export default class BulletList extends Button {
     return {
       icon: "list-bullet",
       label: "Bullet List",
+      command: () => this.editor.toggleLines("-"),
     };
-  }
-
-  commands() {
-    return () => console.log("ul");
   }
 
   get name() {

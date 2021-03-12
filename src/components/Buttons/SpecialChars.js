@@ -32,6 +32,6 @@ export default class SpecialChars extends Button {
   }
 
   get name() {
-    return "special-chars";
+    return "chars";
   }
 }

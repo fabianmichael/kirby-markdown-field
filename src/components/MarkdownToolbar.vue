@@ -41,7 +41,7 @@
             :tooltip="button.label"
             :class="(active.includes(token) ? 'active ' : '') + 'k-toolbar-button k-markdown-button' + (button.align === 'right' ? ' k-markdown-toolbar-buttons-right' : '')"
             tabindex="-1"
-            @click="command(name, button.args)"
+            @click="command(button.command, button.args)"
           />
         </template>
 

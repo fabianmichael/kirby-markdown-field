@@ -1,26 +1,5 @@
 import { syntaxTree } from "@codemirror/language";
 
-function getMarksFromTree(tree) {
-
-}
-
-const Blocks = {
-  Paragraph: "paragraph",
-  ATXHeading1: "ATXHeading1",
-  ATXHeading2: "ATXHeading2",
-  ATXHeading3: "ATXHeading3",
-  ATXHeading4: "ATXHeading4",
-  ATXHeading5: "ATXHeading5",
-  ATXHeading6: "ATXHeading6",
-};
-
-const Inline = {
-  Emphasis: "italic",
-  StrongEmphasis: "bold",
-  InlineCode: "code",
-  Strikethrough: "strikethrough",
-}
-
 export function getActiveTokensAt(view, {block, inline}, selection) {
   const { head, from, to } = selection.main;
   const state = view.state;
@@ -82,41 +61,101 @@ export function getActiveTokensAt(view, {block, inline}, selection) {
     to,
   });
 
-  // console.log("sel", from, to)
-  // console.log("tags", tokens);
   return tokens;
+}
 
-  // if (anchor === head) {
-  //   trees.push(tree.resolve(anchor))
-  //   trees.push(tree.resolve(head))
-  // } else {
-  //   console.log("anchor!=head");
-  // }
+const BlockMarks = [
+  "HeaderMark",
+  "QuoteMark",
+  "ListMark"
+];
 
-  // const trees = [
-  //   // tree.resolve(pos, -1),
-  //   // tree.resolve(pos, 1),
-  //   tree.resolve(pos, 0),
-  // ];
+const BlockTypes = [
+  "ATXHeading1",
+  "ATXHeading2",
+  "ATXHeading3",
+  "ATXHeading4",
+  "ATXHeading5",
+  "ATXHeading6",
+  "BlockQuote",
+  "OrderedList",
+  "BuletList",
+  "Paragraph",
+  "HorizontalRule",
+  "CommentBlock",
+];
 
-  // let n = treeBefore;
-  // let tags = [];
+export function toggleLines(view, mark, selection = null) {
+  const state = view.state;
+  const tree = syntaxTree(state);
+  selection = selection || view.state.selection.main;
+  const { from, to } = selection;
 
-  // const marks = {
-  //   StrongEmphasis: "bold",
-  //   Emphasis: "italic",
-  // };
+  const firstLine = state.doc.lineAt(from);
+  const lastLine  = state.doc.lineAt(to);
 
-  // for (let n of trees) {
-  //   do {
-  //     // tags.push(n.name);
-  //     if (marks[n.name]) {
-  //       tags.push(marks[n.name]);
-  //     }
-  //   } while ((n = n.parent));
-  // }
+  const output = [];
 
-  // console.log("tags", tags);
+  for (let l = firstLine.number, lMax = lastLine.number; l <= lMax; l++) {
+    const line = state.doc.line(l);
+
+    const currentBlock = null;
+    const currentMark  = null;
+
+    tree.iterate({
+      enter: (node, from, to) => {
+        if (BlockTypes.includes(node.name)) {
+          currentBlock = node;
+        } else if (BlockMarks.includes(node.name)) {
+          currentMark = { ...node, from, to };
+        }
+
+        if (currentBlock && currentMark) {
+          // Stop iterating, it block and mark where both found
+          return false;
+        }
+      },
+      from: line.from,
+      to: line.to
+    });
+
+    if (currentBlock && currentBlock.name === "CommentBlock") {
+      // Skip comment blocks
+      output.push(line.text);
+      continue;
+    }
+
+    let prefix;
+    let lineContent;
+
+    if (currentBlock && currentMark) {
+      prefix = line.text.slice(0, currentMark.from - line.from).trimStart();
+      lineContent = line.text.substring(currentMark.to - line.from).trimStart();
+    } else {
+      prefix = "";
+      lineContent = line.text.trimStart();
+    }
+
+    if (mark === "ol") {
+      // Special treatment for ordered lists
+      // TODO: Get numbers of previous lines
+      prefix += (l - firstLine.number + 1) + ".";
+    } else {
+      prefix += mark;
+    }
+
+    prefix += " ";
+
+    output.push(prefix + lineContent);
+  }
+
+  view.dispatch({
+    changes: {
+      from: firstLine.from,
+      to: lastLine.to,
+      insert: output.join(state.lineBreak)
+    }
+  })
 }
 
 // export function getCurrentInlineTokens(view) {

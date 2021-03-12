@@ -7,22 +7,21 @@ import {
   markdownKeymap,
   markdownLanguage,
 } from "@codemirror/lang-markdown";
-import {styleTags, tags as t} from "@codemirror/highlight"
 
-import markdownCommands from "../extensions/commands";
 import { theme, highlightStyle } from "../extensions/theme";
 import specialChars from "../extensions/special-chars";
 import lineStyles from "../extensions/line-styles";
 
 import { EditorView } from "@codemirror/view";
 
-import { getCurrentInlineTokens } from "../extensions/commands.js";
-import { getActiveTokensAt } from "./utils.js";
+import { getActiveTokensAt, setLines } from "./utils.js";
 
 const isFirefox = /Firefox/.test(navigator.userAgent);
 
 import Emitter from "./Emitter.js";
 import Extensions from "./Extensions.js";
+
+import { toggleLines } from "./utils.js";
 
 export default class Editor extends Emitter {
 
@@ -120,8 +119,9 @@ export default class Editor extends Emitter {
         }
 
         const active = getActiveTokensAt(this.view, this.tokens, this.state.selection);
-        console.log("aa", active);
-        // this.emit("update", this, transaction);
+
+        // console.log("line", setLines(this.view, "ol", this.state.selection.main))
+
         this.emit("update", this.view.state.doc.toString(), active);
 
         // https://discuss.codemirror.net/t/codemirror-6-proper-way-to-listen-for-changes/2395/6
@@ -227,6 +227,10 @@ export default class Editor extends Emitter {
         insert: value,
       },
     });
+  }
+
+  toggleLines(mark, selection = null) {
+    return toggleLines(this.view, mark, selection);
   }
 
   get value() {
