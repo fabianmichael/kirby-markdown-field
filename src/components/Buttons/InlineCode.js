@@ -6,19 +6,12 @@ export default class InlineCode extends Button {
     return {
       icon: "code",
       label: "Inline Code",
+      command: this.command,
     };
   }
 
-  commands() {
-    return () => this.toggleMark("`");
-  }
-
-  keys() {
-    return [
-      {
-        "Mod-Shift-c": () => console.log("inline code"),
-      }
-    ]
+  get command() {
+    return () => this.editor.toggleMark(this.token);
   }
 
   get name() {

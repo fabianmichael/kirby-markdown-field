@@ -14,14 +14,17 @@ import lineStyles from "../extensions/line-styles";
 
 import { EditorView } from "@codemirror/view";
 
-import { getActiveTokensAt, setLines } from "./utils.js";
 
 const isFirefox = /Firefox/.test(navigator.userAgent);
 
 import Emitter from "./Emitter.js";
 import Extensions from "./Extensions.js";
 
-import { toggleLines } from "./utils.js";
+import {
+  getActiveTokensAt,
+  toggleLines,
+  toggleMark
+} from "./utils.js";
 
 export default class Editor extends Emitter {
 
@@ -46,12 +49,11 @@ export default class Editor extends Emitter {
 
   createKeymap() {
     const customKeymap = this.extensions.getKeymap();
-    console.log("c", ...customKeymap)
 
     return keymap.of([
       ...standardKeymap,
       ...historyKeymap,
-      // ...markdownKeymap,
+      ...markdownKeymap,
       ...customKeymap,
     ]);
   }
@@ -110,25 +112,16 @@ export default class Editor extends Emitter {
       editable: this.options.editable,
       dispatch: (transaction) => {
         this.view.update([transaction]);
-        // console.log("dispatch");
-        // console.log("tr", transaction);
 
         if (this.preventUpdate) {
           this.preventUpdate = false;
           return;
         }
 
+        const value  = this.view.state.doc.toString()
         const active = getActiveTokensAt(this.view, this.tokens, this.state.selection);
 
-        // console.log("line", setLines(this.view, "ol", this.state.selection.main))
-
-        this.emit("update", this.view.state.doc.toString(), active);
-
-        // https://discuss.codemirror.net/t/codemirror-6-proper-way-to-listen-for-changes/2395/6
-        // _this.onInput();
-        // _this.setTokenType();
-        // _this.currentInlineFormat = getCurrentInlineTokens(_this.editor);
-        // console.log("dd", this.domAtPos(this.state.selection.main.head).node)
+        this.emit("update", value, active);
       },
     });
   }
@@ -190,17 +183,17 @@ export default class Editor extends Emitter {
   /**
    * Insert text at the cursor's position
    */
-  insert(text, incr = 0) {
-    const transaction = this.state.replaceSelection(text);
-    this.dispatch(transaction);
-    // replace current selection
-    // this.editor.getDoc().replaceSelection(str)
-    // move caret if needed
-    // let pos = this.editor.getCursor()
-    // this.editor.setCursor({line: pos.line, ch: pos.ch - incr})
-    // bring the focus back to the editor
-    this.focus();
-  }
+  // insert(text, incr = 0) {
+  //   const transaction = this.state.replaceSelection(text);
+  //   this.dispatch(transaction);
+  //   // replace current selection
+  //   // this.editor.getDoc().replaceSelection(str)
+  //   // move caret if needed
+  //   // let pos = this.editor.getCursor()
+  //   // this.editor.setCursor({line: pos.line, ch: pos.ch - incr})
+  //   // bring the focus back to the editor
+  //   this.focus();
+  // }
 
   toggleSpecialChars(force = null) {
     if (force === this.options.specialChars) {
@@ -229,8 +222,18 @@ export default class Editor extends Emitter {
     });
   }
 
-  toggleLines(mark, selection = null) {
-    return toggleLines(this.view, mark, selection);
+  toggleLines(type, selection = null) {
+    return toggleLines(this.view, type, selection);
+  }
+
+  toggleMark(type, selection = null) {
+    return toggleMark(this.view, type, selection);
+  }
+
+  insert(text) {
+    // TODO: Find out, why this is called very often
+    // return console.log("inserto", (new Error()).stack);
+    this.dispatch(this.state.replaceSelection(text));
   }
 
   get value() {

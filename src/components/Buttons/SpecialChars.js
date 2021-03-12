@@ -9,23 +9,23 @@ export default class SpecialChars extends Button {
       dropdown: [
         {
           label: "No-Break Space",
-          command: "insert",
+          command: () => this.editor.insert("\u00a0"),
         },
         {
           label: "Thin Space",
-          command: "insert",
+          command: () => this.editor.insert("\u2009"),
         },
         {
           label: "Thin No-Break Space",
-          command: "insert",
+          command: () => this.editor.insert("\u202f"),
         },
         {
           label: "Soft Hyphen",
-          command: "insert",
+          command: () => this.editor.insert("\u00ad"),
         },
         {
           label: "Zero-Width Space",
-          command: "insert",
+          command: () => this.editor.insert("\u200b"),
         },
       ],
     }

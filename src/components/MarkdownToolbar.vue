@@ -62,8 +62,8 @@ export default {
   },
   computed: {
     layout() {
-      // console.log("layout");
       return this.buttons.sort((a, b) => {
+        // ensure, that invisibles item always comes last
         if (a.name === "invisibles") return 1;
         if (b.name === "invisibles") return -1;
         return 0;

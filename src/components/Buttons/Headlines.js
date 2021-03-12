@@ -27,15 +27,10 @@ export default class Headlines extends Button {
       dropdown: this.options.levels.map(level => ({
         icon: `h${level}`,
         label: `Heading ${level}`,
-        command: () => this.editor.toggleLines("#".repeat(level)),
+        command: () => this.editor.toggleLines(`ATXHeading${level}`),
         token: `ATXHeading${level}`,
-        tokenType: "block",
       })),
     }
-  }
-
-  commands() {
-    return () => this.toggleMark("**");
   }
 
   keys() {
@@ -44,7 +39,7 @@ export default class Headlines extends Button {
         ...accumulator,
         {
           key: `Mod-${level}`,
-          run: () => this.editor.toggleLines("#".repeat(level)),
+          run: () => this.editor.toggleLines(`ATXHeading${level}`),
           preventDefault: true,
         }
       ], [])

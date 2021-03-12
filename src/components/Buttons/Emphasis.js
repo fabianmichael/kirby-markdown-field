@@ -5,19 +5,21 @@ export default class Emphasis extends Button {
   get button() {
     return {
       icon: "italic",
-      label: "Italic"
+      label: "Italic",
+      command: this.command,
     };
   }
 
-  commands() {
-    return () => this.toggleMark("*");
+  get command() {
+    return () => this.editor.toggleMark(this.token);
   }
+
 
   keys() {
     return [
       {
         key: "Mod-i",
-        run: () => this.toggleMark("*"),
+        run: this.command,
       }
     ];
   }

@@ -6,7 +6,7 @@ export default class BulletList extends Button {
     return {
       icon: "list-bullet",
       label: "Bullet List",
-      command: () => this.editor.toggleLines("-"),
+      command: () => this.editor.toggleLines(this.token),
     };
   }
 

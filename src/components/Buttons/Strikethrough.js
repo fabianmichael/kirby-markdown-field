@@ -5,19 +5,20 @@ export default class Strikethrough extends Button {
   get button() {
     return {
       icon: "strikethrough",
-      label: "Strikethrough"
+      label: "Strikethrough",
+      command: this.command,
     };
   }
 
-  commands() {
-    return () => this.toggleMark("*");
+  get command() {
+    return () => this.editor.toggleMark(this.token);
   }
 
   keys() {
     return [
       {
         key: "Mod-Alt-Shift--",
-        run: () => console.log("strike!"),
+        run: this.command,
       }
     ];
   }

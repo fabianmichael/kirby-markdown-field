@@ -253,7 +253,6 @@ export default {
 
       if (Array.isArray(this.buttons)) {
         this.buttons.forEach(item => {
-          console.log("ddiv", item)
           if (Array.isArray(item)) {
             // headlines item
             mapped.headlines.configure({ levels: item })

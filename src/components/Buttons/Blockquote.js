@@ -6,7 +6,7 @@ export default class BlockQuote extends Button {
     return {
       icon: "quote",
       label: "Quote",
-      command: () => this.editor.toggleLines(">"),
+      command: () => this.editor.toggleLines(this.token),
     };
   }
 

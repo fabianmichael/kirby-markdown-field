@@ -6,9 +6,6 @@ export function getActiveTokensAt(view, {block, inline}, selection) {
   const tree = syntaxTree(state);
   const tokens = [];
 
-  let start = from;
-  let end = to;
-
   if (from !== to) {
     // selection, possibly has multiple lines
     let firstLine = state.doc.lineAt(from);
@@ -33,18 +30,20 @@ export function getActiveTokensAt(view, {block, inline}, selection) {
 
   tree.iterate({
     enter: ({ name }, start, end) => {
-      let match;
+      let inlineMatch;
 
       if (from !== to) {
         // selection
         if (start <= from && to <= end) {
-          match = true;
+          // Matches, if selection is larger or equal to token
+          inlineMatch = true;
         }
       } else {
         // no selection
         if (head > start && head < end) {
-          // only match tokens, where the cursor is inside (not at the edge)
-          match = true
+          // Only match inline tokens, where the cursor is
+          // inside of if (not before/after the token)
+          inlineMatch = true
         }
       }
 
@@ -52,11 +51,10 @@ export function getActiveTokensAt(view, {block, inline}, selection) {
         tokens.push(name)
       }
 
-      if (match && inline.includes(name)) {
+      if (inlineMatch && inline.includes(name)) {
         tokens.push(name);
       }
     },
-    // leave⁠?: fn(type: NodeType, from: number, to: number),
     from,
     to,
   });
@@ -70,47 +68,49 @@ const BlockMarks = [
   "ListMark"
 ];
 
-const BlockTypes = [
-  "ATXHeading1",
-  "ATXHeading2",
-  "ATXHeading3",
-  "ATXHeading4",
-  "ATXHeading5",
-  "ATXHeading6",
-  "BlockQuote",
-  "OrderedList",
-  "BuletList",
-  "Paragraph",
-  "HorizontalRule",
-  "CommentBlock",
-];
+const BlockTypes = {
+  "ATXHeading1"   : "#",
+  "ATXHeading2"   : "##",
+  "ATXHeading3"   : "###",
+  "ATXHeading4"   : "####",
+  "ATXHeading5"   : "#####",
+  "ATXHeading6"   : "######",
+  "Blockquote"    : ">",
+  "OrderedList"   : "1.",
+  "BulletList"    : "-",
+  "HorizontalRule": "***",
+  // "Paragraph": "",
+  // "CommentBlock",
+};
 
-export function toggleLines(view, mark, selection = null) {
-  const state = view.state;
-  const tree = syntaxTree(state);
-  selection = selection || view.state.selection.main;
-  const { from, to } = selection;
+export function toggleLines(view, type, selection = null) {
+  const state        = view.state;
+  const tree         = syntaxTree(state);
+  const { from, to } = selection || view.state.selection.main;
+  const firstLine    = state.doc.lineAt(from);
+  const lastLine     = state.doc.lineAt(to);
 
-  const firstLine = state.doc.lineAt(from);
-  const lastLine  = state.doc.lineAt(to);
-
-  const output = [];
+  const lines        = [];
+  let output         = [];
 
   for (let l = firstLine.number, lMax = lastLine.number; l <= lMax; l++) {
-    const line = state.doc.line(l);
-
-    const currentBlock = null;
-    const currentMark  = null;
+    const line         = state.doc.line(l);
+    let block          = null;
+    let mark           = null;
+    let listNumber     = null;
 
     tree.iterate({
       enter: (node, from, to) => {
-        if (BlockTypes.includes(node.name)) {
-          currentBlock = node;
+        if (BlockTypes[node.name]) {
+          block = node.name;
         } else if (BlockMarks.includes(node.name)) {
-          currentMark = { ...node, from, to };
+          mark = { ...node, from, to };
+          if (block === "OrderedList") {
+            listNumber = parseInt(line.text.slice(from - line.from, to - line.from, 10))
+          }
         }
 
-        if (currentBlock && currentMark) {
+        if (block && mark) {
           // Stop iterating, it block and mark where both found
           return false;
         }
@@ -119,34 +119,51 @@ export function toggleLines(view, mark, selection = null) {
       to: line.to
     });
 
-    if (currentBlock && currentBlock.name === "CommentBlock") {
-      // Skip comment blocks
-      output.push(line.text);
-      continue;
-    }
+    lines.push({
+      line,
+      block,
+      mark,
+      listNumber
+    })
+  }
 
-    let prefix;
-    let lineContent;
+  // Checks if all selected lines already have target block type;
+  const isTargetBlockType = lines.reduce((result, { block }) => !(!result || block !== type), true);
 
-    if (currentBlock && currentMark) {
-      prefix = line.text.slice(0, currentMark.from - line.from).trimStart();
-      lineContent = line.text.substring(currentMark.to - line.from).trimStart();
-    } else {
-      prefix = "";
-      lineContent = line.text.trimStart();
-    }
+  if (isTargetBlockType) {
+    // all lines are target block type, remove marks
+    console.log("remove")
+    output = lines.map(({line, block, mark}) => {
+      if (block === "HorizontalRule") {
+        // Remove whole line content for rules
+        return "";
+      } else if (mark) {
+        return line.text.substring(mark.to - line.from).trimStart();
+      } else
+      return line.text;
+    });
 
-    if (mark === "ol") {
-      // Special treatment for ordered lists
-      // TODO: Get numbers of previous lines
-      prefix += (l - firstLine.number + 1) + ".";
-    } else {
-      prefix += mark;
-    }
+  } else if (type === "HorizontalRule") {
+    // Replace whole selection with rule
+    // TODO: Inserted newlines around the rule should depend on context
+    const rule = state.lineBreak + state.lineBreak + BlockTypes[type] + state.lineBreak + state.lineBreak;
+    view.dispatch(view.state.replaceSelection(rule));
+    return;
 
-    prefix += " ";
+  } else {
+    // different lines types => add/replace lines marks
+    let listNumber = 1;
 
-    output.push(prefix + lineContent);
+    output = lines.map(({line, mark}) => {
+      const prefix = type === "OrderedList"
+        ? (listNumber++) + ". "
+        : BlockTypes[type] + " ";
+
+      if (mark) {
+        return prefix + line.text.substring(mark.to - line.from).trimStart();
+      }
+      return prefix + line.text;
+    });
   }
 
   view.dispatch({
@@ -154,42 +171,10 @@ export function toggleLines(view, mark, selection = null) {
       from: firstLine.from,
       to: lastLine.to,
       insert: output.join(state.lineBreak)
-    }
+    },
   })
 }
 
-// export function getCurrentInlineTokens(view) {
-//   const state = view.state;
-//   const tree = syntaxTree(state);
-//   let inlineFormat = null;
-//   let inlineNode = null;
-
-//   const trees = [
-//     // tree.resolve(state.selection.main.head, -1),
-//     // tree.resolve(state.selection.main.head, 1),
-//     tree.resolve(state.selection.main.head, 0)
-//   ];
-
-//   // let n = treeBefore;
-//   let tags = [];
-
-//   const marks = {
-//     StrongEmphasis: "bold",
-//     Emphasis: "italic",
-//     InlineCode: "code",
-//   };
-
-//   for (let n of trees) {
-
-//     do {
-//       tags.push(n.name);
-//       // if (marks[n.name]) {
-//       // inlineFormat = marks[n.name];
-//       // inlineNode = n;
-//       // break;
-//       // }
-//     } while ((n = n.parent));
-//   }
-
-//   return tags;
-// }
+export function toggleMark(view, type, selection = null) {
+  console.log("toggleMark", type);
+}

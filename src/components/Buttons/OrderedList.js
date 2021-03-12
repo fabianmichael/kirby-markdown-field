@@ -6,8 +6,12 @@ export default class OrderedList extends Button {
     return {
       icon: "list-numbers",
       label: "Ordered List",
-      command: () => this.editor.toggleLines("ol"),
+      command: this.command,
     };
+  }
+
+  get command() {
+    return () => this.editor.toggleLines(this.token);
   }
 
   get name() {

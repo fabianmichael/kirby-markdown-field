@@ -5,21 +5,22 @@ export default class Footnote extends Button {
   get button() {
     return {
       icon: "footnote",
-      label: "Footnote"
+      label: "Footnote",
+      command: this.command,
     };
-  }
-
-  commands() {
-    return () => this.toggleMark("*");
   }
 
   keys() {
     return [
       {
-        key: "Mod-i",
-        run: () => this.toggleMark("*"),
+        mac: "Mod-Ctrl-k",
+        run: this.command,
       }
     ];
+  }
+
+  get command() {
+    return () => this.editor.insert("[^]");
   }
 
   get name() {

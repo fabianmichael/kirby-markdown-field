@@ -10,13 +10,6 @@ export default class Mark extends Extension {
     return null
   }
 
-  command() {
-    return () => {};
-  }
-
-//   remove() {
-//     this.editor.removeMark(this.name);
-//   }
   get token() {
     return null;
   }
@@ -28,13 +21,4 @@ export default class Mark extends Extension {
   get type() {
     return "button";
   }
-
-
-//   toggle() {
-//     return this.editor.toggleMark(this.name);
-//   }
-
-//   update(attrs) {
-//     this.editor.updateMark(this.name, attrs);
-//   }
 }

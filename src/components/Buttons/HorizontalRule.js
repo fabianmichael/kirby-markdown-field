@@ -6,11 +6,12 @@ export default class HorizontalRule extends Button {
     return {
       icon: "horizontal-rule",
       label: "Horizontal Rule",
+      command: this.command,
     };
   }
 
-  commands() {
-    return () => console.log("hr");
+  get command() {
+    return () => this.editor.toggleLines(this.token);
   }
 
   get name() {
