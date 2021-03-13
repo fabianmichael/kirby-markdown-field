@@ -13,7 +13,7 @@
         ref="toolbar"
         :buttons="toolbarButtons"
         :active="active"
-        @command="onCommand"
+        :specialChars="specialChars"
         @mousedown.native.prevent
       />
       <div
@@ -75,8 +75,6 @@ import Toolbar from "./MarkdownToolbar.vue";
 import LinkDialog from "./dialogs/link-dialog.vue";
 import EmailDialog from "./dialogs/email-dialog.vue";
 
-import { syntaxTree } from "@codemirror/language";
-
 import Editor from './Editor.js';
 import Highlight from "./Extensions/Highlight.js";
 import Kirbytags from "./Extensions/Kirbytags.js";
@@ -133,9 +131,6 @@ export default {
         this.editor.setValue(newVal);
       }
     },
-    specialChars(newVal, oldVal) {
-      this.editor.setSpecialChars(this.specialChars);
-    },
   },
   mounted() {
     this.editor = new Editor(this.value, {
@@ -154,8 +149,10 @@ export default {
         update: (value, active) => {
           this.$emit("input", value);
           this.active = active;
-          // this.setTokenType();
         },
+        specialChars: (value) => {
+          this.specialChars = value;
+        }
       }
     });
 
@@ -259,8 +256,6 @@ export default {
             layout.push(mapped.headlines);
           } else if (mapped[item]) {
             layout.push(mapped[item]);
-          } else {
-            console.info("skipped", item);
           }
         })
       }
@@ -308,7 +303,9 @@ export default {
     insertUpload(files, response) {
       console.log("insert Upload");
       this.editor.insert(response.map((file) => file.dragText).join("\n\n"));
+      this.$events.$emit("file.create");
       this.$events.$emit("model.update");
+      this.$store.dispatch("notification/success", ":)");
     },
 
     selectFile() {
@@ -370,15 +367,13 @@ export default {
      * Allows it to accept Kirby DragTexts
      */
     onDrop($event) {
-      // const drag = this.$store.state.drag;
-      // console.log("ondrop", drag.type, drag.data)
-
-      // if (drag && drag.type === "text") {
-      //     this.editorFocus()
-      //     this.editor.insert(drag.data)
-      //     e.preventDefault()
-      // }
-      console.log("drop");
+      // dropping files
+      if (this.uploads && this.$helper.isUploadEvent($event)) {
+        return this.$refs.fileUpload.drop($event.dataTransfer.files, {
+          url: "/api/" + this.endpoints.field + "/upload",
+          multiple: false
+        });
+      }
 
       // dropping text
       const drag = this.$store.state.drag;
@@ -410,13 +405,6 @@ export default {
     },
     onSubmit($event) {
       return this.$emit("submit", $event);
-    },
-    onCommand($event) {
-      console.log("command");
-
-      if ($event === "specialChars") {
-        this.specialChars = !this.specialChars;
-      }
     },
     onUploadError() {
       console.log("upload error");

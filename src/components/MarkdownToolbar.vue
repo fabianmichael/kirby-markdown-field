@@ -1,7 +1,7 @@
 <template>
   <nav class="k-toolbar k-markdown-toolbar">
     <div class="k-toolbar-buttons k-markdown-toolbar-buttons">
-      <template v-for="({ button, token }, buttonIndex) in layout">
+      <template v-for="({ button, token, name }, buttonIndex) in layout">
 
         <!-- divider -->
         <template v-if="button.divider">
@@ -25,7 +25,7 @@
                 :key="dropdownItemIndex"
                 :icon="dropdownItem.icon"
                 :current="active.includes(dropdownItem.token)"
-                @click="command(dropdownItem.command, dropdownItem.args)"
+                @click="dropdownItem.command"
               >
                 {{ dropdownItem.label }}
               </k-dropdown-item>
@@ -39,9 +39,9 @@
             :key="buttonIndex"
             :icon="button.icon"
             :tooltip="button.label"
-            :class="(active.includes(token) ? 'active ' : '') + 'k-toolbar-button k-markdown-button' + (button.align === 'right' ? ' k-markdown-toolbar-buttons-right' : '')"
+            :class="(active.includes(token) || (name === 'invisibles' && specialChars) ? 'active ' : '') + 'k-toolbar-button k-markdown-button' + (button.align === 'right' ? ' k-markdown-toolbar-buttons-right' : '')"
             tabindex="-1"
-            @click="command(button.command, button.args)"
+            @click="button.command"
           />
         </template>
 
@@ -57,6 +57,7 @@ export default {
     buttons: Array,
     editor: Object,
     modals: Boolean,
+    specialChars: Boolean,
     uploads: [Boolean, Object, Array],
     active: Array,
   },
@@ -70,14 +71,5 @@ export default {
       });
     }
   },
-  methods: {
-    command(command, ...args) {
-      if (typeof command === "function") {
-        command();
-      }
-
-      console.log("btn", typeof command, ...args);
-    },
-  }
 };
 </script>

@@ -121,7 +121,7 @@ export default class Editor extends Emitter {
         const value  = this.view.state.doc.toString()
         const active = getActiveTokensAt(this.view, this.tokens, this.state.selection);
 
-        this.emit("update", value, active);
+        this.emit("update", value, active, this.options.specialChars);
       },
     });
   }
@@ -202,6 +202,7 @@ export default class Editor extends Emitter {
 
     this.options.specialChars = typeof force === "boolean" ? force : !this.options.specialChars;
     this.updateState();
+    this.emit("specialChars", this.options.specialChars);
   }
 
   get state() {

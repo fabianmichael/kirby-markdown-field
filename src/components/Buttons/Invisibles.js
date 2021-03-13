@@ -7,14 +7,19 @@ export default class Invisibles extends Button {
       align: "right",
       icon: "preview",
       label: this.$t("markdown.toolbar.button.invisibles"),
+      command: this.command,
     };
   }
 
-  command() {
+  get command() {
     return () => this.editor.toggleSpecialChars()
   }
 
   get name() {
     return "invisibles";
+  }
+
+  get tokenType() {
+    return "setting";
   }
 }
