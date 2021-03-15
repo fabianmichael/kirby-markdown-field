@@ -16,6 +16,7 @@ const theme = EditorView.theme(
     },
     ".cm-content": {
       whiteSpace: "pre-wrap",
+      "-webkit-user-modify": "read-write-plaintext-only", // Todo: Test, if this really hides the "B I U" toolbar on iOS
     },
     ".cm-line": {
       margin: "0",

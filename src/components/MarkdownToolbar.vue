@@ -1,7 +1,7 @@
 <template>
   <nav class="k-toolbar k-markdown-toolbar">
     <div class="k-toolbar-buttons k-markdown-toolbar-buttons">
-      <template v-for="({ button, token, name }, buttonIndex) in layout">
+      <template v-for="({ button, token, name, isActive, isDisabled }, buttonIndex) in layout">
 
         <!-- divider -->
         <template v-if="button.divider">
@@ -26,9 +26,7 @@
                 :icon="dropdownItem.icon"
                 :current="active.includes(dropdownItem.token)"
                 @click="dropdownItem.command"
-              >
-                {{ dropdownItem.label }}
-              </k-dropdown-item>
+              >{{ dropdownItem.label }}</k-dropdown-item>
             </k-dropdown-content>
           </k-dropdown>
         </template>
@@ -39,7 +37,7 @@
             :key="buttonIndex"
             :icon="button.icon"
             :tooltip="button.label"
-            :class="(active.includes(token) || (name === 'invisibles' && specialChars) ? 'active ' : '') + 'k-toolbar-button k-markdown-button' + (button.align === 'right' ? ' k-markdown-toolbar-buttons-right' : '')"
+            :class="(isDisabled() ? 'disabled ' : '') + (isActive() || (name === 'invisibles' && specialChars) ? 'active ' : '') + 'k-toolbar-button k-markdown-button' + (button.align === 'right' ? ' k-markdown-toolbar-buttons-right' : '')"
             tabindex="-1"
             @click="button.command"
           />

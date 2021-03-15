@@ -76,6 +76,7 @@ import LinkDialog from "./dialogs/link-dialog.vue";
 import EmailDialog from "./dialogs/email-dialog.vue";
 
 import Editor from './Editor.js';
+import FencedCode from "./Extensions/FencedCode.js";
 import Highlight from "./Extensions/Highlight.js";
 import Kirbytags from "./Extensions/Kirbytags.js";
 
@@ -144,6 +145,7 @@ export default {
         ...this.createKirbytags(),
         ...this.createHighlights(),
         ...this.createToolbarButtons(),
+        new FencedCode(),
       ],
       events: {
         update: (value, active) => {

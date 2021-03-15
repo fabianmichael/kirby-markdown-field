@@ -6,12 +6,12 @@ export default class StrongEmphasis extends Button {
     return {
       icon: "bold",
       label: "Bold",
-      command: this.command
+      command: this.command,
     };
   }
 
   get command() {
-    return () => this.editor.toggleMark(this.token);
+    return () => !this.isDisabled() && this.editor.toggleMark(this.token);
   }
 
   keys() {

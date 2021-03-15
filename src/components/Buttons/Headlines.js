@@ -29,6 +29,7 @@ export default class Headlines extends Button {
         label: `Heading ${level}`,
         command: () => this.editor.toggleLines(`ATXHeading${level}`),
         token: `ATXHeading${level}`,
+        tokenType: "block",
       })),
     }
   }

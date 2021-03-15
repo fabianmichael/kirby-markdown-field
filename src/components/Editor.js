@@ -119,9 +119,8 @@ export default class Editor extends Emitter {
         }
 
         const value  = this.view.state.doc.toString()
-        const active = getActiveTokensAt(this.view, this.tokens, this.state.selection);
-
-        this.emit("update", value, active, this.options.specialChars);
+        this.activeTokens = getActiveTokensAt(this.view, this.tokens, this.state.selection);
+        this.emit("update", value, this.activeTokens, this.options.specialChars);
       },
     });
   }
@@ -155,6 +154,7 @@ export default class Editor extends Emitter {
       ...options,
     };
 
+    this.activeTokens   = [];
     this.events         = this.createEvents();
     this.extensions     = this.createExtensions();
     this.kirbytags      = this.extensions.getHighlightPlugins();
@@ -163,6 +163,8 @@ export default class Editor extends Emitter {
     this.buttons        = this.extensions.getButtons();
     this.tokens         = this.extensions.getTokens();
     this.view           = this.createView(value);
+
+    console.info("w", this.tokens);
 
     // this.setActiveNodesAndMarks();
 
@@ -178,6 +180,10 @@ export default class Editor extends Emitter {
         selection: { anchor: this.view.state.doc.length },
       }, false);
     }
+  }
+
+  isActiveToken(token) {
+    return this.activeTokens.includes(token);
   }
 
   /**

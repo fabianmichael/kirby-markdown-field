@@ -1,5 +1,19 @@
 import { syntaxTree } from "@codemirror/language";
 
+// function findParentClass(node, className) {
+//   if (node.classList && node.classList.contains("cm-line")) {
+//     return false;
+//   }
+
+//   if (!node.classList || !node.classList.contains(className)) {
+//       return findParentClass(node.parentNode,clsName);
+//   } else if (node.className !== null){
+//       return true;
+//   }
+
+//   return false;
+// }
+
 export function getActiveTokensAt(view, {block, inline}, selection) {
   const { head, from, to } = selection.main;
   const state = view.state;
@@ -8,8 +22,8 @@ export function getActiveTokensAt(view, {block, inline}, selection) {
 
   if (from !== to) {
     // selection, possibly has multiple lines
-    let firstLine = state.doc.lineAt(from);
-    let lastLine  = state.doc.lineAt(to);
+    const firstLine = state.doc.lineAt(from);
+    const lastLine  = state.doc.lineAt(to);
 
     if (firstLine.number !== lastLine.number) {
       // Multiline selection, just look for blocks
@@ -59,6 +73,57 @@ export function getActiveTokensAt(view, {block, inline}, selection) {
     to,
   });
 
+  // Check if selection start or end (or cursor) is inside Kirbytag
+
+  // let startNode = view.domAtPos(from);
+  // if (startNode.node) {
+  //   if (findParentClass(startNode.node, startNode)) {
+  //     tokens.push("kirbytag");
+  //   }
+    // console.log("nnn", startNode.node)
+    // startNode = startNode.node;
+
+    // while(true) {
+    //   if (startNode.classList.contains("cm-line")) {
+    //     break;
+    //   }
+
+    //   if (startNode.classList.contains("cm-kirbytag")) {
+    //     tokens.push("kirbytag");
+    //     break;
+    //   }
+
+    //   if (startNode.parentNode) {
+    //     startNode = startNode.parentNode;
+    //   } else {
+    //     break;
+    //   }
+    // }
+  // }
+
+  // if (from !== to && !tokens.includes("kirbytag")) {
+  //   let endNode = view.domAtPos(to).node;
+  //   if (endNode.node) {
+  //     endNode = endNode.node;
+
+  //     do {
+  //       if (endNode.type !== Node.ELEMENT_NODE) {
+  //         continue;
+  //       }
+
+  //       if (endNode.classList.contains("cm-line")) {
+  //         break;
+  //       }
+
+  //       if (endNode.classList.contains("cm-kirbytag")) {
+  //         tokens.push("kirbytag");
+  //         break;
+  //       }
+
+  //     } while (endNode = endNode.parentNode);
+  //   }
+  // }
+
   return tokens;
 }
 
@@ -79,8 +144,6 @@ const BlockTypes = {
   "OrderedList"   : "1.",
   "BulletList"    : "-",
   "HorizontalRule": "***",
-  // "Paragraph": "",
-  // "CommentBlock",
 };
 
 export function toggleLines(view, type, selection = null) {
@@ -146,8 +209,18 @@ export function toggleLines(view, type, selection = null) {
   } else if (type === "HorizontalRule") {
     // Replace whole selection with rule
     // TODO: Inserted newlines around the rule should depend on context
-    const rule = state.lineBreak + state.lineBreak + BlockTypes[type] + state.lineBreak + state.lineBreak;
-    view.dispatch(view.state.replaceSelection(rule));
+    const textBefore = state.doc.slice(0, from);
+    const textAfter  = state.doc.slice(to);
+
+    view.dispatch({
+      changes: {
+        from: 0,
+        to: state.doc.length,
+        insert: textBefore + "\n\n***\n\n" + textAfter,
+      },
+    });
+    // const rule = state.lineBreak + state.lineBreak + BlockTypes[type] + state.lineBreak + state.lineBreak;
+    // view.dispatch(view.state.replaceSelection(rule));
     return;
 
   } else {

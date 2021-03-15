@@ -21,4 +21,19 @@ export default class Mark extends Extension {
   get type() {
     return "button";
   }
+
+  get isActive() {
+    if (this.token !== null) {
+      return () => this.editor.isActiveToken(this.token);
+    }
+
+    return () => false;
+  }
+
+  get isDisabled() {
+    if (this.tokenType === "inline") {
+      return () => this.editor.isActiveToken("kirbytag") || this.editor.isActiveToken("FencedCode");
+    }
+    return () => false;
+  }
 }

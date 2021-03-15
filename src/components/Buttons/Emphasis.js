@@ -11,9 +11,8 @@ export default class Emphasis extends Button {
   }
 
   get command() {
-    return () => this.editor.toggleMark(this.token);
+    return () => !this.isDisabled() && this.editor.toggleMark(this.token);
   }
-
 
   keys() {
     return [

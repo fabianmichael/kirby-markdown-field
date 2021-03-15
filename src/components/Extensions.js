@@ -58,9 +58,8 @@ export default class Extensions {
    */
   getTokensByType(type) {
     return this.extensions
-    .filter(extension => extension.type === "button")
     .reduce((accumulator, extension) => {
-      if (extension.button.dropdown) {
+      if (extension.type === "button" && extension.button.dropdown) {
         return [
           ...accumulator,
           ...extension.button.dropdown
@@ -69,7 +68,7 @@ export default class Extensions {
         ]
       }
 
-      if (extension.tokenType === type) {
+      if (extension.token && extension.tokenType === type) {
         return [
           ...accumulator,
           extension.token
