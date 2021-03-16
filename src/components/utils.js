@@ -1,18 +1,29 @@
 import { syntaxTree } from "@codemirror/language";
 
-// function findParentClass(node, className) {
-//   if (node.classList && node.classList.contains("cm-line")) {
-//     return false;
-//   }
 
-//   if (!node.classList || !node.classList.contains(className)) {
-//       return findParentClass(node.parentNode,clsName);
-//   } else if (node.className !== null){
-//       return true;
-//   }
+function nodeIsKirbytag(node) {
+  if (!node.node) {
+    return false;
+  }
 
-//   return false;
-// }
+  node = node.node
+
+  do {
+    if (node.classList) {
+      if (node.classList.contains("cm-kirbytag")) {
+        return true;
+      }
+
+      if (node.classList.contains("cm-line")) {
+        return false;
+      }
+    }
+
+    node = node.parentNode
+  } while (node.parentNode);
+
+  return false;
+}
 
 export function getActiveTokensAt(view, {block, inline}, selection) {
   const { head, from, to } = selection.main;
@@ -74,55 +85,17 @@ export function getActiveTokensAt(view, {block, inline}, selection) {
   });
 
   // Check if selection start or end (or cursor) is inside Kirbytag
+  let isKirbytag = nodeIsKirbytag(view.domAtPos(from));
 
-  // let startNode = view.domAtPos(from);
-  // if (startNode.node) {
-  //   if (findParentClass(startNode.node, startNode)) {
-  //     tokens.push("kirbytag");
-  //   }
-    // console.log("nnn", startNode.node)
-    // startNode = startNode.node;
+  if (from !== to) {
+    if (!isKirbytag) {
+      isKirbytag = nodeIsKirbytag(view.domAtPos(to));
+    }
+  }
 
-    // while(true) {
-    //   if (startNode.classList.contains("cm-line")) {
-    //     break;
-    //   }
-
-    //   if (startNode.classList.contains("cm-kirbytag")) {
-    //     tokens.push("kirbytag");
-    //     break;
-    //   }
-
-    //   if (startNode.parentNode) {
-    //     startNode = startNode.parentNode;
-    //   } else {
-    //     break;
-    //   }
-    // }
-  // }
-
-  // if (from !== to && !tokens.includes("kirbytag")) {
-  //   let endNode = view.domAtPos(to).node;
-  //   if (endNode.node) {
-  //     endNode = endNode.node;
-
-  //     do {
-  //       if (endNode.type !== Node.ELEMENT_NODE) {
-  //         continue;
-  //       }
-
-  //       if (endNode.classList.contains("cm-line")) {
-  //         break;
-  //       }
-
-  //       if (endNode.classList.contains("cm-kirbytag")) {
-  //         tokens.push("kirbytag");
-  //         break;
-  //       }
-
-  //     } while (endNode = endNode.parentNode);
-  //   }
-  // }
+  if (isKirbytag) {
+    tokens.push("kirbytag");
+  }
 
   return tokens;
 }
@@ -195,7 +168,6 @@ export function toggleLines(view, type, selection = null) {
 
   if (isTargetBlockType) {
     // all lines are target block type, remove marks
-    console.log("remove")
     output = lines.map(({line, block, mark}) => {
       if (block === "HorizontalRule") {
         // Remove whole line content for rules
@@ -207,20 +179,23 @@ export function toggleLines(view, type, selection = null) {
     });
 
   } else if (type === "HorizontalRule") {
-    // Replace whole selection with rule
-    // TODO: Inserted newlines around the rule should depend on context
-    const textBefore = state.doc.slice(0, from);
-    const textAfter  = state.doc.slice(to);
+    // Replace whole selection with rule cursor should end up at the end of the
+    // new inserted characters.
+    let textBefore = rtrim(state.doc.slice(0, from).toString());
+    let textAfter  = ltrim(state.doc.slice(to).toString());
+
+    textBefore = textBefore + (textBefore.length > 0 ? "\n\n" : "") + "***";
+    textAfter  = "\n\n" + textAfter;
 
     view.dispatch({
       changes: {
         from: 0,
         to: state.doc.length,
-        insert: textBefore + "\n\n***\n\n" + textAfter,
+        insert: textBefore + textAfter,
       },
+      selection: { anchor: textBefore.length },
     });
-    // const rule = state.lineBreak + state.lineBreak + BlockTypes[type] + state.lineBreak + state.lineBreak;
-    // view.dispatch(view.state.replaceSelection(rule));
+
     return;
 
   } else {
@@ -250,4 +225,12 @@ export function toggleLines(view, type, selection = null) {
 
 export function toggleMark(view, type, selection = null) {
   console.log("toggleMark", type);
+}
+
+function ltrim(str) {
+    return str.replace(/^[\s\uFEFF\xA0]+/g, '');
+}
+
+function rtrim(str) {
+    return str.replace(/[\s\uFEFF\xA0]+$/g, '');
 }

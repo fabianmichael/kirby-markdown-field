@@ -2,7 +2,7 @@ import { ViewPlugin, Decoration } from "@codemirror/view";
 import { RangeSetBuilder } from '@codemirror/rangeset';
 import Extension from "../Extension.js";
 
-export default class Highlight extends Extension {
+export default class Kirbytags extends Extension {
 
   get defaults() {
     return {
@@ -17,7 +17,7 @@ export default class Highlight extends Extension {
   plugins() {
     const _this = this;
 
-    return [ViewPlugin.fromClass(class {
+    return [ViewPlugin.fromClass(class KirbytagsHighlighter {
       constructor(view) {
         this.decorations = this.mkDeco(view)
       }
@@ -71,7 +71,7 @@ export default class Highlight extends Extension {
           }
         }
 
-        return b.finish()
+        return b.finish();
       }
     },
       {

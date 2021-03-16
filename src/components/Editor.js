@@ -118,7 +118,7 @@ export default class Editor extends Emitter {
           return;
         }
 
-        const value  = this.view.state.doc.toString()
+        const value  = this.view.state.doc.toString();
         this.activeTokens = getActiveTokensAt(this.view, this.tokens, this.state.selection);
         this.emit("update", value, this.activeTokens, this.options.specialChars);
       },
@@ -164,10 +164,6 @@ export default class Editor extends Emitter {
     this.tokens         = this.extensions.getTokens();
     this.view           = this.createView(value);
 
-    console.info("w", this.tokens);
-
-    // this.setActiveNodesAndMarks();
-
     // Enable spell-checking to enable browser extensions, such as Language Tool
     if (this.options.spellcheck) {
       this.view.contentDOM.setAttribute("spellcheck", "true");
@@ -182,44 +178,24 @@ export default class Editor extends Emitter {
     }
   }
 
-  isActiveToken(token) {
-    return this.activeTokens.includes(token);
+  insert(text) {
+    this.dispatch(this.state.replaceSelection(text));
   }
 
-  /**
-   * Insert text at the cursor's position
-   */
-  // insert(text, incr = 0) {
-  //   const transaction = this.state.replaceSelection(text);
-  //   this.dispatch(transaction);
-  //   // replace current selection
-  //   // this.editor.getDoc().replaceSelection(str)
-  //   // move caret if needed
-  //   // let pos = this.editor.getCursor()
-  //   // this.editor.setCursor({line: pos.line, ch: pos.ch - incr})
-  //   // bring the focus back to the editor
-  //   this.focus();
-  // }
-
-  toggleSpecialChars(force = null) {
-    if (force === this.options.specialChars) {
-      return;
+  isActiveToken(...tokens) {
+    for (let token of tokens) {
+      if (this.activeTokens.includes(token)) {
+        return true;
+      }
     }
-
-    this.options.specialChars = typeof force === "boolean" ? force : !this.options.specialChars;
-    this.updateState();
-    this.emit("specialChars", this.options.specialChars);
+    return false;
   }
 
   get state() {
     return this.view ? this.view.state : null;
   }
 
-  updateState() {
-    this.view.setState(this.createState(this.value));
-  }
-
-  setValue(value, emitUpdate = false) {
+  setValue(value) {
     this.view.dispatch({
       changes: {
         from: 0,
@@ -237,10 +213,18 @@ export default class Editor extends Emitter {
     return toggleMark(this.view, type, selection);
   }
 
-  insert(text) {
-    // TODO: Find out, why this is called very often
-    // return console.log("inserto", (new Error()).stack);
-    this.dispatch(this.state.replaceSelection(text));
+  toggleSpecialChars(force = null) {
+    if (force === this.options.specialChars) {
+      return;
+    }
+
+    this.options.specialChars = typeof force === "boolean" ? force : !this.options.specialChars;
+    this.updateState();
+    this.emit("specialChars", this.options.specialChars);
+  }
+
+  updateState() {
+    this.view.setState(this.createState(this.value));
   }
 
   get value() {

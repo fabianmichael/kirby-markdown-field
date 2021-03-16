@@ -32,6 +32,6 @@ export default class Footnote extends Button {
   }
 
   get isDisabled() {
-    return () => this.editor.isActiveToken("kirbytag") || this.editor.isActiveToken("FencedCode");
+    return () => this.editor.isActiveToken("kirbytag", "FencedCode");
   }
 }

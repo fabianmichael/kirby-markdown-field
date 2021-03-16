@@ -32,7 +32,7 @@ export default class Mark extends Extension {
 
   get isDisabled() {
     if (this.tokenType === "inline") {
-      return () => this.editor.isActiveToken("kirbytag") || this.editor.isActiveToken("FencedCode");
+      return () => this.editor.isActiveToken("kirbytag", "FencedCode");
     }
     return () => false;
   }

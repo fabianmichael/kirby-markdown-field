@@ -94,10 +94,13 @@ const styleDef = HighlightStyle.define([
     tag: t.character, // HTML Entity
     color: "currentColor",
   },
-  // {
-  //   tag: t.monospace, // Inline Code,
-  //   backgroundColor: "var(--cm-code-background)",
-  // }
+  {
+    tag: t.monospace, // Inline Code,
+    backgroundColor: "var(--cm-code-background)",
+    padding: ".1em",
+    margin: "-.1em",
+    borderRadius: ".125em",
+  }
 ]);
 
 const highlightStyle = () => styleDef;
