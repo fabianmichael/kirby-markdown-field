@@ -72,7 +72,8 @@ const styleDef = HighlightStyle.define([
     color: "currentColor",
   },
   {
-    tag: t.heading, // table header
+    // table header
+    tag: t.heading,
     fontWeight: "700",
   },
   {
@@ -91,16 +92,18 @@ const styleDef = HighlightStyle.define([
     textUnderlineOffset: ".14em",
   },
   {
-    tag: t.character, // HTML Entity
+    // HTML Entity
+    tag: t.character,
     color: "currentColor",
   },
   {
-    tag: t.monospace, // Inline Code,
+    // Inline Code,
+    tag: t.monospace,
     backgroundColor: "var(--cm-code-background)",
     padding: ".1em",
     margin: "-.1em",
     borderRadius: ".125em",
-  }
+  },
 ]);
 
 const highlightStyle = () => styleDef;

@@ -31,6 +31,7 @@ export default class Editor extends Emitter {
   constructor(value, options = {}) {
     super();
 
+    this.activeTokens   = [];
     this.preventUpdate = false;
 
     this.defaults = {
@@ -148,19 +149,26 @@ export default class Editor extends Emitter {
     this.view.focus();
   }
 
+  getSelection() {
+    return this.state.sliceDoc(
+      this.state.selection.main.from,
+      this.state.selection.main.to
+    );
+  }
+
   init(value, options = {}) {
     this.options = {
       ...this.defaults,
       ...options,
     };
 
-    this.activeTokens   = [];
     this.events         = this.createEvents();
     this.extensions     = this.createExtensions();
     this.kirbytags      = this.extensions.getHighlightPlugins();
     this.highlights     = this.extensions.getKirbytagsPlugins();
     this.keymap         = this.createKeymap();
     this.buttons        = this.extensions.getButtons();
+    this.dialogs        = this.extensions.getDialogs();
     this.tokens         = this.extensions.getTokens();
     this.view           = this.createView(value);
 

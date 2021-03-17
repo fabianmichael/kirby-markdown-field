@@ -1,6 +1,6 @@
 import Extension from "../Extension.js";
 
-export default class Mark extends Extension {
+export default class Button extends Extension {
 
   constructor(options = {}) {
     super(options);
@@ -8,6 +8,10 @@ export default class Mark extends Extension {
 
   get button() {
     return null
+  }
+
+  get dialog() {
+    return null;
   }
 
   get token() {
@@ -31,9 +35,10 @@ export default class Mark extends Extension {
   }
 
   get isDisabled() {
-    if (this.tokenType === "inline") {
-      return () => this.editor.isActiveToken("kirbytag", "FencedCode");
+    if (this.tokenType === "block") {
+      return () => false;
     }
-    return () => false;
+
+    return () => this.editor.isActiveToken("kirbytag", "FencedCode", "Link");
   }
 }

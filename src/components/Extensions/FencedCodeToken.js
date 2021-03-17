@@ -1,6 +1,6 @@
 import Extension from "../Extension.js";
 
-export default class Highlight extends Extension {
+export default class FencedCodeToken extends Extension {
   get token() {
     return "FencedCode";
   }

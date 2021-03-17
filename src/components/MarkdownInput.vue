@@ -24,31 +24,19 @@
         @keydown.meta.enter="onSubmit"
         @keydown.ctrl.enter="onSubmit"
       />
-      <!-- <textarea ref="input"
-                      class="k-markdown-input-native"
-                      :placeholder="placeholder">
-            </textarea> -->
     </div>
 
-    <!-- <component
-      v-for="(item, index) in dialogsDefs"
-      :key="index"
-      :is="item.is"
-      ref="dialogs"
-    /> -->
-    <!-- <k-markdown-link-dialog
-      ref="linkDialog"
-      :editor="editor"
-      :blank="blank"
+    <component
+      v-for="extension in this.dialogs"
+      v-bind="extension.options"
+      :key="extension.name"
+      :extension="extension"
+      :is="extension.dialog"
+      :ref="`dialog-${extension.name}`"
       @cancel="cancel"
-      @submit="insert"
     />
-    <k-markdown-email-dialog
-      ref="emailDialog"
-      :editor="editor"
-      @cancel="cancel"
-      @submit="insert"
-    />
+
+    <!--
     <k-pages-dialog
       ref="pagesDialog"
       @cancel="cancel"
@@ -72,23 +60,27 @@
 import Field from "./MarkdownField.vue";
 import Toolbar from "./MarkdownToolbar.vue";
 
-import LinkDialog from "./dialogs/link-dialog.vue";
-import EmailDialog from "./dialogs/email-dialog.vue";
+import LinkDialog from "./Dialogs/LinkDialog.vue";
+import EmailDialog from "./Dialogs/EmailDialog.vue";
 
 import Editor from './Editor.js';
-import FencedCode from "./Extensions/FencedCode.js";
+import FencedCodeToken from "./Extensions/FencedCodeToken.js";
 import Highlight from "./Extensions/Highlight.js";
 import Kirbytags from "./Extensions/Kirbytags.js";
+import LinkToken from "./Extensions/LinkToken.js";
+import URLToken from "./Extensions/URLToken.js";
 
 import Blockquote from "./Buttons/Blockquote.js"
 import BulletList from "./Buttons/BulletList.js"
 import Divider from "./Buttons/Divider.js"
+import Email from "./Buttons/Email.js"
 import Emphasis from "./Buttons/Emphasis.js"
 import Footnote from "./Buttons/Footnote.js"
 import Headlines from "./Buttons/Headlines.js"
 import HorizontalRule from "./Buttons/HorizontalRule.js"
 import InlineCode from "./Buttons/InlineCode.js"
 import Invisibles from "./Buttons/Invisibles.js"
+import Link from "./Buttons/Link.js"
 import OrderedList from "./Buttons/OrderedList.js"
 import SpecialChars from "./Buttons/SpecialChars.js"
 import Strikethrough from "./Buttons/Strikethrough.js"
@@ -110,6 +102,7 @@ export default {
       specialChars: false,
       toolbarButtons: [],
       active: [],
+      dialogs: [],
     };
   },
   props: {
@@ -145,9 +138,16 @@ export default {
         ...this.createKirbytags(),
         ...this.createHighlights(),
         ...this.createToolbarButtons(),
-        new FencedCode(),
+        // Additional tokens, used by toolbar buttons
+        new FencedCodeToken(),
+        new LinkToken(),
+        new URLToken(),
       ],
       events: {
+        dialog: (extension)  => {
+          // console.log("dialog", dialog, extension);
+          this.openDialog(extension);
+        },
         update: (value, active) => {
           this.$emit("input", value);
           this.active = active;
@@ -159,6 +159,7 @@ export default {
     });
 
     this.toolbarButtons = this.editor.buttons;
+    this.dialogs = this.editor.dialogs;
 
     // console.log("diags", this.$refs.dialogs.find(item => item.$options._componentTag === 'k-markdown-link-dialog'))
 
@@ -213,12 +214,14 @@ export default {
         new Blockquote(),
         new BulletList(),
         new Divider(),
+        new Email({ kirbytext: this.kirbytext }),
         new Emphasis(),
         new Footnote(),
         new Headlines(),
         new HorizontalRule(),
         new InlineCode(),
         new Invisibles(),
+        new Link({ blank: this.blank, kirbytext: this.kirbytext }),
         new OrderedList(),
         new SpecialChars(),
         new Strikethrough(),
@@ -272,25 +275,33 @@ export default {
     },
 
     createKirbytags() {
-      return this.kirbytags
-        ? [new Kirbytags({ tags: this.knownKirbytags })]
-        : [];
+      return this.kirbytext ? [new Kirbytags({ tags: this.knownKirbytags })] : [];
     },
 
     cancel() {
-      this.editorFocus();
+      // this.editor.focus();
+      this.focus();
       this.currentDialog = null;
     },
 
     /**
      * Open pages dialog
      */
-    openPagesDialog() {
-      this.$refs["pagesDialog"].open({
-        endpoint: this.endpoints.field + "/pages",
-        multiple: false,
-        selected: [],
-      });
+    // openPagesDialog() {
+    //   this.$refs["pagesDialog"].open({
+    //     endpoint: this.endpoints.field + "/pages",
+    //     multiple: false,
+    //     selected: [],
+    //   });
+    // },
+
+    openDialog(extension) {
+      if (this.currentDialog !== null) {
+        return;
+      }
+      const dialogName = `dialog-${extension.name}`;
+      this.$refs[dialogName][0].open();
+      this.currentDialog = dialogName;
     },
 
     /**

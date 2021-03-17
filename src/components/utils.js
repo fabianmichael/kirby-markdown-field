@@ -1,5 +1,47 @@
 import { syntaxTree } from "@codemirror/language";
 
+const BlockMarks = [
+  "HeaderMark",
+  "QuoteMark",
+  "ListMark"
+];
+
+const BlockTypes = {
+  "ATXHeading1"   : "#",
+  "ATXHeading2"   : "##",
+  "ATXHeading3"   : "###",
+  "ATXHeading4"   : "####",
+  "ATXHeading5"   : "#####",
+  "ATXHeading6"   : "######",
+  "Blockquote"    : ">",
+  "OrderedList"   : "1.",
+  "BulletList"    : "-",
+  "HorizontalRule": "***",
+};
+
+function ltrim(str) {
+  return str.replace(/^[\s\uFEFF\xA0]+/g, '');
+}
+
+function rtrim(str) {
+  return str.replace(/[\s\uFEFF\xA0]+$/g, '');
+}
+
+// export function getTokenAt(view, token) {
+//   const state = view.state;
+//   const tree = syntaxTree(state);
+
+//   let n = tree.resolve(state.selection.main.head, 0);
+
+//   do {
+//     if (n.name === token) {
+//       return n;
+//     }
+//   } while (n = n.parent);
+
+//   return null;
+// }
+
 
 function nodeIsKirbytag(node) {
   if (!node.node) {
@@ -53,6 +95,8 @@ export function getActiveTokensAt(view, {block, inline}, selection) {
     }
   }
 
+  // Selection spans only a single linge, get current block token and all
+  // inline tokens
   tree.iterate({
     enter: ({ name }, start, end) => {
       let inlineMatch;
@@ -99,25 +143,6 @@ export function getActiveTokensAt(view, {block, inline}, selection) {
 
   return tokens;
 }
-
-const BlockMarks = [
-  "HeaderMark",
-  "QuoteMark",
-  "ListMark"
-];
-
-const BlockTypes = {
-  "ATXHeading1"   : "#",
-  "ATXHeading2"   : "##",
-  "ATXHeading3"   : "###",
-  "ATXHeading4"   : "####",
-  "ATXHeading5"   : "#####",
-  "ATXHeading6"   : "######",
-  "Blockquote"    : ">",
-  "OrderedList"   : "1.",
-  "BulletList"    : "-",
-  "HorizontalRule": "***",
-};
 
 export function toggleLines(view, type, selection = null) {
   const state        = view.state;
@@ -225,12 +250,4 @@ export function toggleLines(view, type, selection = null) {
 
 export function toggleMark(view, type, selection = null) {
   console.log("toggleMark", type);
-}
-
-function ltrim(str) {
-    return str.replace(/^[\s\uFEFF\xA0]+/g, '');
-}
-
-function rtrim(str) {
-    return str.replace(/[\s\uFEFF\xA0]+$/g, '');
 }

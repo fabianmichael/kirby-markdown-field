@@ -40,6 +40,15 @@ export default class Extensions {
       ], [])
   }
 
+  getDialogs() {
+    return this.getButtons()
+      .filter(extension => extension.dialog)
+      .reduce((accumulator, extension) => [
+        ...accumulator,
+        extension,
+      ], []);
+  }
+
   /**
    * Generates the keymap from all registred extensions.
    */

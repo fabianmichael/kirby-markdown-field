@@ -63,7 +63,7 @@ $options = A::merge($options, [
         /**
          * Whether link dialogs enable editors to easily set a target="_blank". Boolean.
          */
-        'blank' => function($blank = null) {
+        'blank' => function(?bool $blank = null) {
             return $blank ?? option('community.markdown-field.blank');
         },
         /**
@@ -90,8 +90,8 @@ $options = A::merge($options, [
         'highlights' => function ($highlights = null) {
             return $highlights ?? option('community.markdown-field.highlights', true);
         },
-        'kirbytags' => function (bool $kirbytags = true) {
-          return $kirbytags;
+        'kirbytext' => function (bool $kirbytext = true) {
+          return $kirbytext;
         },
     ],
     'computed' => [
