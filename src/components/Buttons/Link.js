@@ -28,19 +28,39 @@ export default class Link extends Button {
 
   get command() {
     return (value) => {
-      const url = value.url !== null ? value.url : "";
+      if (this.isDisabled()) {
+        return;
+      }
 
-      if (this.options.kirbytext) {
-        const text = value.text ? ` text: ${value.text}` : "";
-        const blank = value.blank ? ` target: _blank` : "";
-        this.editor.insert(`(link: ${url}${text}${blank})`);
-      } else {
-        if (value.text) {
-          this.editor.insert(`[${value.text}](${url})`);
+      if (value.type === "email") {
+        const email = value.email !== null ? value.email : "";
+
+        if (this.options.kirbytext) {
+          const text = value.text ? ` text: ${value.text}` : "";
+          this.editor.insert(`(email: ${email}${text})`);
         } else {
-          this.editor.insert(`<${url}>`);
+          if (value.text) {
+            this.editor.insert(`[${value.text}](mailto:${email})`);
+          } else {
+            this.editor.insert(`<${email}>`);
+          }
+        }
+      } else {
+        const url = value.url !== null ? value.url : "";
+
+        if (this.options.kirbytext) {
+          const text = value.text ? ` text: ${value.text}` : "";
+          const blank = value.blank ? ` target: _blank` : "";
+          this.editor.insert(`(link: ${url}${text}${blank})`);
+        } else {
+          if (value.text) {
+            this.editor.insert(`[${value.text}](${url})`);
+          } else {
+            this.editor.insert(`<${url}>`);
+          }
         }
       }
+
       this.editor.focus();
     }
   }

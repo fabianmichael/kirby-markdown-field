@@ -61,7 +61,6 @@ import Field from "./MarkdownField.vue";
 import Toolbar from "./MarkdownToolbar.vue";
 
 import LinkDialog from "./Dialogs/LinkDialog.vue";
-import EmailDialog from "./Dialogs/EmailDialog.vue";
 
 import Editor from './Editor.js';
 import FencedCodeToken from "./Extensions/FencedCodeToken.js";
@@ -73,7 +72,6 @@ import URLToken from "./Extensions/URLToken.js";
 import Blockquote from "./Buttons/Blockquote.js"
 import BulletList from "./Buttons/BulletList.js"
 import Divider from "./Buttons/Divider.js"
-import Email from "./Buttons/Email.js"
 import Emphasis from "./Buttons/Emphasis.js"
 import Footnote from "./Buttons/Footnote.js"
 import Headlines from "./Buttons/Headlines.js"
@@ -90,7 +88,6 @@ export default {
   components: {
     "k-markdown-toolbar": Toolbar,
     "k-markdown-link-dialog": LinkDialog,
-    "k-markdown-email-dialog": EmailDialog,
   },
   data() {
     return {
@@ -214,7 +211,6 @@ export default {
         new Blockquote(),
         new BulletList(),
         new Divider(),
-        new Email({ kirbytext: this.kirbytext }),
         new Emphasis(),
         new Footnote(),
         new Headlines(),
@@ -243,7 +239,6 @@ export default {
           "italic",
           "divider",
           "link",
-          "email",
           "file",
           "code",
           "divider",
@@ -297,11 +292,11 @@ export default {
 
     openDialog(extension) {
       if (this.currentDialog !== null) {
-        return;
+        this.$refs[dialogName][0].cancel();
       }
       const dialogName = `dialog-${extension.name}`;
       this.$refs[dialogName][0].open();
-      this.currentDialog = dialogName;
+      this.currentDialog = this.$refs[dialogName][0];
     },
 
     /**

@@ -1,6 +1,7 @@
 <?php
 
 return array(
+    'markdown.linktype'                       => 'Link type',
     'markdown.yes'                            => 'Yes',
     'markdown.no'                             => 'No',
     'markdown.dialog.blank'                   => 'Open in a new tab?',
