@@ -71,6 +71,7 @@ import URLToken from "./Extensions/URLToken.js";
 
 import Blockquote from "./Buttons/Blockquote.js"
 import BulletList from "./Buttons/BulletList.js"
+import CustomButton from "./Buttons/CustomButton.js"
 import Divider from "./Buttons/Divider.js"
 import Emphasis from "./Buttons/Emphasis.js"
 import Footnote from "./Buttons/Footnote.js"
@@ -206,6 +207,17 @@ export default {
 
     },
 
+    createCustomButtons() {
+      if (!window.markdownEditorButtons) {
+        return [];
+      }
+
+      return window.markdownEditorButtons.reduce((accumulator, definition) => [
+        ...accumulator,
+        CustomButton.factory(definition)
+      ], []);
+    },
+
     createToolbarButtons() {
       const available = [
         new Blockquote(),
@@ -222,6 +234,7 @@ export default {
         new SpecialChars(),
         new Strikethrough(),
         new StrongEmphasis(),
+        ...this.createCustomButtons(),
       ];
 
       const mapped = available.reduce((accumulator, extension) => ({
