@@ -292,7 +292,7 @@ export default {
 
     openDialog(extension) {
       if (this.currentDialog !== null) {
-        this.$refs[dialogName][0].cancel();
+        return;
       }
       const dialogName = `dialog-${extension.name}`;
       this.$refs[dialogName][0].open();
