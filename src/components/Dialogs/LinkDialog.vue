@@ -126,7 +126,7 @@ export default {
     },
     submit() {
       this.$refs.dialog.close();
-      this.extension.command(this.value);
+      this.$emit("submit", this.value);
     },
   }
 };

@@ -60,8 +60,6 @@ export default class Link extends Button {
           }
         }
       }
-
-      this.editor.focus();
     }
   }
 

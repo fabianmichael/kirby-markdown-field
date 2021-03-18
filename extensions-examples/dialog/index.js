@@ -98,7 +98,7 @@ const TwitterDialog = {
       this.value.username = this.value.username.replace(/^@/, '');
 
       // Pass value to extension command
-      this.extension.command(this.value);
+      this.$emit("submit", this.value);
     },
   }
 };

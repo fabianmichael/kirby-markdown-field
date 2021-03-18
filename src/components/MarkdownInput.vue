@@ -33,14 +33,8 @@
       :extension="extension"
       :is="extension.dialog"
       :ref="`dialog-${extension.name}`"
-      @cancel="cancel"
-    />
-
-    <!--
-    <k-pages-dialog
-      ref="pagesDialog"
-      @cancel="cancel"
-      @submit="insertPageLink"
+      @cancel="cancelDialog"
+      @submit="submitDialog(extension, ...arguments)"
     />
     <k-files-dialog
       ref="fileDialog"
@@ -81,6 +75,7 @@ import InlineCode from "./Buttons/InlineCode.js"
 import Invisibles from "./Buttons/Invisibles.js"
 import Link from "./Buttons/Link.js"
 import OrderedList from "./Buttons/OrderedList.js"
+import PageLink from "./Buttons/PageLink.js"
 import SpecialChars from "./Buttons/SpecialChars.js"
 import Strikethrough from "./Buttons/Strikethrough.js"
 import StrongEmphasis from "./Buttons/StrongEmphasis.js"
@@ -142,9 +137,9 @@ export default {
         new URLToken(),
       ],
       events: {
-        dialog: (extension)  => {
+        dialog: (extension, ...args)  => {
           // console.log("dialog", dialog, extension);
-          this.openDialog(extension);
+          this.openDialog(extension, ...args);
         },
         update: (value, active) => {
           this.$emit("input", value);
@@ -237,6 +232,10 @@ export default {
         ...this.createCustomButtons(),
       ];
 
+      if (this.kirbytext) {
+        available.push(new PageLink({ endpoints: this.endpoints, currentLanguage: this.currentLanguage }));
+      }
+
       const mapped = available.reduce((accumulator, extension) => ({
         ...accumulator,
         [extension.name]: extension
@@ -286,30 +285,29 @@ export default {
       return this.kirbytext ? [new Kirbytags({ tags: this.knownKirbytags })] : [];
     },
 
-    cancel() {
-      // this.editor.focus();
+    /**
+     * Extension dialogs
+     */
+    openDialog(extension, ...args) {
+      if (this.currentDialog !== null) {
+        return;
+      }
+
+      const dialogName = `dialog-${extension.name}`;
+      const dialog = this.$refs[dialogName][0];
+      dialog.open(...args);
+      this.currentDialog = dialog;
+    },
+
+    cancelDialog() {
       this.focus();
       this.currentDialog = null;
     },
 
-    /**
-     * Open pages dialog
-     */
-    // openPagesDialog() {
-    //   this.$refs["pagesDialog"].open({
-    //     endpoint: this.endpoints.field + "/pages",
-    //     multiple: false,
-    //     selected: [],
-    //   });
-    // },
-
-    openDialog(extension) {
-      if (this.currentDialog !== null) {
-        return;
-      }
-      const dialogName = `dialog-${extension.name}`;
-      this.$refs[dialogName][0].open();
-      this.currentDialog = this.$refs[dialogName][0];
+    submitDialog(extension, ...args) {
+      this.currentDialog = null;
+      this.focus();
+      extension.command(...args);
     },
 
     /**
