@@ -2,11 +2,11 @@
 
 export default class Extensions {
 
-  constructor(extensions = [], editor) {
+  constructor(extensions = [], editor, input) {
     extensions.forEach(extension => {
-      extension.bindEditor(editor)
-      extension.init()
-      extension.$t = () => "translation"
+      extension.bindEditor(editor);
+      extension.bindInput(input);
+      extension.init();
     })
     this.extensions = extensions;
   }

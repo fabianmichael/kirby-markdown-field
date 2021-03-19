@@ -3,19 +3,12 @@ import { RangeSetBuilder } from '@codemirror/rangeset';
 import Extension from "../Extension.js";
 
 export default class Kirbytags extends Extension {
-
-  get defaults() {
-    return {
-      tags: [],
-    }
-  }
-
   get type() {
     return "kirbytags";
   }
 
   plugins() {
-    const _this = this;
+    const tagNamesPattern = this.input.knownKirbytags.join("|");
 
     return [ViewPlugin.fromClass(class KirbytagsHighlighter {
       constructor(view) {
@@ -28,7 +21,6 @@ export default class Kirbytags extends Extension {
 
       mkDeco(view) {
         let b = new RangeSetBuilder();
-        const tagNamesPattern = _this.options.tags.join("|");
         let regex = new RegExp(`(\\((?:${tagNamesPattern}):)|(\\()|(\\))`, "gi");
 
         for (let { from, to } of view.visibleRanges) {

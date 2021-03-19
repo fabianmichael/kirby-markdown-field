@@ -23,10 +23,10 @@ export default class Headlines extends Button {
   get button() {
     return {
       icon: "title",
-      label: this.$t("toolbar.button.headings"),
+      label: this.input.$t("toolbar.button.headings"),
       dropdown: this.options.levels.map(level => ({
         icon: `h${level}`,
-        label: `Heading ${level}`,
+        label: this.input.$t("markdown.toolbar.button.heading." + level),
         command: () => this.editor.toggleLines(`ATXHeading${level}`),
         token: `ATXHeading${level}`,
         tokenType: "block",

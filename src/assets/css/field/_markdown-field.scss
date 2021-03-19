@@ -6,7 +6,7 @@
 }
 
 // disabled option
-.k-input[data-theme=field][data-disabled] .CodeMirror {
+.k-input[data-theme="field"][data-disabled] .CodeMirror {
   background: #efefef;
 }
 
@@ -81,13 +81,13 @@
 /* -----  Toolbar -------------------------------------------- */
 
 // disabled state of toolbar buttons
-.k-markdown-button.disabled {
+.k-markdown-button.is-disabled {
   opacity: 0.25;
   pointer-events: none;
 }
 
 // active state of dropdown items
-.k-dropdown-item.active {
+.k-dropdown-item.is-active {
   .k-button-text {
     opacity: 1;
   }
@@ -125,7 +125,7 @@
   // }
 
   // active state of toolbar buttons
-  .k-markdown-button.active {
+  .k-markdown-button.is-active {
     // &::before {
     //   content: "";
     //   background: rgba($color-focus, .1);

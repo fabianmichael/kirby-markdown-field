@@ -5,7 +5,7 @@ export default class SpecialChars extends Button {
   get button() {
     return {
       icon: "special-chars",
-      label: this.$t("toolbar.button.headings"),
+      label: this.input.$t("toolbar.button.headings"),
       dropdown: [
         {
           label: "No-Break Space",

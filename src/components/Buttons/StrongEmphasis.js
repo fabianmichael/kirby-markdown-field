@@ -5,7 +5,7 @@ export default class StrongEmphasis extends Button {
   get button() {
     return {
       icon: "bold",
-      label: "Bold",
+      label: this.input.$t("toolbar.button.bold"),
       command: this.command,
     };
   }

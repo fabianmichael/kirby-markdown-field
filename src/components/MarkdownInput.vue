@@ -7,6 +7,7 @@
     :font-scaling="font.scaling"
     :data-over="over"
   >
+
     <div class="k-markdown-input-wrapper" :data-size="size">
       <k-markdown-toolbar
         v-if="buttons && !disabled"
@@ -28,7 +29,7 @@
 
     <component
       v-for="extension in this.dialogs"
-      v-bind="extension.options"
+      v-bind="$props"
       :key="extension.name"
       :extension="extension"
       :is="extension.dialog"
@@ -36,17 +37,13 @@
       @cancel="cancelDialog"
       @submit="submitDialog(extension, ...arguments)"
     />
-    <k-files-dialog
-      ref="fileDialog"
-      @cancel="cancel"
-      @submit="insertFile($event)"
-    /> -->
+
     <k-upload
       v-if="uploads"
       ref="fileUpload"
       @success="insertUpload"
-      @error="onUploadError"
     />
+
   </div>
 </template>
 
@@ -68,6 +65,7 @@ import BulletList from "./Buttons/BulletList.js"
 import CustomButton from "./Buttons/CustomButton.js"
 import Divider from "./Buttons/Divider.js"
 import Emphasis from "./Buttons/Emphasis.js"
+import File from "./Buttons/File.js"
 import Footnote from "./Buttons/Footnote.js"
 import Headlines from "./Buttons/Headlines.js"
 import HorizontalRule from "./Buttons/HorizontalRule.js"
@@ -124,6 +122,7 @@ export default {
       autofocus: this.autofocus,
       editable: !this.disabled,
       element: this.$refs.input,
+      input: this,
       placeholder: this.placeholder,
       specialChars: this.specialChars,
       spellcheck: this.spellcheck,
@@ -137,11 +136,13 @@ export default {
         new URLToken(),
       ],
       events: {
-        dialog: (extension, ...args)  => {
-          // console.log("dialog", dialog, extension);
+        dialog: (extension, ...args) => {
           this.openDialog(extension, ...args);
         },
         update: (value, active) => {
+          if (this.$refs.toolbar) {
+            this.$refs.toolbar.closeDropdowns();
+          }
           this.$emit("input", value);
           this.active = active;
         },
@@ -153,55 +154,23 @@ export default {
 
     this.toolbarButtons = this.editor.buttons;
     this.dialogs = this.editor.dialogs;
-
-    // console.log("diags", this.$refs.dialogs.find(item => item.$options._componentTag === 'k-markdown-link-dialog'))
-
-    // // Open dialogs
-    // this.$root.$on('md-openDialog' + this.id, dialog => {
-    //     if(this.$refs[dialog + "Dialog"]) {
-    //         this.currentDialog = dialog
-
-    //         // open the pages dialog with the correct options
-    //         if(dialog == 'pages') {
-    //             this.openPagesDialog()
-    //         }
-    //         // open any other dialog without additional params
-    //         else {
-    //             this.$refs[dialog + "Dialog"].open();
-    //         }
-    //     } else {
-    //         throw "Invalid toolbar dialog";
-    //     }
-    // })
-    // this.$root.$on('md-fileCommand' + this.id, command => {
-    //     // alert(command)
-    //     if(command == 'selectFile') this.selectFile()
-    //     if(command == 'uploadFile') this.uploadFile()
-    // })
-
-    // // Emit changed value
-    // this.editor.on('focus', _editor => {
-    //     this.$root.$emit('md-closeDropdowns')
-    // })
-
-    // // Accept dragText from Kirby sections
-    // this.editor.on('drop', this.onDrop.bind(this))
   },
-
-  // setTokenType() {
-  //   // getTokenTypeAt(this.editor.view, this.editor.view.state.selection.main.head);
-  // },
 
   beforeDestroy() {
     this.editor.destroy();
   },
 
   methods: {
-    filterExtensions(available, active, postFilter) {
-      return available;
-
+    focus() {
+      this.editor.focus();
     },
 
+    onSubmit($event) {
+      return this.$emit("submit", $event);
+    },
+    /**
+     * Extensions
+     */
     createCustomButtons() {
       if (!window.markdownEditorButtons) {
         return [];
@@ -219,12 +188,13 @@ export default {
         new BulletList(),
         new Divider(),
         new Emphasis(),
+        new File(),
         new Footnote(),
         new Headlines(),
         new HorizontalRule(),
         new InlineCode(),
         new Invisibles(),
-        new Link({ blank: this.blank, kirbytext: this.kirbytext }),
+        new Link(),
         new OrderedList(),
         new SpecialChars(),
         new Strikethrough(),
@@ -233,7 +203,7 @@ export default {
       ];
 
       if (this.kirbytext) {
-        available.push(new PageLink({ endpoints: this.endpoints, currentLanguage: this.currentLanguage }));
+        available.push(new PageLink());
       }
 
       const mapped = available.reduce((accumulator, extension) => ({
@@ -282,7 +252,7 @@ export default {
     },
 
     createKirbytags() {
-      return this.kirbytext ? [new Kirbytags({ tags: this.knownKirbytags })] : [];
+      return this.kirbytext ? [new Kirbytags()] : [];
     },
 
     /**
@@ -300,8 +270,8 @@ export default {
     },
 
     cancelDialog() {
-      this.focus();
       this.currentDialog = null;
+      setTimeout(() => this.focus());
     },
 
     submitDialog(extension, ...args) {
@@ -313,14 +283,7 @@ export default {
     /**
      * File handling
      */
-    insertFile(files) {
-      if (files && files.length > 0) {
-        this.editor.insert(files.map((file) => file.dragText).join("\n\n"));
-      }
-    },
-
     insertUpload(files, response) {
-      console.log("insert Upload");
       this.editor.insert(response.map((file) => file.dragText).join("\n\n"));
       this.$events.$emit("file.create");
       this.$events.$emit("model.update");
@@ -342,48 +305,7 @@ export default {
     },
 
     /**
-     * Insert (link: ) tag on pagesDialog submit
-     */
-    insertPageLink(selected) {
-      // if(selected && selected.length) {
-      //     let page      = selected[0]
-      //     let selection = this.editor.getDoc().getSelection()
-      //     let text      = selection.length > 0 ? selection : page.text || page.title
-      //     let lang      = this.currentLanguage && !this.currentLanguage.default ? ' lang: '+ this.currentLanguage.code : ''
-      //     let tag       = '(link: '+ page.id +' text: '+ text + lang +')'
-      //     this.editor.insert(tag, 1)
-      //     this.currentDialog = null
-      // }
-      // else {
-      //     this.cancel()
-      // }
-    },
-
-    focus() {
-      this.editor.focus();
-    },
-
-    // getEditorValue() {
-    //   return this.editor.state.doc.toString();
-    // },
-
-    // setEditorValue(value) {
-    //   this.editor.dispatch({
-    //     changes: {
-    //       from: 0,
-    //       to: this.editor.state.doc.length,
-    //       insert: value,
-    //     },
-    //   });
-    // },
-
-    // onInput() {
-    //   this.$emit("input", this.getEditorValue());
-    // },
-
-    /**
-     * Handles the drop event from CodeMirror
-     * Allows it to accept Kirby DragTexts
+     * Drag and Drop and Uploads
      */
     onDrop($event) {
       // dropping files
@@ -401,17 +323,18 @@ export default {
         this.focus();
       }
     },
+
     onDragLeave() {
       this.$refs.input.blur();
       this.isDragOver = false;
     },
+
     onDragOver($event) {
       // drag & drop for files
       if (this.uploads && this.$helper.isUploadEvent($event)) {
         $event.dataTransfer.dropEffect = "copy";
         this.focus();
         this.isDragOver = true;
-        console.log("upload?");
         return;
       }
       // drag & drop for text
@@ -421,13 +344,7 @@ export default {
         this.focus();
         this.isDragOver = true;
       }
-    },
-    onSubmit($event) {
-      return this.$emit("submit", $event);
-    },
-    onUploadError() {
-      console.log("upload error");
     }
-  },
+  }
 };
 </script>

@@ -5,7 +5,7 @@ export default class OrderedList extends Button {
   get button() {
     return {
       icon: "list-numbers",
-      label: "Ordered List",
+      label: this.input.$t("toolbar.button.ol"),
       command: this.command,
     };
   }

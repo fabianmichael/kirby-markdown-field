@@ -12,8 +12,7 @@ import { theme, highlightStyle } from "../extensions/theme";
 import specialChars from "../extensions/special-chars";
 import lineStyles from "../extensions/line-styles";
 
-import { EditorView } from "@codemirror/view";
-
+import { EditorView, ViewPlugin } from "@codemirror/view";
 
 const isFirefox = /Firefox/.test(navigator.userAgent);
 
@@ -39,6 +38,7 @@ export default class Editor extends Emitter {
       element: null,
       events: {},
       extensions: [],
+      input: null,
       placeholder: null,
       specialChars: false,
       spellcheck: true,
@@ -70,7 +70,7 @@ export default class Editor extends Emitter {
   }
 
   createExtensions() {
-    return new Extensions(this.options.extensions, this);
+    return new Extensions(this.options.extensions, this, this.options.input);
   }
 
   createState(value) {
@@ -94,8 +94,12 @@ export default class Editor extends Emitter {
        */
       isFirefox && drawSelection(),
       this.options.placeholder && placeholder(this.options.placeholder),
-      theme
-
+      theme,
+      // ViewPlugin.define(() => ({}), { eventHandlers: {
+      //   focus(event, view) { console.log("focus", event, view); },
+      //   focusin(event, view) { console.log("focusin", event, view); },
+      //   click(event, view) { console.log("click", event, view); },
+      // }})
     ].filter((v) => !!v);
 
     return EditorState.create({

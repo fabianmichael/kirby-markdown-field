@@ -6,7 +6,7 @@ export default class Footnote extends Button {
   get button() {
     return {
       icon: "footnote",
-      label: "Footnote",
+      label: this.input.$t("markdown.toolbar.button.footnote"),
       command: this.command,
     };
   }

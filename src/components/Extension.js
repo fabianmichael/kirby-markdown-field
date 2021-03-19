@@ -20,8 +20,12 @@ export default class Extension {
     return this._init = true;
   }
 
-  bindEditor(editor = null) {
+  bindEditor(editor) {
     this.editor = editor;
+  }
+
+  bindInput(input) {
+    this.input = input;
   }
 
   get name() {
@@ -33,7 +37,9 @@ export default class Extension {
   }
 
   get defaults() {
-    return {};
+    return {
+      input: null,
+    };
   }
 
   plugins() {

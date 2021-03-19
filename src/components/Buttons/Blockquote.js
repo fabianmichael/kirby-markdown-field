@@ -5,7 +5,7 @@ export default class BlockQuote extends Button {
   get button() {
     return {
       icon: "quote",
-      label: "Quote",
+      label: this.input.$t("markdown.toolbar.button.blockquote"),
       command: () => this.editor.toggleLines(this.token),
     };
   }

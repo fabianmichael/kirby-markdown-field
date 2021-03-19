@@ -5,7 +5,7 @@ export default class BulletList extends Button {
   get button() {
     return {
       icon: "list-bullet",
-      label: "Bullet List",
+      label: this.input.$t("toolbar.button.ul"),
       command: () => this.editor.toggleLines(this.token),
     };
   }

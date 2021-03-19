@@ -5,7 +5,7 @@ export default class Emphasis extends Button {
   get button() {
     return {
       icon: "italic",
-      label: "Italic",
+      label: this.input.$t("toolbar.button.italic"),
       command: this.command,
     };
   }

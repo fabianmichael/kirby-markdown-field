@@ -5,7 +5,7 @@ export default class Strikethrough extends Button {
   get button() {
     return {
       icon: "strikethrough",
-      label: "Strikethrough",
+      label: this.input.$t("markdown.toolbar.button.strikethrough"),
       command: this.command,
     };
   }

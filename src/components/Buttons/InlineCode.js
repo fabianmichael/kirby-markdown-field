@@ -5,7 +5,7 @@ export default class InlineCode extends Button {
   get button() {
     return {
       icon: "code",
-      label: "Inline Code",
+      label: this.input.$t("toolbar.button.code"),
       command: this.command,
     };
   }

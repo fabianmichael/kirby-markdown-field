@@ -6,7 +6,7 @@ export default class Invisibles extends Button {
     return {
       align: "right",
       icon: "preview",
-      label: this.$t("markdown.toolbar.button.invisibles"),
+      label: this.input.$t("markdown.toolbar.button.invisibles"),
       command: this.command,
     };
   }
