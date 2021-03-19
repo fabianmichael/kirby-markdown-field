@@ -21,6 +21,7 @@ const theme = EditorView.theme(
     ".cm-line": {
       margin: "0",
       padding: "0",
+      scrollMargin: "3.5rem 0", /* ensures, that scrolling to a line takes height of the toolbar and Kirby’s save bar into account. */
     },
     ".cm-cursor": {
       position: "absolute",

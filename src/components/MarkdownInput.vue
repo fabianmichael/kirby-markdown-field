@@ -62,7 +62,7 @@ import URLToken from "./Extensions/URLToken.js";
 
 import Blockquote from "./Buttons/Blockquote.js"
 import BulletList from "./Buttons/BulletList.js"
-import CustomButton from "./Buttons/CustomButton.js"
+import Button from "./Buttons/Button.js"
 import Divider from "./Buttons/Divider.js"
 import Emphasis from "./Buttons/Emphasis.js"
 import File from "./Buttons/File.js"
@@ -171,14 +171,14 @@ export default {
     /**
      * Extensions
      */
-    createCustomButtons() {
+    createButtons() {
       if (!window.markdownEditorButtons) {
         return [];
       }
 
       return window.markdownEditorButtons.reduce((accumulator, definition) => [
         ...accumulator,
-        CustomButton.factory(definition)
+        Button.factory(definition)
       ], []);
     },
 
@@ -199,7 +199,7 @@ export default {
         new SpecialChars(),
         new Strikethrough(),
         new StrongEmphasis(),
-        ...this.createCustomButtons(),
+        ...this.createButtons(),
       ];
 
       if (this.kirbytext) {
@@ -254,7 +254,6 @@ export default {
     createKirbytags() {
       return this.kirbytext ? [new Kirbytags()] : [];
     },
-
     /**
      * Extension dialogs
      */

@@ -8,9 +8,9 @@ import {
   markdownLanguage,
 } from "@codemirror/lang-markdown";
 
-import { theme, highlightStyle } from "../extensions/theme";
-import specialChars from "../extensions/special-chars";
-import lineStyles from "../extensions/line-styles";
+import { theme, highlightStyle } from "./theme/theme.js";
+import specialChars from "./theme/special-chars";
+import lineStyles from "./theme/line-styles";
 
 import { EditorView, ViewPlugin } from "@codemirror/view";
 
@@ -22,6 +22,7 @@ import Extensions from "./Extensions.js";
 import {
   getActiveTokensAt,
   toggleLines,
+  getFirstElementParent,
   toggleMark
 } from "./utils.js";
 
@@ -190,8 +191,15 @@ export default class Editor extends Emitter {
     }
   }
 
-  insert(text) {
+  insert(text, scrollIntoView = true) {
     this.dispatch(this.state.replaceSelection(text));
+    if (scrollIntoView) {
+      let { node } = this.view.domAtPos(this.state.selection.main.head);
+      try {
+        node = getFirstElementParent(node);
+        node.scrollIntoView();
+      } catch (e) {};
+    }
   }
 
   isActiveToken(...tokens) {

@@ -5,7 +5,7 @@ return array(
     "markdown.no"                             => "Nein",
     "markdown.dialog.blank"                   => "In neuem Tab öffnen?",
     "markdown.toolbar.button.blockquote"      => "Zitat",
-    "markdown.toolbar.button.horizontal-rule" => "Horizontale Linie",
+    "markdown.toolbar.button.hr"              => "Trennlinie",
     "markdown.toolbar.button.heading.1"       => "Überschrift 1",
     "markdown.toolbar.button.heading.2"       => "Überschrift 2",
     "markdown.toolbar.button.heading.3"       => "Überschrift 3",

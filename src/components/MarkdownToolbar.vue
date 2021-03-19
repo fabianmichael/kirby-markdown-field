@@ -16,7 +16,7 @@
               :icon="button.icon"
               :tooltip="button.label"
               tabindex="-1"
-              class="k-toolbar-button k-markdown-button"
+              :class="(isDisabled() ? 'is-disabled ' : '') + 'k-toolbar-button k-markdown-button'"
               @click="$refs[buttonIndex + '-dropdown'][0].toggle()"
             />
             <k-dropdown-content

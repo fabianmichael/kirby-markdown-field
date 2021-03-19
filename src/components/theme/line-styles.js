@@ -1,7 +1,7 @@
 import { Decoration } from "@codemirror/view";
 import { RangeSetBuilder } from "@codemirror/rangeset";
 import { ViewPlugin } from "@codemirror/view";
-import { getBlockName } from "./commands";
+import { getBlockName } from "../utils.js";
 
 const blockStyles = {
   FencedCode: Decoration.line({

@@ -6,7 +6,7 @@ return array(
     'markdown.no'                             => 'No',
     'markdown.dialog.blank'                   => 'Open in a new tab?',
     'markdown.toolbar.button.blockquote'      => 'Blockquote',
-    'markdown.toolbar.button.horizontal-rule' => 'Horizontal rule',
+    'markdown.toolbar.button.hr'              => 'Horizontal rule',
     'markdown.toolbar.button.heading.1'       => 'Heading 1',
     'markdown.toolbar.button.heading.2'       => 'Heading 2',
     'markdown.toolbar.button.heading.3'       => 'Heading 3',

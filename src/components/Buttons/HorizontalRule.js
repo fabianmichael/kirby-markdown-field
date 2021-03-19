@@ -5,7 +5,7 @@ export default class HorizontalRule extends Button {
   get button() {
     return {
       icon: "horizontal-rule",
-      label: "Horizontal Rule",
+      label: this.input.$t("markdown.toolbar.button.hr"),
       command: this.command,
     };
   }
@@ -24,5 +24,9 @@ export default class HorizontalRule extends Button {
 
   get tokenType() {
     return "block";
+  }
+
+  get isDisabled() {
+    return () => this.editor.isActiveToken("kirbytag", "Link");
   }
 }

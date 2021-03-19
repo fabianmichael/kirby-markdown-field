@@ -6,18 +6,18 @@ export default class Headlines extends Button {
     super(options);
   }
 
+  get defaults() {
+    return {
+      levels: [1, 2, 3],
+    };
+  }
+
   configure(options = {}) {
     if (Array.isArray(options.levels)) {
       options.levels = options.levels.map(v => parseInt(v.replace(/^h/i, ""), 10))
     }
 
     Button.prototype.configure.call(this, options);
-  }
-
-  get defaults() {
-    return {
-      levels: [1, 2, 3],
-    };
   }
 
   get button() {

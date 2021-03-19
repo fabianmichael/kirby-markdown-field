@@ -1,4 +1,5 @@
 import Extension from "../Extension.js";
+import { completeAssign } from "../utils.js";
 
 export default class Button extends Extension {
 
@@ -40,5 +41,14 @@ export default class Button extends Extension {
     }
 
     return () => this.editor.isActiveToken("kirbytag", "FencedCode", "Link");
+  }
+
+  /**
+   * Creates a custom button
+   */
+  static factory(definition) {
+    const button = new Button();
+    completeAssign(button, definition);
+    return button;
   }
 }
