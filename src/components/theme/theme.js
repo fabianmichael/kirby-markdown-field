@@ -6,34 +6,46 @@ const theme = EditorView.theme(
     "&.cm-focused": {
       outline: "none",
     },
+
     "&.focused ::selection": {
       background: "var(--cm-selection-background)",
     },
+
     ".cm-scroller": {
       fontFamily: "var(--font-family-mono)",
       lineHeight: "var(--cm-line-height)",
-      fontSize: "var(--font-size-medium)",
+      fontSize:   "var(--font-size-medium)",
     },
+
     ".cm-content": {
       whiteSpace: "pre-wrap",
       "-webkit-user-modify": "read-write-plaintext-only", // Todo: Test, if this really hides the "B I U" toolbar on iOS
     },
+    /**
+     * 1. Ensures, that scrolling to a line takes height of the
+     *    toolbar and Kirby’s save bar into account. Probably does
+     *    not work in Safari (v14).
+     */
     ".cm-line": {
       margin: "0",
       padding: "0",
-      scrollMargin: "3.5rem 0", /* ensures, that scrolling to a line takes height of the toolbar and Kirby’s save bar into account. */
+      scrollMargin: "3.5rem 0", /* 1 */
     },
+
     ".cm-cursor": {
       position: "absolute",
       borderLeft: ".125rem solid currentColor",
       marginLeft: "-.0625rem",
     },
+
     "&.cm-focused .cm-cursor": {
       color: "var(--color-focus)",
     },
+
     "&.cm-focused .cm-selectionBackground, .cm-selectionBackground": {
       backgroundColor: "var(--cm-selection-background)",
     },
+
     ".cm-codeblock": {
       margin: "0 calc(.25 * var(--cm-line-margin))",
       padding: "0 calc(.75 * var(--cm-line-margin))",
@@ -41,8 +53,6 @@ const theme = EditorView.theme(
   },
   { dark: false }
 );
-
-export { theme };
 
 const styleDef = HighlightStyle.define([
   {
@@ -109,4 +119,7 @@ const styleDef = HighlightStyle.define([
 
 const highlightStyle = () => styleDef;
 
-export { highlightStyle };
+export {
+  highlightStyle,
+  theme
+};

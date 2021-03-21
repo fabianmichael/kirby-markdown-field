@@ -1,4 +1,4 @@
-// make sure there's no overflow
+/* Make sure there's no overflow */
 .k-markdown-field {
   .k-input-element {
     width: 100%;
@@ -6,35 +6,34 @@
 }
 
 // disabled option
-.k-input[data-theme="field"][data-disabled] .CodeMirror {
-  background: #efefef;
-}
+// .k-input[data-theme="field"][data-disabled] .CodeMirror {
+//   background: #efefef;
+// }
 
+/**
+ * General field setup
+ */
 .k-markdown-input-wrapper {
-
-  // General setup
   position: relative;
   // transform: translate3d(0, 0, 0); // causes issue with sticky on Safari
 
-  .k-markdown-input-native {
-    resize: none;
-    border: 0;
-    width: 100%;
-    background: none;
-    font: inherit;
-    line-height: 1.5em;
-    color: inherit;
-    &::placeholder {
-      color: $color-light-grey;
-    }
-    &:focus {
-       outline: 0;
-    }
-    &:invalid {
-      box-shadow: none;
-      outline: 0;
-    }
-  }
+  // .k-markdown-input-native {
+  //   resize: none;
+  //   border: 0;
+  //   width: 100%;
+  //   background: none;
+  //   font: inherit;
+  //   line-height: 1.5em;
+  //   color: inherit;
+
+  //   &:focus {
+  //      outline: 0;
+  //   }
+  //   &:invalid {
+  //     box-shadow: none;
+  //     outline: 0;
+  //   }
+  // }
 
   // size option
   &[data-size="one-line"] {
@@ -78,22 +77,17 @@
 }
 
 
-/* -----  Toolbar -------------------------------------------- */
+/**
+ * Toolbar
+ */
 
-// disabled state of toolbar buttons
+/* disabled state of toolbar buttons */
 .k-markdown-button.is-disabled {
   opacity: 0.25;
   pointer-events: none;
 }
 
-// active state of dropdown items
-.k-dropdown-item.is-active {
-  .k-button-text {
-    opacity: 1;
-  }
-}
-
-// Editor has focus
+/* Editor has focus */
 .k-markdown-input:focus-within .k-toolbar {
   position: -webkit-sticky;
   position: sticky;
@@ -101,7 +95,6 @@
   right: 0;
   left: 0;
   z-index: 4;
-  -webkit-box-shadow: rgba(0, 0, 0, 0.05) 0 2px 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   color: #000;
@@ -110,35 +103,9 @@
     position: relative;
   }
 
-  // .k-button-icon {
-  //   width: 32px;
-  //   height: 32px;
-  //   border-radius: 2px;
-  // }
-
-  // .k-toolbar-button:hover {
-  //   background: transparent;
-  // }
-
-  // .k-toolbar-button:hover .k-button-icon {
-  //   background: hsla(0,0%,93.7%,.5);
-  // }
-
-  // active state of toolbar buttons
   .k-markdown-button.is-active {
-    // &::before {
-    //   content: "";
-    //   background: rgba($color-focus, .1);
-    //   position: absolute;
-    //   $inset: 3px;
-    //   top: $inset;
-    //   left: $inset;
-    //   right: $inset;
-    //   bottom: $inset;
-    //   border-radius: var(--border-radius);
-    // }
     background: rgba($color-focus, .075);
-    color: $color-focus; // #498FCE
+    color: $color-focus;
   }
 
   .k-button-icon {
@@ -147,12 +114,13 @@
   }
 }
 
-// align invisibles button to the right of the toolbar
+/* Align invisibles button to the right of the toolbar */
 .k-markdown-toolbar-buttons-right {
   margin-left: auto;
   border-left: 1px solid $color-light;
 }
 
+/** Active state for dropdown items */
 .k-markdown-toolbar .k-button.k-dropdown-item[aria-current="true"] {
   color: #aacfff;
 }

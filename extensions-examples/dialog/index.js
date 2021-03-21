@@ -18,7 +18,9 @@ window.markdownEditorButtons.push({
    * What the button is actually supposed to do, when the dialog’s form gets submitted
    */
   get command() {
-    return (value) => this.editor.insert(`(twitter: ${value.username})`);
+    return ({ username }) => {
+      this.editor.insert(`(twitter: ${username})`);
+    };
   },
 
   /**
@@ -95,7 +97,7 @@ const TwitterDialog = {
       this.$refs.dialog.close();
 
       // Sanitize value before submit
-      this.value.username = this.value.username.replace(/^@/, '');
+      this.value.username = this.value.username ? this.value.username.replace(/^@/, '') : "";
 
       // Pass value to extension command
       this.$emit("submit", this.value);

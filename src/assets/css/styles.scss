@@ -12,12 +12,8 @@
   --cm-color-meta: #aaa;
   --cm-color-light-gray: rgba(0,0,0,.1);
   --cm-selection-background: hsla(195, 80%, 40%, .16);
+  --md-color-special-char: #f8a752;
 }
-
-// @import
-//   'themes/default.scss',
-//   'themes/custom.scss',
-//   'themes/options.scss';
 
 .k-markdown-field .cm-line {
   padding: 0 var(--cm-line-inset);
@@ -128,33 +124,35 @@
  * Special chars
  */
 
- .cm-specialChar {
+.cm-specialChar {
    cursor: text;
  }
 
-/* Space */
+/**
+ * Space
+ * 1. Ensure, that extra span around each space character does not
+ *    have any effect on word-wrapping.
+ **/
 .cm-specialChar[data-code="32"] {
-  word-break: break-all;
-  $c: #f8a752;
-  background: linear-gradient($c, $c) 50% calc(50% + 1px) / 2px 2px no-repeat;
+  word-break: break-all; /* 1 */
+  background: linear-gradient(var(--md-color-special-char), var(--md-color-special-char)) 50% calc(50% + .0625em) / .125em .125em no-repeat;
 }
 
 /* No-Break Space */
 .cm-specialChar[data-code="160"] {
-  $c: #f8a752;
   background:
-    linear-gradient($c, $c) 1px 100% / 1px 2px no-repeat,
-    linear-gradient($c, $c) 1px 100% / calc(100% - 2px) 1px no-repeat,
-    linear-gradient($c, $c) calc(100% - 1px) 100% / 1px 2px no-repeat;
+    linear-gradient(var(--md-color-special-char), var(--md-color-special-char)) .0625em 100% / .0625em .125em no-repeat,
+    linear-gradient(var(--md-color-special-char), var(--md-color-special-char)) .0625em 100% / calc(100% - .125em) .0625em no-repeat,
+    linear-gradient(var(--md-color-special-char), var(--md-color-special-char)) calc(100% - .0625em) 100% / .0625em .125em no-repeat;
   color: transparent;
 }
 
 /* Soft Hyphen */
 .cm-specialChar[data-code="173"] {
-  margin-left: -1px;
+  margin-left: -.0625em;
   position: relative;
-  left: .5px;
-  border-left: 1px solid #f8a752;
+  left: .03125em;
+  border-left: .0625em solid var(--md-color-special-char);
 }
 
 /* Zero-Width Space */
