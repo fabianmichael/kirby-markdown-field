@@ -1,5 +1,5 @@
 import { EditorState } from "@codemirror/state";
-import { drawSelection, placeholder, keymap } from "@codemirror/view";
+import { EditorView, drawSelection, placeholder, keymap } from "@codemirror/view";
 import { history, historyKeymap } from "@codemirror/history";
 import { standardKeymap } from "@codemirror/commands";
 import {
@@ -8,23 +8,20 @@ import {
   markdownLanguage,
 } from "@codemirror/lang-markdown";
 
+import lineStyles from "./theme/line-styles";
 import { theme, highlightStyle } from "./theme/theme.js";
 import specialChars from "./theme/special-chars";
-import lineStyles from "./theme/line-styles";
-
-import { EditorView, ViewPlugin } from "@codemirror/view";
-
-const isFirefox = /Firefox/.test(navigator.userAgent);
-
 import Emitter from "./Emitter.js";
 import Extensions from "./Extensions.js";
-
 import {
   getActiveTokensAt,
   toggleLines,
   getFirstElementParent,
   toggleMark
 } from "./utils.js";
+import browser from "./browser.js";
+
+const isKnownDesktopBrowser = (browser.safari || browser.chrome || browser.gecko) && (!browser.android && !browser.ios);
 
 export default class Editor extends Emitter {
 
@@ -92,15 +89,13 @@ export default class Editor extends Emitter {
        * this bug.
        *
        * See https://bugzilla.mozilla.org/show_bug.cgi?id=1327834
+       *
+       * However, drawn selction and custom caret look better anyways,
+       * so enable for al known desktop browsers.
        */
-      isFirefox && drawSelection(),
+      isKnownDesktopBrowser && drawSelection(),
       this.options.placeholder && placeholder(this.options.placeholder),
       theme,
-      // ViewPlugin.define(() => ({}), { eventHandlers: {
-      //   focus(event, view) { console.log("focus", event, view); },
-      //   focusin(event, view) { console.log("focusin", event, view); },
-      //   click(event, view) { console.log("click", event, view); },
-      // }})
     ].filter((v) => !!v);
 
     return EditorState.create({

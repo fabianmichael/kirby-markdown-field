@@ -40,7 +40,7 @@ export default class Button extends Extension {
       return () => false;
     }
 
-    return () => this.editor.isActiveToken("kirbytag", "FencedCode", "Link");
+    return () => this.editor.isActiveToken("kirbytag", "FencedCode", "Link", "URL");
   }
 
   /**

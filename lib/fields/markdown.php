@@ -14,84 +14,84 @@ $options = A::merge($options, [
         /**
          * Sets the toolbar buttons.
          */
-        'buttons' => function($buttons = null) {
-        	if($buttons === false) return false;
+        'buttons' => function ($buttons = null) {
+            if ($buttons === false) return false;
 
             $buttons = $buttons ?? option('community.markdown-field.buttons');
-        	if(empty($buttons)) return false;
+            if (empty($buttons)) return false;
 
             $uniqueButtons = array();
-			foreach ($buttons as $button) {
-    			if ($button == 'divider' || !in_array($button, $uniqueButtons)) {
-        			$uniqueButtons[] = $button;
-    			}
-    		}
+            foreach ($buttons as $button) {
+                if ($button == 'divider' || !in_array($button, $uniqueButtons)) {
+                    $uniqueButtons[] = $button;
+                }
+            }
 
-    		return $uniqueButtons;
+            return $uniqueButtons;
         },
         /**
          * Sets whether the editor is editable
          */
-        'disabled' => function(bool $disabled = false) {
+        'disabled' => function (bool $disabled = false) {
             return $disabled;
         },
         /*
          * Sets the editor font.
          */
-        'font' => function($font = null) {
-        	$fontOptions = option('community.markdown-field.font');
+        'font' => function ($font = null) {
+            $fontOptions = option('community.markdown-field.font');
 
-        	if($font) {
-        		// if there is a family set but no scaling option
-        		if(array_key_exists('family', $font) && !array_key_exists('scaling', $font)) {
-        			// default scaling: true for sans-serif, false for monospace
-        			$scaling     = $font['family'] == 'sans-serif';
-        			$fontOptions = A::merge($fontOptions, array('scaling' => $scaling));
-        		}
-        		// merge field options with global defaults
-        		$fontOptions = A::merge($fontOptions, $font);
-        	}
+            if ($font) {
+                // if there is a family set but no scaling option
+                if (array_key_exists('family', $font) && !array_key_exists('scaling', $font)) {
+                    // default scaling: true for sans-serif, false for monospace
+                    $scaling     = $font['family'] == 'sans-serif';
+                    $fontOptions = A::merge($fontOptions, array('scaling' => $scaling));
+                }
+                // merge field options with global defaults
+                $fontOptions = A::merge($fontOptions, $font);
+            }
 
             return $fontOptions;
         },
         /**
          * Whether link / email buttons should open a modal. Boolean.
          */
-        'modals' => function($modals = null) {
+        'modals' => function ($modals = null) {
             return $modals ?? option('community.markdown-field.modals');
         },
         /**
          * Whether link dialogs enable editors to easily set a target="_blank". Boolean.
          */
-        'blank' => function(?bool $blank = null) {
+        'blank' => function (?bool $blank = null) {
             return $blank ?? option('community.markdown-field.blank');
         },
         /**
          * Whether the current language direction should be checked on init. Boolean.
          */
-        'direction' => function($direction = null) {
+        'direction' => function ($direction = null) {
             return $direction ?? option('community.markdown-field.direction');
         },
         /**
          * Min-height of the field when empty. String.
          */
-        'size' => function($size = null) {
+        'size' => function ($size = null) {
             return $size ?? option('community.markdown-field.size');
         },
-        'placeholder' => function($placeholder = null) {
+        'placeholder' => function ($placeholder = null) {
             return $placeholder;
         },
-        'query' => function($query = null) {
-        	$queryOptions = option('community.markdown-field.query');
-        	$queryOptions = $query ? A::merge($queryOptions, $query) : $queryOptions;
+        'query' => function ($query = null) {
+            $queryOptions = option('community.markdown-field.query');
+            $queryOptions = $query ? A::merge($queryOptions, $query) : $queryOptions;
 
-        	return $queryOptions;
+            return $queryOptions;
         },
         'highlights' => function ($highlights = null) {
             return $highlights ?? option('community.markdown-field.highlights', true);
         },
         'kirbytext' => function (bool $kirbytext = true) {
-          return $kirbytext;
+            return $kirbytext;
         },
     ],
     'computed' => [
@@ -100,16 +100,16 @@ $options = A::merge($options, [
          * Highlighting only known KirbyTags decreases the chance of false
          * positives.
          */
-        'knownKirbytags' => function() {
+        'knownKirbytags' => function () {
             $tags = array_keys(kirby()->extensions('tags'));
             return $tags;
         },
-        'breaks' => function() {
+        'breaks' => function () {
             return option('markdown.breaks', true);
         },
-        'customHighlights' => function() {
+        'customHighlights' => function () {
             $highlights = [];
-            $resolve = function($highlight) {
+            $resolve = function ($highlight) {
                 return is_callable($highlight) ? $highlight() : $highlight;
             };
 

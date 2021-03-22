@@ -18,6 +18,7 @@ const theme = EditorView.theme(
     },
 
     ".cm-content": {
+      padding: "var(--cm-content-padding-y) 0",
       whiteSpace: "pre-wrap",
       "-webkit-user-modify": "read-write-plaintext-only", // Todo: Test, if this really hides the "B I U" toolbar on iOS
     },
@@ -34,12 +35,13 @@ const theme = EditorView.theme(
 
     ".cm-cursor": {
       position: "absolute",
-      borderLeft: ".125rem solid currentColor",
-      marginLeft: "-.0625rem",
+      borderLeft: ".1875rem solid currentColor",
+      marginLeft: "-.09375rem",
+      transform: "scaleY(1.3)",
     },
 
     "&.cm-focused .cm-cursor": {
-      color: "var(--color-focus)",
+      color: "var(--cm-color-cursor)",
     },
 
     "&.cm-focused .cm-selectionBackground, .cm-selectionBackground": {

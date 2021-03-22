@@ -49,4 +49,8 @@ export default class Headlines extends Button {
   get name() {
     return "headlines";
   }
+
+  get isDisabled() {
+    return () => false;
+  }
 }
