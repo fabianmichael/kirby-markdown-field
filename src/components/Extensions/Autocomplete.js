@@ -1,3 +1,5 @@
+// Current version of CodeMirror does not support proper positioning of the
+// tooltip dialog within Kirby’s panel. will save this for later.
 
 // import {CompletionSource, autocompletion, CompletionContext, startCompletion,
 //   currentCompletions, completionStatus, completeFromList } from "@codemirror/autocomplete"

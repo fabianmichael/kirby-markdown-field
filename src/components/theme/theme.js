@@ -37,7 +37,6 @@ const theme = EditorView.theme(
       position: "absolute",
       borderLeft: ".1875rem solid currentColor",
       marginLeft: "-.09375rem",
-      transform: "scaleY(1.3)",
     },
 
     "&.cm-focused .cm-cursor": {

@@ -183,10 +183,12 @@ export function toggleLines(view, type, selection = null) {
   const firstLine    = state.doc.lineAt(from);
   const lastLine     = state.doc.lineAt(to);
 
-  const lines        = [];
-  let output         = [];
+  const lines           = [];
+  let   output          = [];
+  let   selectionOffset = 0;
 
   for (let l = firstLine.number, lMax = lastLine.number; l <= lMax; l++) {
+    // gather information for about all selected lines
     const line         = state.doc.line(l);
     let block          = null;
     let mark           = null;
@@ -220,24 +222,33 @@ export function toggleLines(view, type, selection = null) {
     })
   }
 
+  console.log("ll", lines)
+
   // Checks if all selected lines already have target block type;
   const isTargetBlockType = lines.reduce((result, { block }) => !(!result || block !== type), true);
 
   if (isTargetBlockType) {
     // all lines are target block type, remove marks
+
     output = lines.map(({line, block, mark}) => {
       if (block === "HorizontalRule") {
         // Remove whole line content for rules
         return "";
       } else if (mark) {
-        return line.text.substring(mark.to - line.from).trimStart();
-      } else
+        const text = ltrim(line.text.substring(mark.to - line.from));
+        selectionOffset -= line.text.length - text.length;
+        return text;
+      }
+
+      // no mark to remove, do nothing. Should never occur, but let’s
+      // be safe to avoid errors.
       return line.text;
     });
 
   } else if (type === "HorizontalRule") {
     // Replace whole selection with rule cursor should end up at the end of the
     // new inserted characters.
+
     let textBefore = rtrim(state.doc.slice(0, from).toString());
     let textAfter  = ltrim(state.doc.slice(to).toString());
 
@@ -257,18 +268,26 @@ export function toggleLines(view, type, selection = null) {
 
   } else {
     // different lines types => add/replace lines marks
+
     let listNumber = 1;
 
     output = lines.map(({line, mark}) => {
       const prefix = type === "OrderedList"
         ? (listNumber++) + ". "
         : BlockTypes[type] + " ";
+      let text;
 
       if (mark) {
-        return prefix + line.text.substring(mark.to - line.from).trimStart();
+        // replace old mark
+        text = prefix + ltrim(line.text.substring(mark.to - line.from));
+      } else {
+        text = prefix + line.text;
       }
-      return prefix + line.text;
+
+      selectionOffset += text.length - line.text.length;
+      return text;
     });
+
   }
 
   view.dispatch({
@@ -277,6 +296,10 @@ export function toggleLines(view, type, selection = null) {
       to: lastLine.to,
       insert: output.join(state.lineBreak)
     },
+    selection: {
+      anchor: state.selection.main.anchor + selectionOffset,
+      head: state.selection.main.head + selectionOffset,
+    }
   })
 }
 

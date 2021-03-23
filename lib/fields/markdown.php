@@ -101,8 +101,12 @@ $options = A::merge($options, [
          * positives.
          */
         'knownKirbytags' => function () {
-            $tags = array_keys(kirby()->extensions('tags'));
-            return $tags;
+            return array_keys(kirby()->extensions('tags'));
+            // $tags = [];
+            // foreach (kirby()->extensions('tags') as $name => $tag) {
+            //     $tags[$name] = $tag['attr'] ?? [];
+            // }
+            // return $tags;
         },
         'breaks' => function () {
             return option('markdown.breaks', true);
