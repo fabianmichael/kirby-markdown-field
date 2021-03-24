@@ -222,8 +222,6 @@ export function toggleLines(view, type, selection = null) {
     })
   }
 
-  console.log("ll", lines)
-
   // Checks if all selected lines already have target block type;
   const isTargetBlockType = lines.reduce((result, { block }) => !(!result || block !== type), true);
 

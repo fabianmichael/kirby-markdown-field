@@ -34,7 +34,8 @@
       :extension="extension"
       :is="extension.dialog"
       :ref="`dialog-${extension.name}`"
-      @cancel="cancelDialog"
+      @cancel="cancel"
+      @close="cancel"
       @submit="submitDialog(extension, ...arguments)"
     />
 
@@ -119,7 +120,6 @@ export default {
   },
   mounted() {
     this.editor = new Editor(this.value, {
-      autofocus: this.autofocus,
       editable: !this.disabled,
       element: this.$refs.input,
       input: this,
@@ -154,6 +154,18 @@ export default {
 
     this.toolbarButtons = this.editor.buttons;
     this.dialogs = this.editor.dialogs;
+
+    if (this.autofocus && !this.disabled) {
+      this.focus().then(() => {
+        this.editor.view.dispatch({
+          scrollIntoView: true,
+          selection: {
+            head: this.editor.state.doc.length,
+            anchor: this.editor.state.doc.length,
+          },
+        });
+      });
+    }
   },
 
   beforeDestroy() {
@@ -162,7 +174,13 @@ export default {
 
   methods: {
     focus() {
-      this.editor.focus();
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          this.$refs.input.focus();
+          this.editor.focus()
+          resolve();
+        });
+      });
     },
 
     onSubmit($event) {
@@ -222,6 +240,7 @@ export default {
           "divider",
           "link",
           "file",
+          "image",
           "code",
           "divider",
           "ul",
@@ -258,17 +277,13 @@ export default {
      * Extension dialogs
      */
     openDialog(extension, ...args) {
-      if (this.currentDialog !== null) {
-        return;
-      }
-
       const dialogName = `dialog-${extension.name}`;
       const dialog = this.$refs[dialogName][0];
       dialog.open(...args);
       this.currentDialog = dialog;
     },
 
-    cancelDialog() {
+    cancel() {
       this.currentDialog = null;
       setTimeout(() => this.focus());
     },

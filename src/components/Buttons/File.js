@@ -49,12 +49,11 @@ export default class File extends Button {
         return;
       }
 
-      console.log("sel", selected);
-
       const file      = selected[0];
       const selection = this.editor.getSelection();
-      const text      = selection.length > 0 ? ` text:${selection}` : "";
-      const tag       = `(file: ${file.filename}${text})`;
+      const tagName   = file.type === "image" ? "image" : "file";
+      const text      = selection.length > 0 && tagName === "file" ? ` text: ${selection}` : "";
+      const tag       = `(${tagName}: ${file.filename}${text})`;
 
       this.editor.insert(tag);
     }

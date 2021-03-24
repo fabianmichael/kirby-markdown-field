@@ -2,8 +2,8 @@
   <k-dialog
     ref="dialog"
     :button="$t('insert')"
-    @close="cancel"
-    @submit="$refs.form.submit()"
+    @cancel="$emit('cancel')"
+    @submit="submit"
   >
     <k-form
       ref="form"
@@ -84,9 +84,6 @@ export default {
     }
   },
   methods: {
-    cancel() {
-      this.$emit("cancel");
-    },
     isEmail(str) {
       // https://emailregex.com/
       return str.match(

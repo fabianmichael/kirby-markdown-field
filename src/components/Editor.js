@@ -17,7 +17,7 @@ import {
   getActiveTokensAt,
   toggleLines,
   getFirstElementParent,
-  toggleMark
+  toggleMark,
 } from "./utils.js";
 import browser from "./browser.js";
 
@@ -176,14 +176,6 @@ export default class Editor extends Emitter {
     if (this.options.spellcheck) {
       this.view.contentDOM.setAttribute("spellcheck", "true");
     }
-
-    if (this.options.autofocus !== false && this.options.editable) {
-      this.focus();
-      // Custom autofocus: place the cursor at the end of current value
-      this.dispatch({
-        selection: { anchor: this.view.state.doc.length },
-      }, false);
-    }
   }
 
   insert(text, scrollIntoView = true) {
@@ -192,7 +184,7 @@ export default class Editor extends Emitter {
       let { node } = this.view.domAtPos(this.state.selection.main.head);
       try {
         node = getFirstElementParent(node);
-        node.scrollIntoView();
+        node.scrollIntoView({ behavior: "smooth" });
       } catch (e) {};
     }
   }

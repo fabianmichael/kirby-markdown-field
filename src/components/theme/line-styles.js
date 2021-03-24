@@ -3,201 +3,58 @@ import { RangeSetBuilder } from "@codemirror/rangeset";
 import { ViewPlugin } from "@codemirror/view";
 import { getBlockName } from "../utils.js";
 
-// const blockStyles = {
-
-//   FencedCode: (view, line, prefixLength) => Decoration.line({
-//     attributes: {
-//       class: "cm-codeblock",
-//     },
-//   }),
-
-//   HorizontalRule: (view, line, prefixLength) => Decoration.line({
-//     attributes: {
-//       class: "cm-hr",
-//     },
-//   }),
-
-//   Blockquote: (view, line, prefixLength) => Decoration.line({
-//     attributes: {
-//       class: "cm-blockquote",
-//     },
-//   }),
-
-//   ATXHeading1: (view, line, prefixLength) => Decoration.line({
-//     attributes: {
-//       class: "cm-heading",
-//       style: `--cm-indent: ${prefixLength}ch; --cm-mark: 2ch;`,
-//     },
-//   }),
-
-//   ATXHeading2: (view, line, prefixLength) => Decoration.line({
-//     attributes: {
-//       class: "cm-heading",
-//       style: `--cm-indent: ${prefixLength}ch; --cm-mark: 3ch;`,
-//     },
-//   }),
-
-//   ATXHeading3: (view, line, prefixLength) => Decoration.line({
-//     attributes: {
-//       class: "cm-heading",
-//       style: `--cm-indent: ${prefixLength}ch; --cm-mark: 4ch;`,
-//     },
-//   }),
-
-//   ATXHeading4: (view, line, prefixLength) => Decoration.line({
-//     attributes: {
-//       class: "cm-heading",
-//       style: `--cm-indent: ${prefixLength}ch; --cm-mark: 5ch;`,
-//     },
-//   }),
-
-//   ATXHeading5: (view, line, prefixLength) => Decoration.line({
-//     attributes: {
-//       class: "cm-heading",
-//       style: `--cm-indent: ${prefixLength}ch; --cm-mark: 7ch;`,
-//     },
-//   }),
-
-//   ATXHeading6: (view, line, prefixLength) => Decoration.line({
-//     attributes: {
-//       class: "cm-heading",
-//       style: `--cm-indent: ${prefixLength}ch; --cm-mark: 7ch;`,
-//     },
-//   }),
-
-//   BulletList: (view, line, prefixLength) => Decoration.line({
-//     attributes: {
-//       class: "cm-ul",
-//     },
-//   }),
-
-//   OrderedList: (view, line, prefixLength) => {
-//     const matches = line.text.match(/^( *)(\d\.)( )+/) || ["", "","",""];
-//     console.log("ll", matches)
-//     return Decoration.line({
-//       attributes: {
-//         class: "cm-ol",
-//         style: `--cm-indent: ${matches[1].length}ch; --cm-mark: ${matches[2].length + matches[3].length}ch`
-//       },
-//     })
-//   },
-// };
-
 const blockStyles = {
-
   FencedCode: {
     class: "cm-codeblock",
   },
-
   HorizontalRule: {
     class: "cm-hr",
   },
-
   Blockquote: {
     class: "cm-blockquote",
     mark: /^( *)(>)( +)/,
     multiLine: true,
   },
-
   ATXHeading1: {
     class: "cm-heading",
     mark: /^( {0,3})(#{1})( +)/,
     multiLine: false,
   },
-
   ATXHeading2: {
     class: "cm-heading",
     mark: /^( {0,3})(#{2})( +)/,
     multiLine: false,
   },
-
   ATXHeading3: {
     class: "cm-heading",
     mark: /^( {0,3})(#{3})( +)/,
     multiLine: false,
   },
-
   ATXHeading4: {
     class: "cm-heading",
     mark: /^( {0,3})(#{4})( +)/,
     multiLine: false,
   },
-
   ATXHeading5: {
     class: "cm-heading",
     mark: /^( {0,3})(#{5})( +)/,
     multiLine: false,
   },
-
   ATXHeading6: {
     class: "cm-heading",
     mark: /^( {0,3})(#{6})( +)/,
     multiLine: false,
   },
-
   OrderedList: {
     class: "cm-ol",
     mark: /^( *)(\d+\.)( +)/,
     multiLine: true,
   },
-
   BulletList: {
     class: "cm-ol",
     mark: /^( *)(-|\+|\*)( +)/,
     multiLine: true,
   },
-
-  // ATXHeading2: (view, line, prefixLength) => Decoration.line({
-  //   attributes: {
-  //     class: "cm-heading",
-  //     style: `--cm-indent: ${prefixLength}ch; --cm-mark: 3ch;`,
-  //   },
-  // }),
-
-  // ATXHeading3: (view, line, prefixLength) => Decoration.line({
-  //   attributes: {
-  //     class: "cm-heading",
-  //     style: `--cm-indent: ${prefixLength}ch; --cm-mark: 4ch;`,
-  //   },
-  // }),
-
-  // ATXHeading4: (view, line, prefixLength) => Decoration.line({
-  //   attributes: {
-  //     class: "cm-heading",
-  //     style: `--cm-indent: ${prefixLength}ch; --cm-mark: 5ch;`,
-  //   },
-  // }),
-
-  // ATXHeading5: (view, line, prefixLength) => Decoration.line({
-  //   attributes: {
-  //     class: "cm-heading",
-  //     style: `--cm-indent: ${prefixLength}ch; --cm-mark: 7ch;`,
-  //   },
-  // }),
-
-  // ATXHeading6: (view, line, prefixLength) => Decoration.line({
-  //   attributes: {
-  //     class: "cm-heading",
-  //     style: `--cm-indent: ${prefixLength}ch; --cm-mark: 7ch;`,
-  //   },
-  // }),
-
-  // BulletList: (view, line, prefixLength) => Decoration.line({
-  //   attributes: {
-  //     class: "cm-ul",
-  //   },
-  // }),
-
-  // OrderedList: (view, line, prefixLength) => {
-  //   const matches = line.text.match(/^( *)(\d\.)( )+/) || ["", "","",""];
-  //   console.log("ll", matches)
-  //   return Decoration.line({
-  //     attributes: {
-  //       class: "cm-ol",
-  //       style: `--cm-indent: ${matches[1].length}ch; --cm-mark: ${matches[2].length + matches[3].length}ch`
-  //     },
-  //   })
-  // },
 };
 
 const blockNames = Object.keys(blockStyles);
