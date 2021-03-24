@@ -1,3 +1,4 @@
+(function() {
 // Ensure, that the global `markdownEditorButtons` variable exists, otherwise
 // declare it. It is just a plain array, that gets read whenever the field is use.
 window.markdownEditorButtons = window.markdownEditorButtons || [];
@@ -105,8 +106,10 @@ const TwitterDialog = {
   }
 };
 
-panel.plugin("my/markdown-dialog", {
+window.panel.plugin("my/markdown-dialog", {
   components: {
     "k-markdown-twitter-dialog": TwitterDialog,
   }
 });
+
+})();
