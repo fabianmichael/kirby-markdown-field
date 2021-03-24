@@ -14,11 +14,13 @@ import specialChars from "./theme/special-chars";
 import Emitter from "./Emitter.js";
 import Extensions from "./Extensions.js";
 import {
-  getActiveTokensAt,
   toggleLines,
-  getFirstElementParent,
   toggleMark,
-} from "./utils.js";
+} from "./Utils/markup.js";
+import { getFirstElementParent } from "./Utils/dom.js";
+import { getActiveTokensAt } from "./Utils/syntax.js";
+
+
 import browser from "./browser.js";
 
 const isKnownDesktopBrowser = (browser.safari || browser.chrome || browser.gecko) && (!browser.android && !browser.ios);
@@ -189,7 +191,7 @@ export default class Editor extends Emitter {
     let { node } = this.view.domAtPos(this.state.selection.main.head);
       try {
         node = getFirstElementParent(node);
-        node.scrollIntoView({ behavior: "smooth" });
+        node.scrollIntoView();
       } catch (e) {};
   }
 

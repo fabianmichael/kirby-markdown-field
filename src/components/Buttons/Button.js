@@ -1,5 +1,5 @@
 import Extension from "../Extension.js";
-import { completeAssign } from "../utils.js";
+import completeAssign from "../Utils/complete-assign.js";
 
 export default class Button extends Extension {
 

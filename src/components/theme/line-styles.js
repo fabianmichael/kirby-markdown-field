@@ -1,7 +1,7 @@
 import { Decoration } from "@codemirror/view";
 import { RangeSetBuilder } from "@codemirror/rangeset";
 import { ViewPlugin } from "@codemirror/view";
-import { getBlockName } from "../utils.js";
+import { getBlockNameAt } from "../Utils/syntax.js";
 
 const blockStyles = {
   FencedCode: {
@@ -67,7 +67,7 @@ function lineDeco(view) {
 
     for (let pos = from; pos <= to;) {
       const line = view.state.doc.lineAt(pos);
-      const blockToken = getBlockName(view, pos + line.text.match(/^ */)[0].length, blockNames);
+      const blockToken = getBlockNameAt(view, pos + line.text.match(/^ */)[0].length, blockNames);
       let matches = null;
 
       if (blockStyles[blockToken]) {
