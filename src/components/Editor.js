@@ -181,12 +181,16 @@ export default class Editor extends Emitter {
   insert(text, scrollIntoView = true) {
     this.dispatch(this.state.replaceSelection(text));
     if (scrollIntoView) {
-      let { node } = this.view.domAtPos(this.state.selection.main.head);
+      this.scrollSelectionIntoView();
+    }
+  }
+
+  scrollSelectionIntoView() {
+    let { node } = this.view.domAtPos(this.state.selection.main.head);
       try {
         node = getFirstElementParent(node);
         node.scrollIntoView({ behavior: "smooth" });
       } catch (e) {};
-    }
   }
 
   isActiveToken(...tokens) {

@@ -176,7 +176,6 @@ export default {
     focus() {
       return new Promise((resolve) => {
         setTimeout(() => {
-          this.$refs.input.focus();
           this.editor.focus()
           resolve();
         });

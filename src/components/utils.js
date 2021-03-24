@@ -260,6 +260,7 @@ export function toggleLines(view, type, selection = null) {
         insert: textBefore + textAfter,
       },
       selection: { anchor: textBefore.length },
+      scrollIntoView: true,
     });
 
     return;
@@ -297,7 +298,8 @@ export function toggleLines(view, type, selection = null) {
     selection: {
       anchor: state.selection.main.anchor + selectionOffset,
       head: state.selection.main.head + selectionOffset,
-    }
+    },
+    scrollIntoView: true,
   })
 }
 

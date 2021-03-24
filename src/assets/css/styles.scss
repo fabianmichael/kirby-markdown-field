@@ -66,6 +66,16 @@
 }
 
 /**
+ * 1. Hack for overriding the color of header marks, because these
+ *    would appear gray otherwise, such as other `processingInstruction`
+ *    tags should. Due to CodeMirror’s language definition, these
+ *    cannot be styled separately.
+ */
+.k-markdown-field .cm-heading > :first-child {
+  color: currentColor; /* 1 */
+}
+
+/**
  * ## Inline styles
  */
 
@@ -73,10 +83,15 @@
 .k-markdown-field .cm-kirbytag {
   padding: .0625em 0 .0625em;
   margin: -.0625em 0 0px;
+  font-weight: 400;
   background: rgba(66,113,174,.15);
   border: .0625em solid rgba(66,113,174,.3);
   border-width: .0625em 0;
   box-decoration-break: clone;
+}
+
+.k-markdown-field .cm-kirbytag > * {
+  font-weight: 400;;
 }
 
 /**

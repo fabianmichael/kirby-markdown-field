@@ -57,6 +57,16 @@ const theme = EditorView.theme(
 
 const styleDef = HighlightStyle.define([
   {
+    tag: t.contentSeparator,
+    color: "currentColor",
+    fontWeight: "700",
+  },
+  {
+    tag: [t.heading1, t.heading2, t.heading3, t.heading4, t.heading5, t.heading6],
+    fontWeight: "700",
+    color: "currentColor",
+  },
+  {
     tag: [
       t.name,
       t.angleBracket,
@@ -70,16 +80,7 @@ const styleDef = HighlightStyle.define([
     color: "var(--cm-color-meta)",
   },
   {
-    tag: t.contentSeparator,
-    color: "currentColor",
-    fontWeight: "700",
-  },
-  {
     tag: t.strong,
-    fontWeight: "700",
-  },
-  {
-    tag: [t.heading1, t.heading2, t.heading3, t.heading4, t.heading5, t.heading6],
     fontWeight: "700",
     color: "currentColor",
   },
@@ -91,8 +92,8 @@ const styleDef = HighlightStyle.define([
   {
     tag: t.emphasis,
     fontStyle: "italic",
+    color: "currentColor",
   },
-
   {
     tag: t.deleted,
     textDecoration: "line-through",
@@ -116,6 +117,10 @@ const styleDef = HighlightStyle.define([
     margin: "-.1em",
     borderRadius: ".125em",
   },
+  {
+    tag: [t.labelName, t.link],
+    fontWeight: "400",
+  }
 ]);
 
 const highlightStyle = () => styleDef;
