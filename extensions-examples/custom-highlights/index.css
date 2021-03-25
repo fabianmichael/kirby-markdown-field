@@ -1,0 +1,19 @@
+.my-text-variable {
+  background: rgb(175, 57, 57, .1);
+  color: rgb(175, 57, 57);
+  padding: 2px;
+  margin: -2px;
+  border-radius: 2px;
+}
+
+.my-mark-highlight {
+  background: rgba(255, 230, 0, .5);
+  border-radius: .125em;
+  color: var(--color-text) !important;
+  margin: -2px;
+  padding: 2px;
+}
+
+.my-mark-highlight * {
+  color: currentColor !important;
+}
