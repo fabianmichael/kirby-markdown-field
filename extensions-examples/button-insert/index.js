@@ -1,6 +1,7 @@
+(function() {
 // Ensure, that the global `markdownEditorButtons` variable exists, otherwise
 // declare it. It is just a plain array, that gets read whenever the field is use.
-window.markdownEditorButtons = window.markdownEditorButtons || [];
+window.markdownEditorButtons = window.markdownEditorButtons || [];
 
 // Pass the plugin definition to the buttons array
 window.markdownEditorButtons.push({
@@ -38,3 +39,5 @@ window.markdownEditorButtons.push({
     return () => false; // It’s always time to smile
   },
 });
+
+})();
