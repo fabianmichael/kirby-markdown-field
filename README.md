@@ -1,6 +1,12 @@
 # Kirby – Markdown field
 
-⚠️ This branch in an early exploration of upgrading the field to CodeMirror 6. This is by any means not ready for production yet. ⚠️
+⚠️ **WARNING:** This plugin is still in alpha state. Some things might not work as expected, yet. ⚠️
+
+**Known issues of the alpha:**
+
+- Toggling of inline formats is not completely implemented yet.
+- The are some weird, but mostly minor scrolling bugs. It’s not clear yet, if these are caused by CodeMirror or how scrolling works in Kirby’s panel.
+- CodeMirror 6 is still in beta. Its API might still be subject to minor changes, so this plugin will not reach a stable version until CodeMirror 6 does.
 
 Enhanced markdown editor for Kirby 3, community built.
 
@@ -30,9 +36,11 @@ Enhanced markdown editor for Kirby 3, community built.
 
 ## 1. Installation
 
-Download and copy this repository to ```/site/plugins/markdown-field```
+⛔️ Only download and cloning of this branch is supported, until version 2 has been released.
 
-Alternatively, you can install it with composer: ```composer require k-community/markdown-field```
+Download and copy this repository to `/site/plugins/markdown-field`
+
+Alternatively, you can install it with composer: `composer require k-community/markdown-field`
 
 <br/>
 
@@ -49,6 +57,8 @@ editor:
 <br/>
 
 ## 3. Options
+
+⛔️ Needs update
 
 ### 3.1. Available options
 
@@ -84,6 +94,8 @@ font:
 ```
 
 ### 3.3. Buttons
+
+⛔️ Needs update
 
 This field is packing the usual textarea buttons, and some more.
 
@@ -145,6 +157,8 @@ buttons:
 
 ### 3.4. Query
 
+⛔️ Has to be tested
+
 You can limit the options shown in the Pagelink dialog, by setting a `pagelink` query (if unset, you'll be able to browse the entire website tree)
 
 ```yaml
@@ -153,6 +167,8 @@ query:
 ```
 
 ### 3.5. Size
+
+⛔️ Not implemented in version 2 yet
 
 You can define the height of the field when empty. Default is `two-lines`, which mimics the textarea's default empty height.
 
@@ -186,12 +202,14 @@ Then in your `panel.css`:
 
 ### 3.6. Default options
 
+⛔️ Needs update
+
 You can globally override the default options, instead of setting them on a per-field basis. In your `site/config/config.php`:
 
 ```php
 return [
   'community.markdown-field.size'       => 'small',
-  'community.markdown-field.buttons'    => ['headlines', 'bold', 'italic', 'divider', 'link', 'email', 'file', 'code', 'divider', 'ul', 'ol'],
+  'community.markdown-field.buttons'    => ['headlines', 'bold', 'italic', 'divider', 'link', 'email', 'file', 'code', 'divider', 'ul', 'ol' , 'invisibles'],
   'community.markdown-field.font'       => [
     'family'  => 'monospace',
     'scaling' => false,
@@ -202,7 +220,6 @@ return [
   ],
   'community.markdown-field.modals'     => true,
   'community.markdown-field.blank'      => false,
-  'community.markdown-field.invisibles' => false,
   'community.markdown-field.direction' => false,
 ];
 ```
@@ -211,7 +228,9 @@ return [
 
 ## 4. Custom buttons
 
-Since 1.0.8 you can register your own buttons. This functionnality has [a dedicated guide](custom-buttons).
+~~Since 1.0.8 you can register your own buttons. This functionnality has [a dedicated guide](custom-buttons).~~~
+
+API has changed, see `extension-examples` folder.
 
 <br/>
 
@@ -240,7 +259,12 @@ MIT
 
 <br/>
 
-## 7. Credits
+## 7. Migrating from Version 1
+
+- The **invisibles** option has been replaced by a button, called `invisibles`. Just add that to your toolbar setup instead.
+- The API for registering custom buttons has changed. See `extension-examples` folder for examples.
+
+## 8. Credits
 
 **Text editor:**
 
@@ -250,7 +274,9 @@ MIT
 
 @fabianmichael, @sylvainjule, @medienbaecker, @mtsknn, @nsteiner, @rasteiner, @thomasfahrland, @johannschopplich
 
-**Inspirations / K2 fields:**
+**Inspirations**
 
-- [Visual Markdown Editor](https://github.com/JonasDoebertin/kirby-visual-markdown) by [Jonas Döbertin](https://github.com/JonasDoebertin)
-- [SimpleMDE for Kirby](https://github.com/medienbaecker/kirby-simplemde) by [Thomas Günther](https://github.com/medienbaecker)
+- [Visual Markdown Editor for Kirby 2](https://github.com/JonasDoebertin/kirby-visual-markdown) by [Jonas Döbertin](https://github.com/JonasDoebertin)
+- [SimpleMDE for Kirby 2](https://github.com/medienbaecker/kirby-simplemde) by [Thomas Günther](https://github.com/medienbaecker)
+- [Kirby’s Writer Field](https://getkirby.com/docs/reference/panel/fields/writer) by [Bastian Allgeier](https://bastianallgeier.com/)
+- [tiptap – rich-text editor for Vue.js](https://tiptap.dev/)
