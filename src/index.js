@@ -1,3 +1,5 @@
+import "./style.css";
+
 import MarkdownField from "./components/MarkdownField.vue";
 import MarkdownInput from "./components/MarkdownInput.vue";
 

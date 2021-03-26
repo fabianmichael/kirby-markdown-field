@@ -1,7 +1,7 @@
 <?php
 
 Kirby::plugin('community/markdown-field', [
-  'options' => array(
+  'options' => [
     'buttons'    => ['headlines', 'bold', 'italic', 'divider', 'link', 'email', 'file', 'code', 'divider', 'ul', 'ol'],
     'font'       => [
       'family'  => 'monospace',
@@ -18,13 +18,13 @@ Kirby::plugin('community/markdown-field', [
     'invisibles' => false,
     'direction'  => false,
     'size'       => 'small',
-  ),
-  'fields' => array(
-    'markdown' => require_once __DIR__ . '/lib/fields/markdown.php',
-  ),
-  'translations' => array(
-    'en' => require_once __DIR__ . '/lib/languages/en.php',
-    'fr' => require_once __DIR__ . '/lib/languages/fr.php',
-    'de' => require_once __DIR__ . '/lib/languages/de.php',
-  ),
+  ],
+  'fields' => [
+    'markdown' => require __DIR__ . '/fields/markdown.php',
+  ],
+  'translations' => [
+    'en' => require __DIR__ . '/translations/en.php',
+    'fr' => require __DIR__ . '/translations/fr.php',
+    'de' => require __DIR__ . '/translations/de.php',
+  ],
 ]);

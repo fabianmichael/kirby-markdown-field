@@ -20,7 +20,7 @@ $options = A::merge($options, [
             $buttons = $buttons ?? option('community.markdown-field.buttons');
             if (empty($buttons)) return false;
 
-            $uniqueButtons = array();
+            $uniqueButtons = [];
             foreach ($buttons as $button) {
                 if ($button == 'divider' || !in_array($button, $uniqueButtons)) {
                     $uniqueButtons[] = $button;
@@ -46,7 +46,7 @@ $options = A::merge($options, [
                 if (array_key_exists('family', $font) && !array_key_exists('scaling', $font)) {
                     // default scaling: true for sans-serif, false for monospace
                     $scaling     = $font['family'] == 'sans-serif';
-                    $fontOptions = A::merge($fontOptions, array('scaling' => $scaling));
+                    $fontOptions = A::merge($fontOptions, ['scaling' => $scaling]);
                 }
                 // merge field options with global defaults
                 $fontOptions = A::merge($fontOptions, $font);
