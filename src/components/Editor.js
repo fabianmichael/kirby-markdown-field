@@ -180,18 +180,14 @@ export default class Editor extends Emitter {
   }
 
   insert(text, scrollIntoView = true) {
-    this.dispatch(this.state.replaceSelection(text));
     if (scrollIntoView) {
-      this.scrollSelectionIntoView();
+      this.dispatch({
+        ...this.state.replaceSelection(text),
+        scrollIntoView: true,
+      });
+    } else {
+      this.dispatch(this.state.replaceSelection(text));
     }
-  }
-
-  scrollSelectionIntoView() {
-    let { node } = this.view.domAtPos(this.state.selection.main.head);
-      try {
-        node = getFirstElementParent(node);
-        node.scrollIntoView();
-      } catch (e) {};
   }
 
   isActiveToken(...tokens) {

@@ -87,12 +87,10 @@ let resizeObserver;
 if (window.ResizeObserver) {
   resizeObserver = new ResizeObserver(entries => {
     for (let { target, contentRect } of entries) {
-      console.log("border", contentRect);
       target._component.layout = contentRect.width >= 450 ? "wide" : "narrow";
     }
   });
 }
-
 
 export default {
   components: {
