@@ -15,12 +15,15 @@ const theme = EditorView.theme(
       fontFamily: "var(--font-family-mono)",
       lineHeight: "var(--cm-line-height)",
       fontSize:   "var(--font-size-medium)",
+      overflowX:  "hidden",
     },
 
     ".cm-content": {
       padding: "var(--cm-content-padding-y) 0",
       whiteSpace: "pre-wrap",
-      "-webkit-user-modify": "read-write-plaintext-only", // Todo: Test, if this really hides the "B I U" toolbar on iOS
+      overflowWrap: "break-word", // prevents long, unbreakable word from creating a horizontal scrollbar
+      "-webkit-user-modify": "read-write-plaintext-only", // disables `B I U` buttons on iOS
+      width: "100%", // required to wrap all lines, that would be too long for the viewport.
     },
     /**
      * 1. Ensures, that scrolling to a line takes height of the

@@ -41,7 +41,7 @@
             :key="buttonIndex"
             :icon="button.icon"
             :tooltip="button.label"
-            :class="(isDisabled() ? 'is-disabled ' : '') + (isActive() || (name === 'invisibles' && specialChars) ? 'is-active ' : '') + 'k-toolbar-button k-markdown-button' + (button.align === 'right' ? ' k-markdown-toolbar-buttons-right' : '')"
+            :class="(isDisabled() ? 'is-disabled ' : '') + (isActive() || (name === 'invisibles' && specialChars) ? 'is-active ' : '') + 'k-toolbar-button k-markdown-button' + (button.align === 'right' ? ' k-markdown-toolbar-button-right' : '')"
             tabindex="-1"
             @click="button.command"
           />

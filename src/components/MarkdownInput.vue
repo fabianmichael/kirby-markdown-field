@@ -5,10 +5,11 @@
     :font-family="font.family"
     :font-size="font.size"
     :font-scaling="font.scaling"
+    :data-layout="layout"
     :data-over="over"
   >
 
-    <div class="k-markdown-input-wrapper" :data-size="size">
+    <!-- <div class="k-markdown-input-wrapper" :data-size="size"> -->
       <k-markdown-toolbar
         v-if="buttons && !disabled"
         ref="toolbar"
@@ -19,13 +20,14 @@
       />
       <div
         ref="input"
+        class="k-markdown-input"
         @dragover="onDragOver"
         @dragleave="onDragLeave"
         @drop="onDrop"
         @keydown.meta.enter="onSubmit"
         @keydown.ctrl.enter="onSubmit"
       />
-    </div>
+    <!-- </div> -->
 
     <component
       v-for="extension in this.dialogs"
@@ -79,6 +81,19 @@ import SpecialChars from "./Buttons/SpecialChars.js"
 import Strikethrough from "./Buttons/Strikethrough.js"
 import StrongEmphasis from "./Buttons/StrongEmphasis.js"
 
+
+let resizeObserver;
+
+if (window.ResizeObserver) {
+  resizeObserver = new ResizeObserver(entries => {
+    for (let { target, contentRect } of entries) {
+      console.log("border", contentRect);
+      target._component.layout = contentRect.width >= 450 ? "wide" : "narrow";
+    }
+  });
+}
+
+
 export default {
   components: {
     "k-markdown-toolbar": Toolbar,
@@ -95,6 +110,7 @@ export default {
       toolbarButtons: [],
       active: [],
       dialogs: [],
+      layout: "narrow",
     };
   },
   props: {
@@ -166,9 +182,17 @@ export default {
         });
       });
     }
+
+    if (resizeObserver) {
+      this.$refs.input._component = this;
+      resizeObserver.observe(this.$refs.input);
+    }
   },
 
   beforeDestroy() {
+    if (resizeObserver) {
+      resizeObserver.unobserve(this.$refs.input);
+    }
     this.editor.destroy();
   },
 

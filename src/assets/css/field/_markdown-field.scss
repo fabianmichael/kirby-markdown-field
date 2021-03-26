@@ -1,8 +1,8 @@
-/* Make sure there's no overflow */
-.k-markdown-field {
-  .k-input-element {
-    width: 100%;
-  }
+/**
+ * 1. Make sure there's no overflow
+ */
+.k-markdown-field .k-input-element {
+  width: 100%; /* 1 */
 }
 
 // disabled option
@@ -13,69 +13,68 @@
 /**
  * General field setup
  */
-.k-markdown-input-wrapper {
-  position: relative;
-  // transform: translate3d(0, 0, 0); // causes issue with sticky on Safari
+// .k-markdown-input-wrapper {
+//   position: relative;
+//   // transform: translate3d(0, 0, 0); // causes issue with sticky on Safari
 
-  // .k-markdown-input-native {
-  //   resize: none;
-  //   border: 0;
-  //   width: 100%;
-  //   background: none;
-  //   font: inherit;
-  //   line-height: 1.5em;
-  //   color: inherit;
+//   // .k-markdown-input-native {
+//   //   resize: none;
+//   //   border: 0;
+//   //   width: 100%;
+//   //   background: none;
+//   //   font: inherit;
+//   //   line-height: 1.5em;
+//   //   color: inherit;
 
-  //   &:focus {
-  //      outline: 0;
-  //   }
-  //   &:invalid {
-  //     box-shadow: none;
-  //     outline: 0;
-  //   }
-  // }
+//   //   &:focus {
+//   //      outline: 0;
+//   //   }
+//   //   &:invalid {
+//   //     box-shadow: none;
+//   //     outline: 0;
+//   //   }
+//   // }
 
-  // size option
-  &[data-size="one-line"] {
-    .cm-s-default,
-    .CodeMirror-scroll {
-      min-height: 0;
-    }
-  }
-  &[data-size="two-lines"] {
-    .cm-s-default,
-    .CodeMirror-scroll {
-      min-height: 3.5rem;
-    }
-  }
-  &[data-size="small"] {
-    .cm-s-default,
-    .CodeMirror-scroll {
-      min-height: 7.5rem;
-    }
-  }
-  &[data-size="medium"] {
-    .cm-s-default,
-    .CodeMirror-scroll {
-      min-height: 15rem;
-    }
-  }
+//   // size option
+//   &[data-size="one-line"] {
+//     .cm-s-default,
+//     .CodeMirror-scroll {
+//       min-height: 0;
+//     }
+//   }
+//   &[data-size="two-lines"] {
+//     .cm-s-default,
+//     .CodeMirror-scroll {
+//       min-height: 3.5rem;
+//     }
+//   }
+//   &[data-size="small"] {
+//     .cm-s-default,
+//     .CodeMirror-scroll {
+//       min-height: 7.5rem;
+//     }
+//   }
+//   &[data-size="medium"] {
+//     .cm-s-default,
+//     .CodeMirror-scroll {
+//       min-height: 15rem;
+//     }
+//   }
 
-  &[data-size="large"] {
-    .cm-s-default,
-    .CodeMirror-scroll {
-      min-height: 30rem;
-    }
-  }
+//   &[data-size="large"] {
+//     .cm-s-default,
+//     .CodeMirror-scroll {
+//       min-height: 30rem;
+//     }
+//   }
 
-  &[data-size="huge"] {
-    .cm-s-default,
-    .CodeMirror-scroll {
-      min-height: 45rem;
-    }
-  }
-}
-
+//   &[data-size="huge"] {
+//     .cm-s-default,
+//     .CodeMirror-scroll {
+//       min-height: 45rem;
+//     }
+//   }
+// }
 
 /**
  * Toolbar
@@ -83,21 +82,20 @@
 
 /* disabled state of toolbar buttons */
 .k-markdown-button.is-disabled {
-  opacity: 0.25;
+  opacity: .25;
   pointer-events: none;
 }
 
 /* Editor has focus */
 .k-markdown-input:focus-within .k-toolbar {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-  right: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, .1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, .05);
+  color: var(--color-text);
   left: 0;
+  position: sticky;
+  right: 0;
+  top: 0;
   z-index: 4;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  color: #000;
 
   .k-markdown-button {
     position: relative;
@@ -114,10 +112,23 @@
   }
 }
 
+.k-markdown-toolbar {
+  height: auto;
+  min-height: 38px;
+}
+
+.k-markdown-toolbar-buttons {
+  flex-wrap: wrap;
+}
+
+.k-markdown-toolbar-buttons > * {
+  flex-shrink: 0;
+}
+
 /* Align invisibles button to the right of the toolbar */
-.k-markdown-toolbar-buttons-right {
-  margin-left: auto;
+.k-markdown-toolbar-button-right {
   border-left: 1px solid $color-light;
+  margin-left: auto;
 }
 
 /** Active state for dropdown items */

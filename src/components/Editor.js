@@ -22,8 +22,7 @@ import { getActiveTokensAt } from "./Utils/syntax.js";
 
 
 import browser from "./browser.js";
-
-const isKnownDesktopBrowser = (browser.safari || browser.chrome || browser.gecko) && (!browser.android && !browser.ios);
+// const isKnownDesktopBrowser = (browser.safari || browser.chrome || browser.gecko) && (!browser.android && !browser.ios);
 
 export default class Editor extends Emitter {
 
@@ -95,7 +94,7 @@ export default class Editor extends Emitter {
        * However, drawn selction and custom caret look better anyways,
        * so enable for al known desktop browsers.
        */
-      isKnownDesktopBrowser && drawSelection(),
+      browser.gecko && drawSelection(),
       this.options.placeholder && placeholder(this.options.placeholder),
       theme,
     ].filter((v) => !!v);

@@ -1,8 +1,5 @@
-@import
-  'abstracts/variables.scss';
-
-@import
-  'field/markdown-field.scss';
+@import "abstracts/variables.scss";
+@import "field/markdown-field.scss";
 
 /**
  * ## Global configuration
@@ -10,14 +7,25 @@
 
 .k-markdown-field {
   --cm-content-padding-y: .75rem;
-  --cm-line-inset: 1.5rem;
-  --cm-line-height: 1.6;
+  --cm-line-padding-x: 1.5rem;
+  --cm-line-height: 1.7;
   --cm-code-background: rgba(0, 0, 0, .05);
   --cm-color-meta: #aaa;
-  --cm-color-light-gray: rgba(0,0,0,.1);
+  --cm-color-light-gray: rgba(0, 0, 0, .1);
   --cm-selection-background: hsla(195, 80%, 40%, .16);
   --md-color-special-char: #f8a752;
   --cm-color-cursor: #5588ca;
+}
+
+.k-markdown-input[data-layout="narrow"] {
+  --cm-content-padding-y: .375rem !important;
+  --cm-line-padding-x: .375rem !important;
+}
+
+.k-markdown-input[data-layout="narrow"] .cm-line {
+  --cm-mark: 0 !important;
+  --cm-indent: 0 !important;
+  --cm-extra-indent: 0 !important;
 }
 
 /**
@@ -28,17 +36,17 @@
 .k-markdown-field .cm-line {
   --cm-line-indent: calc(var(--cm-indent, 0ch) + var(--cm-mark, 0ch) + var(--cm-extra-indent, 0ch));
   margin-left: var(--cm-line-indent);
-  padding: 0 var(--cm-line-inset);
+  padding: 0 var(--cm-line-padding-x);
   text-indent: calc(-1 * var(--cm-indent, 0ch) - var(--cm-mark, 0ch));
 }
 
 /* Codeblock with background */
 .k-markdown-field .cm-codeblock {
   background: var(--cm-code-background);
-  margin-left: calc(var(--cm-line-inset) / 2);
-  margin-right: calc(var(--cm-line-inset) / 2);
-  padding-left: calc(var(--cm-line-inset) / 2);
-  padding-right: calc(var(--cm-line-inset) / 2);
+  margin-left: calc(var(--cm-line-padding-x) / 2);
+  margin-right: calc(var(--cm-line-padding-x) / 2);
+  padding-left: calc(var(--cm-line-padding-x) / 2);
+  padding-right: calc(var(--cm-line-padding-x) / 2);
 }
 
 /* Blockquote */
@@ -55,9 +63,9 @@
 
 .k-markdown-field .cm-hr::before,
 .k-markdown-field .cm-hr::after {
+  background: linear-gradient(var(--cm-color-light-gray), var(--cm-color-light-gray)) 50% calc(50% + .0625rem) / 100% .0625rem no-repeat;
   content: "";
   flex-grow: 1;
-  background: linear-gradient(var(--cm-color-light-gray), var(--cm-color-light-gray)) 50% calc(50% + .0625rem) / 100% .0625rem no-repeat;
 }
 
 .k-markdown-field .cm-hr > span {
@@ -81,17 +89,17 @@
 
 /* Kirbytags */
 .k-markdown-field .cm-kirbytag {
-  padding: .0625em 0 .0625em;
-  margin: -.0625em 0 0px;
-  font-weight: 400;
-  background: rgba(66,113,174,.15);
-  border: .0625em solid rgba(66,113,174,.3);
+  background: rgba(66, 113, 174, .15);
+  border: .0625em solid rgba(66, 113, 174, .3);
   border-width: .0625em 0;
   box-decoration-break: clone;
+  font-weight: 400;
+  margin: -.0625em 0 0;
+  padding: .0625em 0 .0625em;
 }
 
 .k-markdown-field .cm-kirbytag > * {
-  font-weight: 400;;
+  font-weight: 400;
 }
 
 /**
@@ -104,14 +112,14 @@
 
 .k-markdown-field .cm-kirbytag-open {
   border-left-width: .0625em;
-  margin-left: -.0625em;
   border-radius: .125em 0 0 .125em;
+  margin-left: -.0625em;
 }
 
 .k-markdown-field .cm-kirbytag-close {
+  border-radius: 0 .125em .125em 0;
   border-right-width: .0625em;
   margin-right: -.0625em;
-  border-radius: 0 .125em .125em 0;
 }
 
 // .k-markdown-field .cm-kirbytag-attr {
@@ -127,12 +135,12 @@
 
 .k-markdown-field [class*=" cm-token-"],
 .k-markdown-field [class^="cm-token-"] {
-  padding: .0625em 0;
-  margin: -.125em -.0625em;
-  border-radius: .125em;
   background: var(--token-background, rgba(0,0,0,.05));
   border: .0625em solid var(--token-border, rgba(0,0,0,.1));
+  border-radius: .125em;
   color: var(--color-text, #000);
+  margin: -.125em -.0625em;
+  padding: .0625em 0;
 }
 
 .k-markdown-field [class*=" cm-token-"] > *,
@@ -156,18 +164,18 @@
  * Special chars
  */
 
- .k-markdown-field .cm-specialChar {
-   cursor: text;
- }
+.k-markdown-field .cm-specialChar {
+  cursor: text;
+}
 
 /**
  * Space
  * 1. Ensure, that extra span around each space character does not
  *    have any effect on word-wrapping.
  **/
- .k-markdown-field .cm-specialChar[data-code="32"] {
-  word-break: break-all; /* 1 */
+.k-markdown-field .cm-specialChar[data-code="32"] {
   background: linear-gradient(var(--md-color-special-char), var(--md-color-special-char)) 50% calc(50% + .0625em) / .125em .125em no-repeat;
+  word-break: break-all; /* 1 */
 }
 
 /* No-Break Space */
@@ -181,22 +189,22 @@
 
 /* Soft Hyphen */
 .k-markdown-field .cm-specialChar[data-code="173"] {
+  border-left: .0625em solid var(--md-color-special-char);
+  left: .03125em;
   margin-left: -.0625em;
   position: relative;
-  left: .03125em;
-  border-left: .0625em solid var(--md-color-special-char);
 }
 
 /* Zero-Width Space */
 .k-markdown-field .cm-specialChar[data-code="8203"] {
-  padding-left: 3px;
+  background: url("data:image/svg+xml,%3Csvg width='3' height='23' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 2.915v17.17a1.5 1.5 0 11-1 0V2.915a1.5 1.5 0 111 0zM1.5 2a.5.5 0 100-1 .5.5 0 000 1zm0 20a.5.5 0 100-1 .5.5 0 000 1z' fill='%23f8a752' fill-rule='nonzero'/%3E%3C/svg%3E%0A") no-repeat;
+  margin-bottom: -4px;
   margin-left: -1.5px;
   margin-right: -1.5px;
-  margin-bottom: -4px;
   margin-top: -4px;
   padding-bottom: 2px;
+  padding-left: 3px;
   padding-top: 2px;
-  background: url("data:image/svg+xml,%3Csvg width='3' height='23' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 2.915v17.17a1.5 1.5 0 11-1 0V2.915a1.5 1.5 0 111 0zM1.5 2a.5.5 0 100-1 .5.5 0 000 1zm0 20a.5.5 0 100-1 .5.5 0 000 1z' fill='%23f8a752' fill-rule='nonzero'/%3E%3C/svg%3E%0A") no-repeat;
 }
 
 /* Tab character */
