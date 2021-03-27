@@ -20,23 +20,59 @@
 export default {
   extends: "k-textarea-field",
   props: {
-    autofocus: Boolean,
-    blank: Boolean,
-    breaks: Boolean,
-    buttons: [Boolean, Array],
-    customHighlights: Array,
-    direction: Boolean,
-    disabled: Boolean,
+    autofocus: {
+      type: Boolean,
+      default: false,
+    },
+    blank: {
+      type: Boolean,
+      default: false,
+    },
+    buttons: {
+      type: [Boolean, Array],
+      default: true,
+    },
+    customHighlights: {
+      type: Array,
+      default: () => [],
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     endpoints: Object,
-    font: Object,
-    highlights: [Boolean, Array],
-    kirbytext: Boolean,
-    knownKirbytags: Array,
-    modals: Boolean,
-    placeholder: String,
-    size: String,
-    spellcheck: Boolean,
-    uploads: [Boolean, Object, Array],
+    font: {
+      type: String,
+      default: "monospace",
+    },
+    highlights: {
+      type: [Boolean, Array],
+      default: true,
+    },
+    kirbytext: {
+      type: Boolean,
+      default: true,
+    },
+    knownKirbytags: {
+      type: Array,
+      default: () => [],
+    },
+    placeholder: {
+      type: String,
+      default: "",
+    },
+    size: {
+      type: String,
+      default: "",
+    },
+    spellcheck: {
+      type: Boolean,
+      default: true,
+    },
+    uploads: {
+      type: [Boolean, Object, Array],
+      default: true
+    },
     value: String,
   },
 };

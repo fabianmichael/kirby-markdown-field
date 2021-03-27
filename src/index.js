@@ -1,11 +1,15 @@
 import "./style.css";
 
+import MarkdownBlock from "./components/MarkdownBlock.vue";
 import MarkdownField from "./components/MarkdownField.vue";
 import MarkdownInput from "./components/MarkdownInput.vue";
 
 window.panel.plugin("community/markdown-field", {
   components: {
     "k-markdown-input": MarkdownInput,
+  },
+  blocks: {
+    markdown: MarkdownBlock,
   },
   fields: {
     markdown: MarkdownField,

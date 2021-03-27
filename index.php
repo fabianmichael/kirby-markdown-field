@@ -13,11 +13,12 @@ Kirby::plugin('community/markdown-field', [
       'images'   => 'page.images',
       'files'    => 'page.files.filterBy("type", "!=", "image")',
     ],
-    'modals'     => true,
     'blank'      => false,
     'invisibles' => false,
-    'direction'  => false,
     'size'       => 'small',
+  ],
+  'blueprints' => [
+    'blocks/markdown' => __DIR__ . '/blueprints/blocks/markdown.yml',
   ],
   'fields' => [
     'markdown' => require __DIR__ . '/fields/markdown.php',

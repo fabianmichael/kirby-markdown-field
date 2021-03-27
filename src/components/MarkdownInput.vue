@@ -1,33 +1,30 @@
 <template>
   <div
     :data-theme="theme"
-    class="k-markdown-input"
-    :font-family="font.family"
-    :font-size="font.size"
-    :font-scaling="font.scaling"
+    class="k-markdown-input-wrap"
+    :data-font-family="font"
+    :data-font-size="fontSize"
     :data-layout="layout"
     :data-over="over"
   >
 
-    <!-- <div class="k-markdown-input-wrapper" :data-size="size"> -->
-      <k-markdown-toolbar
-        v-if="buttons && !disabled"
-        ref="toolbar"
-        :buttons="toolbarButtons"
-        :active="active"
-        :specialChars="specialChars"
-        @mousedown.native.prevent
-      />
-      <div
-        ref="input"
-        class="k-markdown-input"
-        @dragover="onDragOver"
-        @dragleave="onDragLeave"
-        @drop="onDrop"
-        @keydown.meta.enter="onSubmit"
-        @keydown.ctrl.enter="onSubmit"
-      />
-    <!-- </div> -->
+    <k-markdown-toolbar
+      v-if="buttons && !disabled && !hideToolbar"
+      ref="toolbar"
+      :buttons="toolbarButtons"
+      :active="active"
+      :specialChars="specialChars"
+      @mousedown.native.prevent
+    />
+    <div
+      ref="input"
+      class="k-markdown-input"
+      @dragover="onDragOver"
+      @dragleave="onDragLeave"
+      @drop="onDrop"
+      @keydown.meta.enter="onSubmit"
+      @keydown.ctrl.enter="onSubmit"
+    />
 
     <component
       v-for="extension in this.dialogs"
@@ -113,6 +110,19 @@ export default {
   },
   props: {
     ...Field.props,
+    hideToolbar: {
+      // allows for hiding the toolbar, but keeping button definitions
+      type: Boolean,
+      default: false,
+    },
+    forceLayout: {
+      type: [String, Boolean],
+      default: false,
+    },
+    fontSize: {
+      type: String,
+      default: "normal",
+    }
   },
   computed: {
     currentLanguage() {
@@ -181,14 +191,18 @@ export default {
       });
     }
 
-    if (resizeObserver) {
-      this.$refs.input._component = this;
-      resizeObserver.observe(this.$refs.input);
+    if (this.forceLayout) {
+      this.layout = this.forceLayout;
+    } else {
+      if (resizeObserver) {
+        this.$refs.input._component = this;
+        resizeObserver.observe(this.$refs.input);
+      }
     }
   },
 
   beforeDestroy() {
-    if (resizeObserver) {
+    if (!this.forceLayout && resizeObserver && this.$refs.input) {
       resizeObserver.unobserve(this.$refs.input);
     }
     this.editor.destroy();
@@ -196,12 +210,7 @@ export default {
 
   methods: {
     focus() {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          this.editor.focus()
-          resolve();
-        });
-      });
+      this.editor.focus();
     },
 
     onSubmit($event) {

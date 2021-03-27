@@ -12,9 +12,9 @@ const theme = EditorView.theme(
     },
 
     ".cm-scroller": {
-      fontFamily: "var(--font-family-mono)",
+      fontFamily: "var(--cm-font-family)",
       lineHeight: "var(--cm-line-height)",
-      fontSize:   "var(--font-size-medium)",
+      fontSize:   "var(--cm-font-size)",
       overflowX:  "hidden",
     },
 

@@ -15,12 +15,22 @@ $options = A::merge($options, [
          * Sets the toolbar buttons.
          */
         'buttons' => function ($buttons = null) {
-            if ($buttons === false) return false;
+            if ($buttons === false) {
+                return false;
+            }
 
             $buttons = $buttons ?? option('community.markdown-field.buttons');
-            if (empty($buttons)) return false;
+
+            if (empty($buttons)) {
+                return false;
+            }
+
+            if ($buttons === true) {
+                return true;
+            }
 
             $uniqueButtons = [];
+
             foreach ($buttons as $button) {
                 if ($button == 'divider' || !in_array($button, $uniqueButtons)) {
                     $uniqueButtons[] = $button;
@@ -39,38 +49,13 @@ $options = A::merge($options, [
          * Sets the editor font.
          */
         'font' => function ($font = null) {
-            $fontOptions = option('community.markdown-field.font');
-
-            if ($font) {
-                // if there is a family set but no scaling option
-                if (array_key_exists('family', $font) && !array_key_exists('scaling', $font)) {
-                    // default scaling: true for sans-serif, false for monospace
-                    $scaling     = $font['family'] == 'sans-serif';
-                    $fontOptions = A::merge($fontOptions, ['scaling' => $scaling]);
-                }
-                // merge field options with global defaults
-                $fontOptions = A::merge($fontOptions, $font);
-            }
-
-            return $fontOptions;
-        },
-        /**
-         * Whether link / email buttons should open a modal. Boolean.
-         */
-        'modals' => function ($modals = null) {
-            return $modals ?? option('community.markdown-field.modals');
+            return $font ?? option('community.markdown-field.font');
         },
         /**
          * Whether link dialogs enable editors to easily set a target="_blank". Boolean.
          */
         'blank' => function (?bool $blank = null) {
             return $blank ?? option('community.markdown-field.blank');
-        },
-        /**
-         * Whether the current language direction should be checked on init. Boolean.
-         */
-        'direction' => function ($direction = null) {
-            return $direction ?? option('community.markdown-field.direction');
         },
         /**
          * Min-height of the field when empty. String.
@@ -107,9 +92,6 @@ $options = A::merge($options, [
             //     $tags[$name] = $tag['attr'] ?? [];
             // }
             // return $tags;
-        },
-        'breaks' => function () {
-            return option('markdown.breaks', true);
         },
         'customHighlights' => function () {
             $highlights = [];
