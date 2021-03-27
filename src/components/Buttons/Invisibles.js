@@ -22,4 +22,8 @@ export default class Invisibles extends Button {
   get tokenType() {
     return "setting";
   }
+
+  get isDisabled() {
+    return () => false;
+  }
 }
