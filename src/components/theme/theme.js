@@ -1,4 +1,4 @@
-import { EditorView } from "@codemirror/view";
+import { EditorView, PluginField, ViewPlugin } from "@codemirror/view";
 import { HighlightStyle, tags as t } from "@codemirror/highlight";
 
 const theme = EditorView.theme(
@@ -128,7 +128,27 @@ const styleDef = HighlightStyle.define([
 
 const highlightStyle = () => styleDef;
 
+
+function scrollMargin() {
+  return ViewPlugin.fromClass(class {
+    constructor(view) {
+      this.margin = {
+        bottom: 60,
+        top: 60,
+      }
+    }
+
+    update(update) {
+      // Your update logic here
+      // this.margin = {left: 100}
+    }
+  }, {
+    provide: PluginField.scrollMargins.from(value => value.margin)
+  })
+}
+
 export {
   highlightStyle,
-  theme
+  theme,
+  scrollMargin
 };

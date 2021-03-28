@@ -9,7 +9,7 @@ import {
 } from "@codemirror/lang-markdown";
 
 import lineStyles from "./theme/line-styles";
-import { theme, highlightStyle } from "./theme/theme.js";
+import { theme, highlightStyle, scrollMargin } from "./theme/theme.js";
 import specialChars from "./theme/special-chars";
 import Emitter from "./Emitter.js";
 import Extensions from "./Extensions.js";
@@ -96,6 +96,7 @@ export default class Editor extends Emitter {
       isKnownDesktopBrowser && drawSelection(),
       this.options.placeholder && placeholder(this.options.placeholder),
       theme,
+      scrollMargin(),
     ].filter((v) => !!v);
 
     return EditorState.create({
