@@ -14,14 +14,8 @@ $options = A::merge($options, [
         /**
          * Sets the toolbar buttons.
          */
-        'buttons' => function ($buttons = null) {
-            if ($buttons === false) {
-                return false;
-            }
-
-            $buttons = $buttons ?? option('community.markdown-field.buttons');
-
-            if (empty($buttons)) {
+        'buttons' => function ($buttons = true) {
+            if ($buttons === false || empty($buttons) === true) {
                 return false;
             }
 
@@ -29,52 +23,31 @@ $options = A::merge($options, [
                 return true;
             }
 
-            $uniqueButtons = [];
+            return $buttons;
+        },
 
-            foreach ($buttons as $button) {
-                if ($button == 'divider' || !in_array($button, $uniqueButtons)) {
-                    $uniqueButtons[] = $button;
-                }
-            }
-
-            return $uniqueButtons;
-        },
-        /**
-         * Sets whether the editor is editable
-         */
-        'disabled' => function (bool $disabled = false) {
-            return $disabled;
-        },
-        /*
-         * Sets the editor font.
-         */
-        'font' => function ($font = null) {
-            return $font ?? option('community.markdown-field.font');
-        },
         /**
          * Whether link dialogs enable editors to easily set a target="_blank". Boolean.
          */
-        'blank' => function (?bool $blank = null) {
-            return $blank ?? option('community.markdown-field.blank');
+        'blank' => function (bool $blank = true) {
+            return $blank;
         },
+
         /**
          * Min-height of the field when empty. String.
          */
-        'size' => function ($size = null) {
-            return $size ?? option('community.markdown-field.size');
+        'size' => function (?string $size = null) {
+            return $size;
         },
-        'placeholder' => function ($placeholder = null) {
-            return $placeholder;
-        },
-        'query' => function ($query = null) {
-            $queryOptions = option('community.markdown-field.query');
-            $queryOptions = $query ? A::merge($queryOptions, $query) : $queryOptions;
 
-            return $queryOptions;
+        'query' => function ($query = null) {
+            return $query;
         },
-        'highlights' => function ($highlights = null) {
-            return $highlights ?? option('community.markdown-field.highlights', true);
+
+        'highlights' => function ($highlights = true) {
+            return $highlights;
         },
+
         'kirbytext' => function (bool $kirbytext = true) {
             return $kirbytext;
         },

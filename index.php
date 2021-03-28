@@ -1,22 +1,8 @@
 <?php
 
+use Kirby\Cms\App as Kirby;
+
 Kirby::plugin('community/markdown-field', [
-  'options' => [
-    'buttons'    => ['headlines', 'bold', 'italic', 'divider', 'link', 'email', 'file', 'code', 'divider', 'ul', 'ol'],
-    'font'       => [
-      'family'  => 'monospace',
-      'size'    => 'regular',
-      'scaling' => false,
-    ],
-    'query'      => [
-      'pagelink' => null,
-      'images'   => 'page.images',
-      'files'    => 'page.files.filterBy("type", "!=", "image")',
-    ],
-    'blank'      => false,
-    'invisibles' => false,
-    'size'       => 'small',
-  ],
   'blueprints' => [
     'blocks/markdown' => __DIR__ . '/blueprints/blocks/markdown.yml',
   ],
