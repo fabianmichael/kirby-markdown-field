@@ -22,6 +22,7 @@ const theme = EditorView.theme(
       padding: "var(--cm-content-padding-y) 0",
       whiteSpace: "pre-wrap",
       overflowWrap: "break-word", // prevents long, unbreakable word from creating a horizontal scrollbar
+      wordBreak: "break-word",
       "-webkit-user-modify": "read-write-plaintext-only", // disables `B I U` buttons on iOS
       width: "100%", // required to wrap all lines, that would be too long for the viewport.
     },

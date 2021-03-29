@@ -245,9 +245,9 @@
 
 .k-markdown-input .cm-hr::before,
 .k-markdown-input .cm-hr::after {
-  background: linear-gradient(var(--cm-color-light-gray), var(--cm-color-light-gray)) 50% calc(50% + .0625rem) / 100% .0625rem no-repeat;
+  background: linear-gradient(var(--cm-color-light-gray), var(--cm-color-light-gray)) 50% calc(var(--cm-line-height) * 1em / 2) / 100% .0625rem no-repeat;
   content: "";
-  flex-grow: 1;
+  flex: 1 0 2ch;
 }
 
 .k-markdown-input .cm-hr > span {
