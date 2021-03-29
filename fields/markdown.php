@@ -24,9 +24,14 @@ $options = A::merge($options, [
             }
 
             $def = [];
+            $divider = 0;
 
             foreach ($buttons as $type => $button) {
               if (is_int($type) === true && is_string($button) === true) {
+                if ($button === 'divider') {
+                  $button = "divider__" . $divider++;
+                }
+
                 $def[$button] = true;
               }
 

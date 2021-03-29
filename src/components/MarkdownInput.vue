@@ -269,12 +269,12 @@ export default {
           ],
           "bold": true,
           "italic": true,
-          "divider": true,
+          "divider__0": true,
           "link": true,
           "file": true,
           "image": true,
           "code": true,
-          "divider": true,
+          "divider__1": true,
           "ul": true,
           "ol": true,
           "invisibles": true,
@@ -284,6 +284,8 @@ export default {
       const layout = [];
 
       for (let item of Object.keys(this.buttons)) {
+        item = item.replace(/__.*$/, ''); // remove divider suffix
+
         if (this.buttons[item] === true) {
           layout.push(mapped[item]);
         } else {
