@@ -23,7 +23,19 @@ $options = A::merge($options, [
                 return true;
             }
 
-            return $buttons;
+            $def = [];
+
+            foreach ($buttons as $type => $button) {
+              if (is_int($type) === true && is_string($button) === true) {
+                $def[$button] = true;
+              }
+
+              if (is_string($type) === true) {
+                $def[$type] = $button;
+              }
+            }
+
+            return $def;
         },
 
         /**
@@ -31,6 +43,13 @@ $options = A::merge($options, [
          */
         'blank' => function (bool $blank = true) {
             return $blank;
+        },
+
+        /**
+         * Sets the font family (sans or monospace)
+         */
+        'font' => function (string $font = null) {
+          return in_array($font, ['sans', 'sans-serif']) === true ? 'sans-serif' : 'monospace';
         },
 
         /**

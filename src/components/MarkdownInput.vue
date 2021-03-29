@@ -259,36 +259,37 @@ export default {
         [extension.name]: extension
       }), {});
 
-      const layout = [];
-
       if (this.buttons === true) {
         // default layout
-        this.buttons = [
-          "headlines",
-          "bold",
-          "italic",
-          "divider",
-          "link",
-          "file",
-          "image",
-          "code",
-          "divider",
-          "ul",
-          "ol",
-          "invisibles",
-        ]
+        this.buttons = {
+          "headlines": [
+            "h1",
+            "h2",
+            "h3",
+          ],
+          "bold": true,
+          "italic": true,
+          "divider": true,
+          "link": true,
+          "file": true,
+          "image": true,
+          "code": true,
+          "divider": true,
+          "ul": true,
+          "ol": true,
+          "invisibles": true,
+        }
       }
 
-      if (Array.isArray(this.buttons)) {
-        this.buttons.forEach(item => {
-          if (Array.isArray(item)) {
-            // headlines item
-            mapped.headlines.configure({ levels: item })
-            layout.push(mapped.headlines);
-          } else if (mapped[item]) {
-            layout.push(mapped[item]);
-          }
-        })
+      const layout = [];
+
+      for (let item of Object.keys(this.buttons)) {
+        if (this.buttons[item] === true) {
+          layout.push(mapped[item]);
+        } else {
+          mapped[item].configure(this.buttons[item]);
+          layout.push(mapped[item]);
+        }
       }
 
       return layout;

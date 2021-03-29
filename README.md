@@ -57,7 +57,7 @@ editor:
 
 ## 3. Options
 
-⛔️ Needs update
+⛔️ Needs update, query not implemented yet.
 
 ### 3.1. Available options
 
@@ -65,28 +65,26 @@ You have access to the very same options as [the textarea field](https://getkirb
 
 | Option | Type | Required | Default | Description |
 |:-------|:-----|:---------|:--------|:------------|
-| font | string | `false` | `monospace` | Sets the font family (`sans` or `monospace`) |
-| modals | Boolean | false | `true` | If set to `false`, link and email tags will be added without opening a modal |
+| font | string | `false` | `monospace` | Sets the font family (`sans-serif` or `monospace`) |
 | blank | Boolean / String | false | `false` | If set to `true`, editors will be presented an option to add the `target: _blank` option to link tags. If set to `always`, the option will be activated by default |
-| invisibles | Boolean | false | `false` | If set to `true`, the *invisibles* button will be displayed in the toolbar, allowing you to show / hide hidden characters and whitespaces |
 | query | Object | false | [see below](#34-query) | Sets a custom query for the page selector dialog |
 | size | String | false | `small` | Sets the empty height of the Markdown field |
 
 ### 3.2. Font settings
 
-Removed
+You can choose between monospace (`monospace`) and sans-serif (`sans`) font. The monospace font offers a more sophisticated layout with indentation for multiline list elements, headings and blockquote – things, which would be much harder to implement (and slower to calculate) for a proportional font.
+
+While the sans-serif might be more appealing to non-technical writers at first, the monospace should be the preferred version in most cases.
 
 ### 3.3. Buttons
 
-⛔️ Needs update, options for single items should be objects, not array like headlines in version 1
-
 This field is packing the usual textarea buttons, and some more.
 
-`headlines` can contain the whole range of headings from `h1` to `h6`, and therefore accepts a sub-array (default is `['h1', 'h2', 'h3']`):
+`headlines` can contain the whole range of headings from `h1` to `h6`, and therefore accepts a sub-array (default is `['h1', 'h2', 'h3']`). Use `headlines` as key in this case, instead of prepending a dash, like for items without configuration:
 
 ```yaml
 buttons:
-  - headlines
+  headlines:
     - h1
     - h2
     - h3
@@ -100,13 +98,14 @@ You also have access to 6 additional buttons:
 ```yaml
 buttons:
   - blockquote
-  - horizontal-rule
+  - hr
   - strikethrough
   - pagelink
   - footnote
 ```
 
-If you don't need it, you can also hide the toolbar:
+If you don't need it, you can also hide the toolbar. This will also disable
+the shortcuts for all formats.
 
 ```yaml
 buttons: false
@@ -116,25 +115,28 @@ The full list of available buttons:
 
 ```yaml
 buttons:
-  - headlines
-      - h1
-      - h2
-      - h3
-      - h4
-      - h5
-      - h6
+  headlines:
+    - h1
+    - h2
+    - h3
+    - h4
+    - h5
+    - h6
   - bold
   - italic
+  - strikethrough
+  - code
   - ul
   - ol
   - link
-  - email
   - blockquote
-  - horizontal-rule
+  - hr
   - strikethrough
   - pagelink
   - file
   - footnote
+  - invisibles
+  - divider # can be used multiple times
 ```
 
 ### 3.4. Query
@@ -217,6 +219,10 @@ MIT
 
 ## 7. Migrating from Version 1
 
+- Setting avaiable **headline levels** now work a bit differently, see [3.3. Buttons](#33-buttons). This was necessary to allow for multiple, configurable dropdowns in the future/extensions.
+- The `horizontal-rule` button was renamed to `hr`.
+- The `modals` option has been removed. Clicking the link button will always display a modal.
+- The `link` and `email` buttons have been merged into a single popup.
 - The **invisibles** option has been replaced by a button, called `invisibles`. Just add that to your toolbar setup instead.
 - The API for registering custom buttons has changed. See `extension-examples` folder for examples.
 - Font scaling options have been removed. Version 2 of the Markdown field only accepts `monospace` and `sans` as font options. if you need scaling of headlines, consider using Kirby’s Blocks field instead.

@@ -15,6 +15,10 @@
   --cm-color-cursor: #5588ca;
 }
 
+.k-markdown-input-wrap[data-font-family="sans-serif"] {
+  --cm-font-family: var(--font-family-sans);
+}
+
 .k-markdown-input-wrap[data-font-size="small"] {
   --cm-font-size: var(--font-size-small);
   --cm-line-height: 1.5;
@@ -26,6 +30,12 @@
 }
 
 .k-markdown-input-wrap[data-layout="narrow"] .cm-line {
+  --cm-mark: 0 !important;
+  --cm-indent: 0 !important;
+  --cm-extra-indent: 0 !important;
+}
+
+.k-markdown-input-wrap[data-font-family="sans-serif"] .cm-line {
   --cm-mark: 0 !important;
   --cm-indent: 0 !important;
   --cm-extra-indent: 0 !important;
@@ -221,6 +231,10 @@
 .k-markdown-input .cm-blockquote {
   --cm-extra-indent: -.25em;
   border-left: .25em solid var(--cm-color-light-gray);
+}
+
+.k-markdown-input-wrap[data-font-family="sans-serif"] .cm-blockquote {
+  --cm-line-indent: .75em;
 }
 
 /* Horizontal Rule */
