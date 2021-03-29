@@ -39,13 +39,6 @@ $options = A::merge($options, [
         },
 
         /**
-         * Whether link dialogs enable editors to easily set a target="_blank". Boolean.
-         */
-        'blank' => function (bool $blank = true) {
-            return $blank;
-        },
-
-        /**
          * Sets the font family (sans or monospace)
          */
         'font' => function (string $font = null) {

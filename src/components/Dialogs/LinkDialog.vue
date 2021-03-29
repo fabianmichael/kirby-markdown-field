@@ -80,7 +80,7 @@ export default {
   },
   computed: {
     displayedFields() {
-      return (this.kirbytext && this.blank) ? Object.assign(this.fields, this.blankField) : this.fields
+      return (this.kirbytext && this.extension.options.blank) ? Object.assign(this.fields, this.blankField) : this.fields
     }
   },
   methods: {

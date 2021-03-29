@@ -9,6 +9,12 @@ export default class Link extends Button {
     };
   }
 
+  get defaults() {
+    return {
+      blank: true
+    }
+  }
+
   keys() {
     return [
       {

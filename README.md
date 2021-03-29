@@ -7,6 +7,7 @@
 - Toggling of inline formats is not completely implemented yet.
 - The are some weird, but mostly minor scrolling bugs. It’s not clear yet, if these are caused by CodeMirror or how scrolling works in Kirby’s panel.
 - CodeMirror 6 is still in beta. Its API might still be subject to minor changes, so this plugin will not reach a stable version until CodeMirror 6 does.
+- Size options are not implemented yet
 
 Enhanced markdown editor for Kirby 3, community built.
 
@@ -66,7 +67,6 @@ You have access to the very same options as [the textarea field](https://getkirb
 | Option | Type | Required | Default | Description |
 |:-------|:-----|:---------|:--------|:------------|
 | font | string | `false` | `monospace` | Sets the font family (`sans-serif` or `monospace`) |
-| blank | Boolean / String | false | `false` | If set to `true`, editors will be presented an option to add the `target: _blank` option to link tags. If set to `always`, the option will be activated by default |
 | query | Object | false | [see below](#34-query) | Sets a custom query for the page selector dialog |
 | size | String | false | `small` | Sets the empty height of the Markdown field |
 
@@ -93,7 +93,7 @@ buttons:
     - h6
 ```
 
-You also have access to 6 additional buttons:
+You also have access to additional buttons:
 
 ```yaml
 buttons:
@@ -128,7 +128,8 @@ buttons:
   - code
   - ul
   - ol
-  - link
+  link:
+    blank: true # Show option for opening link in a new tab.
   - blockquote
   - hr
   - strikethrough
@@ -223,6 +224,7 @@ MIT
 - The `horizontal-rule` button was renamed to `hr`.
 - The `modals` option has been removed. Clicking the link button will always display a modal.
 - The `link` and `email` buttons have been merged into a single popup.
+- The `blank` option has been moved from the global options to the link button.
 - The **invisibles** option has been replaced by a button, called `invisibles`. Just add that to your toolbar setup instead.
 - The API for registering custom buttons has changed. See `extension-examples` folder for examples.
 - Font scaling options have been removed. Version 2 of the Markdown field only accepts `monospace` and `sans` as font options. if you need scaling of headlines, consider using Kirby’s Blocks field instead.
