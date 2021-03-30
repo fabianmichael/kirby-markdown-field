@@ -32,7 +32,7 @@ $options = A::merge($options, [
                   $button = "divider__" . $divider++;
                 }
 
-                $def[$button] = true;
+                $def[$button] = new stdClass();
               }
 
               if (is_string($type) === true) {

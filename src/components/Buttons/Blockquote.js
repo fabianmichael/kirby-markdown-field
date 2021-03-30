@@ -10,6 +10,15 @@ export default class BlockQuote extends Button {
     };
   }
 
+  keys() {
+    return [
+      {
+        key: "Ctrl-Alt-q",
+        run: this.command,
+      }
+    ];
+  }
+
   get name() {
     return "quote";
   }

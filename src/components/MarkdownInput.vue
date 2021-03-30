@@ -267,17 +267,17 @@ export default {
             "h2",
             "h3",
           ],
-          "bold": true,
-          "italic": true,
-          "divider__0": true,
-          "link": true,
-          "file": true,
-          "image": true,
-          "code": true,
-          "divider__1": true,
-          "ul": true,
-          "ol": true,
-          "invisibles": true,
+          "bold": {},
+          "italic": {},
+          "divider__0": {},
+          "link": {},
+          "file": {},
+          "image": {},
+          "code": {},
+          "divider__1": {},
+          "ul": {},
+          "ol": {},
+          "invisibles": {},
         }
       }
 
@@ -286,9 +286,7 @@ export default {
       for (let item of Object.keys(this.buttons)) {
         item = item.replace(/__.*$/, ''); // remove divider suffix
 
-        if (this.buttons[item] === true) {
-          layout.push(mapped[item]);
-        } else {
+        if (mapped[item]) {
           mapped[item].configure(this.buttons[item]);
           layout.push(mapped[item]);
         }

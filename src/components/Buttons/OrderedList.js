@@ -14,6 +14,15 @@ export default class OrderedList extends Button {
     return () => this.editor.toggleLines(this.token);
   }
 
+  keys() {
+    return [
+      {
+        key: "Ctrl-Alt-o",
+        run: this.command,
+      }
+    ];
+  }
+
   get name() {
     return "ol";
   }

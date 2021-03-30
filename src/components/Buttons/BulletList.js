@@ -14,6 +14,15 @@ export default class BulletList extends Button {
     return "ul";
   }
 
+  keys() {
+    return [
+      {
+        key: "Ctrl-Alt-u",
+        run: this.command,
+      }
+    ];
+  }
+
   get token() {
     return "BulletList";
   }

@@ -15,15 +15,6 @@ export default class Link extends Button {
     }
   }
 
-  keys() {
-    return [
-      {
-        mac: "Mod-Ctrl-k",
-        run: () => this.editor.emit("dialog", this),
-      }
-    ];
-  }
-
   get command() {
     return (value) => {
       if (this.isDisabled()) {
@@ -63,6 +54,15 @@ export default class Link extends Button {
 
   get dialog() {
     return "k-markdown-link-dialog";
+  }
+
+  keys() {
+    return [
+      {
+        mac: "Mod-k",
+        run: () => this.editor.emit("dialog", this),
+      }
+    ];
   }
 
   get name() {
