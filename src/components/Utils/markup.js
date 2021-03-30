@@ -178,89 +178,48 @@ export function toggleLines(view, type, selection = null) {
   });
 }
 
+
 export function toggleMark(view, type, selection = null) {
-  const { format, node } = getCurrentInlineToken(view);
-  const state = view.state;
-  const sel = selection || state.selection.main;
+  selection = selection || view.state.selection.main;
   const mark = InlineTypes[type];
+  const { from, to } = selection;
+  const { format, node } = getCurrentInlineToken(view);
 
-
-
-  if (
-    format !== null && view.state.sliceDoc(node.from, node.from + mark.length) === mark
-  ) {
-    // Remove format/add another one
-
-    if (sel.from !== sel.to) {
-      // selection
-      console.log("how to deal with selection?");
-    } else {
-      // no selection
-      // TODO: Only toggle selected word
-
-
-      view.dispatch({
-        changes: {
-          from: node.from,
-          to: node.to,
-          insert: state.sliceDoc(node.from + mark.length, node.to - mark.length)
-        },
-        selection: { anchor: sel.from - mark.length }
-      });
-    }
-
-  } else if (state.sliceDoc(sel.from - mark.length, sel.to + mark.length) === mark + mark) {
-    // Remove empty formatting marks. e.g. `**|**`
-
+  if (format !== null && view.state.sliceDoc(node.from, node.from + mark.length) === mark) {
+    // Format already applied => remove
     view.dispatch({
       changes: {
-        from: sel.from - mark.length,
-        to: sel.to + mark.length,
-        insert: ""
+        from: node.from,
+        to: node.to,
+        insert: view.state.sliceDoc(node.from + mark.length, node.to - mark.length)
       },
-      selection: { anchor: sel.from - mark.length }
+      selection: { anchor: selection.from - mark.length }
     });
-
-  } else if (sel.from !== sel.to) {
-    // wrap current selection
-    // TODO: Wrap multiple lines separately, because Markdown does not support multi-line inline formats
-
-    view.dispatch(
-      state.replaceSelection(mark + state.sliceDoc(sel.from, sel.to) + mark)
-    );
-
-    view.dispatch({
-      selection: {
-        anchor: sel.anchor + mark.length,
-        head: sel.head + mark.length
-      }
-    });
-
   } else {
-    // No selection, add formatting to adjacent word
+    // Apply format, based on context
 
     const prevChar = getPrevCharRange(view);
     const prevGroupRange = prevChar !== null ? getPrevGroupRange(view) : null;
-    const isBoundaryBefore = !prevChar || isBoundaryChar(view.state, prevChar.from, sel.head);
+    const isBoundaryBefore = !prevChar || isBoundaryChar(view.state, prevChar.from, selection.head);
     const nextChar = getNextCharRange(view);
     const nextGroupRange = nextChar !== null ? getNextGroupRange(view) : null;
-    const isBoundaryAfter = !nextChar || isBoundaryChar(view.state, sel.head, nextChar.from);
+    const isBoundaryAfter = !nextChar || isBoundaryChar(view.state, selection.head, nextChar.from);
 
     if (isBoundaryBefore && isBoundaryAfter) {
       // Cursor sorrounded by boundaries, e.g. `word | word`
       view.dispatch({
-        changes: { from: sel.from, to: sel.to, insert: mark + mark },
-        selection: { anchor: sel.from + mark.length }
+        changes: { from: selection.from, to: selection.to, insert: mark + mark },
+        selection: { anchor: selection.from + mark.length }
       });
     } else if (isBoundaryBefore && !isBoundaryAfter) {
       // before word, e.g. ` |word`
       view.dispatch({
         changes: {
-          from: sel.from,
+          from: selection.from,
           to: nextGroupRange.to,
-          insert: mark + state.sliceDoc(sel.from, nextGroupRange.to) + mark
+          insert: mark + view.state.sliceDoc(selection.from, nextGroupRange.to) + mark
         },
-        selection: { anchor: sel.from + mark.length }
+        selection: { anchor: selection.from + mark.length }
       });
     } else if (isBoundaryAfter && !isBoundaryBefore) {
       // after word, e.g. `word| `, `word|.`
@@ -268,10 +227,10 @@ export function toggleMark(view, type, selection = null) {
       view.dispatch({
         changes: {
           from: prevGroupRange.from,
-          to: sel.to,
-          insert: mark + state.sliceDoc(prevGroupRange.from, sel.to) + mark
+          to: selection.to,
+          insert: mark + view.state.sliceDoc(prevGroupRange.from, selection.to) + mark
         },
-        selection: { anchor: sel.to + mark.length }
+        selection: { anchor: selection.to + mark.length }
       });
 
     } else if (!isBoundaryBefore && !isBoundaryAfter) {
@@ -282,9 +241,9 @@ export function toggleMark(view, type, selection = null) {
           from: prevGroupRange.from,
           to: nextGroupRange.to,
           insert:
-            mark + state.sliceDoc(prevGroupRange.from, nextGroupRange.to) + mark
+            mark + view.state.sliceDoc(prevGroupRange.from, nextGroupRange.to) + mark
         },
-        selection: { anchor: sel.from + mark.length }
+        selection: { anchor: selection.from + mark.length }
       });
 
     }

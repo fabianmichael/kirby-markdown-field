@@ -4,8 +4,6 @@
 
 **Known issues of the alpha:**
 
-- Toggling of inline formats is not completely implemented yet.
-- The are some weird, but mostly minor scrolling bugs. It’s not clear yet, if these are caused by CodeMirror or how scrolling works in Kirby’s panel.
 - CodeMirror 6 is still in beta. Its API might still be subject to minor changes, so this plugin will not reach a stable version until CodeMirror 6 does.
 - Size options are not implemented yet
 
