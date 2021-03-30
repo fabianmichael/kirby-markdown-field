@@ -108,6 +108,18 @@
   color: #aacfff;
 }
 
+/* .k-markdown-toolbar .k-button-text {
+  display: flex;
+  justify-content: space-between;
+  align-items: baselint;
+}
+
+.k-markdown-toolbar .k-button-text kbd {
+  font-variant-numeric: tabular-nums;
+  margin-left: 2.5rem;
+  opacity: .6;
+} */
+
 /**
  * General field setup
  */

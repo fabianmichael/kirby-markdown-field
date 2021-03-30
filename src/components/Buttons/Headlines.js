@@ -34,7 +34,7 @@ export default class Headlines extends Button {
       {
         name: "h1",
         icon: `h1`,
-        label: this.input.$t("markdown.toolbar.button.heading.1"),
+        label: this.input.$t("markdown.toolbar.button.heading.1"), //  + '<kbd>⌃⌥1</kbd>'
         command: () => this.editor.toggleLines(`ATXHeading1`),
         token: `ATXHeading1`,
         tokenType: "block",
@@ -88,7 +88,7 @@ export default class Headlines extends Button {
         return [
         ...accumulator,
         {
-          key: `Mod-${level}`,
+          key: `Ctrl-Alt-${level}`,
           run: () => this.editor.toggleLines(`ATXHeading${level}`),
           preventDefault: true,
         }

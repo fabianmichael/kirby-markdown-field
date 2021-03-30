@@ -30,7 +30,7 @@
                 :icon="dropdownItem.icon"
                 :current="active.includes(dropdownItem.token)"
                 @click="dropdownItem.command"
-              >{{ dropdownItem.label }}</k-dropdown-item>
+              ><span v-html="dropdownItem.label"/></k-dropdown-item>
             </k-dropdown-content>
           </k-dropdown>
         </template>
