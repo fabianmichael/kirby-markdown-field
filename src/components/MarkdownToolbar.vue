@@ -70,12 +70,25 @@ export default {
   },
   computed: {
     layout() {
-      return this.buttons.sort((a, b) => {
-        // ensure, that invisibles item always comes last
+      // ensure, that invisibles item always comes last
+      let layout = this.buttons.sort((a, b) => {
         if (a.name === "invisibles") return 1;
         if (b.name === "invisibles") return -1;
         return 0;
       });
+
+      // cache layout, to getters of button extensions are not
+      // called every time the editor updates.
+      layout = layout.map(item => {
+        return {
+          button: item.button,
+          name: item.name,
+          isActive: item.isActive,
+          isDisabled: item.isDisabled
+        };
+      });
+
+      return layout;
     }
   },
   methods: {

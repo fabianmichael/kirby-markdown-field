@@ -8,12 +8,10 @@ const currentPlatform = typeof navigator === "undefined" ? "key"
 export function formatKeyName(keys, translate, before = " (", after = ")") {
 
   let keyName = keys[currentPlatform] ?? keys.key ?? null;
-  console.log("kk");
 
   if (keyName === null) {
     return "";
   }
-
 
   const parts = keyName.split(/-(?!$)/);
   let result = parts[parts.length - 1];

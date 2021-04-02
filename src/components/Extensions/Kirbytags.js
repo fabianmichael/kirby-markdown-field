@@ -8,9 +8,9 @@ export default class Kirbytags extends Extension {
   }
 
   plugins() {
-    const tagNamesPattern = this.input.knownKirbytags.join("|");
-    // const tagNamesPattern = Object.keys(this.input.knownKirbytags).join("|");
-    // const tagAttrs = this.input.knownKirbytags;
+    // const tagNamesPattern = this.input.knownKirbytags.join("|");
+    const tagNamesPattern = Object.keys(this.input.knownKirbytags).join("|");
+    const tagAttrs = this.input.knownKirbytags;
 
     return [ViewPlugin.fromClass(class KirbytagsHighlighter {
       constructor(view) {
@@ -52,23 +52,23 @@ export default class Kirbytags extends Extension {
                   class: "cm-kirbytag cm-kirbytag-open",
                 }));
 
-                // const attrsPattern = tagAttrs[tagName.toLowerCase()].join("|");
-                // let tagContent = view.state.sliceDoc(from + tagStartIndex + 1, from + match.index);
-                // const parts = tagContent.split(new RegExp(`((?:${tagName}|${attrsPattern}):)`, "gi"));
-                // let start = 0;
+                const attrsPattern = tagAttrs[tagName.toLowerCase()].join("|");
+                let tagContent = view.state.sliceDoc(from + tagStartIndex + 1, from + match.index);
+                const parts = tagContent.split(new RegExp(`((?:${tagName}|${attrsPattern}):)`, "gi"));
+                let start = 0;
 
-                // for (let t of parts) {
-                //   const l = t.length;
-                //   const isAttr = t.substring(l - 1) === ":";
-                //   b.add(from + tagStartIndex + 1 + start, from + tagStartIndex + 1 + start + l, Decoration.mark({
-                //     class: isAttr ? "cm-kirbytag cm-kirbytag-attr" : "cm-kirbytag",
-                //   }));
-                //   start += l;
-                // }
+                for (let t of parts) {
+                  const l = t.length;
+                  const isAttr = t.substring(l - 1) === ":";
+                  b.add(from + tagStartIndex + 1 + start, from + tagStartIndex + 1 + start + l, Decoration.mark({
+                    class: isAttr ? "cm-kirbytag cm-kirbytag-attr" : "cm-kirbytag",
+                  }));
+                  start += l;
+                }
 
-                b.add(from + tagStartIndex + 1, from + match.index + match[0].length - 1, Decoration.mark({
-                  class: "cm-kirbytag",
-                }));
+                // b.add(from + tagStartIndex + 1, from + match.index + match[0].length - 1, Decoration.mark({
+                //   class: "cm-kirbytag",
+                // }));
 
                 b.add(from + match.index + match[0].length - 1, from + match.index + match[0].length, Decoration.mark({
                   class: "cm-kirbytag cm-kirbytag-close",

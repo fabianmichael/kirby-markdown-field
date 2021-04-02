@@ -3,7 +3,6 @@ import Button from "./Button.js";
 export default class OrderedList extends Button {
 
   get button() {
-    console.log("get list button")
     return {
       icon: "list-numbers",
       label: this.input.$t("toolbar.button.ol") + this.formatKeyName(this.keys()[0]),
