@@ -14,8 +14,8 @@ import specialChars from "./theme/special-chars";
 import Emitter from "./Emitter.js";
 import Extensions from "./Extensions.js";
 import {
-  toggleLines,
-  toggleMark,
+  toggleBlockFormat,
+  toggleInlineFormat,
 } from "./Utils/markup.js";
 import { getActiveTokensAt } from "./Utils/syntax.js";
 
@@ -91,7 +91,8 @@ export default class Editor extends Emitter {
        * See https://bugzilla.mozilla.org/show_bug.cgi?id=1327834
        *
        * However, drawn selction and custom caret look better anyways,
-       * so enable for al known desktop browsers.
+       * so enable for all known desktop browsers, where it should not
+       * cause any trouble.
        */
       isKnownDesktopBrowser && drawSelection(),
       this.options.placeholder && placeholder(this.options.placeholder),
@@ -112,8 +113,8 @@ export default class Editor extends Emitter {
       state: this.createState(value),
       parent: this.options.element,
       editable: this.options.editable,
-      dispatch: (transaction) => {
-        this.view.update([transaction]);
+      dispatch: (...transaction) => {
+        this.view.update(transaction);
 
         if (this.preventUpdate) {
           this.preventUpdate = false;
@@ -213,12 +214,12 @@ export default class Editor extends Emitter {
     });
   }
 
-  toggleLines(type, selection = null) {
-    return toggleLines(this.view, type, selection);
+  toggleBlockFormat(type) {
+    return toggleBlockFormat(this.view, type);
   }
 
-  toggleMark(type, selection = null) {
-    return toggleMark(this.view, type, selection);
+  toggleInlineFormat(type) {
+    return toggleInlineFormat(this.view, type);
   }
 
   toggleSpecialChars(force = null) {

@@ -5,22 +5,28 @@ export default class BlockQuote extends Button {
   get button() {
     return {
       icon: "quote",
-      label: this.input.$t("markdown.toolbar.button.blockquote"),
-      command: () => this.editor.toggleLines(this.token),
+      label: this.input.$t("markdown.toolbar.button.blockquote") + this.formatKeyName(this.keys()[0]),
+      command: this.command,
     };
+  }
+
+  get command() {
+    return () => this.editor.toggleBlockFormat(this.token);
   }
 
   keys() {
     return [
       {
-        key: "Ctrl-Alt-q",
+        mac: "Ctrl-Alt-q",
+        key: "Alt-Shift-q",
         run: this.command,
+        preventDefault: true,
       }
     ];
   }
 
   get name() {
-    return "quote";
+    return "blockquote";
   }
 
   get token() {

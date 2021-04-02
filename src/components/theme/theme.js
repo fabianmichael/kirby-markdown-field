@@ -23,9 +23,12 @@ const theme = EditorView.theme(
       whiteSpace: "pre-wrap",
       overflowWrap: "break-word", // prevents long, unbreakable word from creating a horizontal scrollbar
       wordBreak: "break-word",
+      minHeight: "calc(2 * var(--cm-content-padding-y) + 1em * var(--cm-line-height))", // prevents the editor from collapsing under certain cirtumstances
       "-webkit-user-modify": "read-write-plaintext-only", // disables `B I U` buttons on iOS
       width: "100%", // required to wrap all lines, that would be too long for the viewport.
+      caretColor: "auto", // override CM’s default black caret color, whoch looks a bit strange on iOS
     },
+
     /**
      * 1. Ensures, that scrolling to a line takes height of the
      *    toolbar and Kirby’s save bar into account. Probably does
@@ -49,6 +52,8 @@ const theme = EditorView.theme(
 
     "&.cm-focused .cm-selectionBackground, .cm-selectionBackground": {
       backgroundColor: "var(--cm-selection-background)",
+      // "backgroundColor": "Highlight",
+      // "opacity": "0.27",
     },
 
     ".cm-codeblock": {

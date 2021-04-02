@@ -11,7 +11,7 @@ export default class HorizontalRule extends Button {
   }
 
   get command() {
-    return () => this.editor.toggleLines(this.token);
+    return () => this.editor.toggleBlockFormat(this.token);
   }
 
   get name() {

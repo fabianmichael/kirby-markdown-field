@@ -5,13 +5,13 @@ export default class StrongEmphasis extends Button {
   get button() {
     return {
       icon: "bold",
-      label: this.input.$t("toolbar.button.bold"),
+      label: this.input.$t("toolbar.button.bold") + this.formatKeyName(this.keys()[0]),
       command: this.command,
     };
   }
 
   get command() {
-    return () => !this.isDisabled() && this.editor.toggleMark(this.token);
+    return () => !this.isDisabled() && this.editor.toggleInlineFormat(this.token);
   }
 
   keys() {

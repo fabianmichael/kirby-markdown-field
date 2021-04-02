@@ -153,3 +153,88 @@ export function getCurrentInlineToken(view) {
     node: inlineNode,
   };
 }
+
+// export function getCurrentInlineTokens(view) {
+//   const tree = syntaxTree(view.state);
+
+//   let n =  tree.resolve(view.state.selection.main.head, 0);
+
+//   const tokens = [];
+
+//   do {
+//     if (InlineTypes[n.name]) {
+//       tokens.push({
+//         format: InlineTypes[n.name],
+//         node: n,
+//       });
+//     }
+//   } while ((n = n.parent));
+
+//   return tokens;
+// }
+
+
+export function getCurrentInlineTokens(view) {
+  const { head, from, to } = view.state.selection.main;
+  const state = view.state;
+  const tree = syntaxTree(state);
+  const tokens = [];
+
+  // if (from !== to) {
+  //   // selection, possibly has multiple lines
+  //   const firstLine = state.doc.lineAt(from);
+  //   const lastLine  = state.doc.lineAt(to);
+
+  //   if (firstLine.number !== lastLine.number) {
+  //     // Multiline selection, just look for blocks
+
+  //     tree.iterate({
+  //       enter: ({ name }) => {
+  //         if (block.includes(name)) {
+  //           tokens.push(name)
+  //         }
+  //       },
+  //       from: firstLine.from,
+  //       to: lastLine.to,
+  //     });
+
+  //     return tokens;
+  //   }
+  // }
+
+  // Selection spans only a single linge, get current block token and all
+  // inline tokens
+  tree.iterate({
+    enter: (node, start, end) => {
+      let inlineMatch;
+
+      if (from !== to) {
+        // selection
+        if (start <= from && to <= end) {
+          // Matches, if selection is larger or equal to token
+          inlineMatch = true;
+        }
+      } else {
+        // no selection
+        if (head > start && head < end) {
+          // Only match inline tokens, where the cursor is
+          // inside of if (not before/after the token)
+          inlineMatch = true
+        }
+      }
+
+      if (inlineMatch && InlineTypes[node.name]) {
+        tokens.push({
+          node,
+          from: start,
+          to: end
+        });
+      }
+    },
+    from,
+    to,
+  });
+
+
+  return tokens.reverse();
+}

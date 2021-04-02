@@ -6,13 +6,24 @@ export default class Invisibles extends Button {
     return {
       align: "right",
       icon: "preview",
-      label: this.input.$t("markdown.toolbar.button.invisibles"),
+      label: this.input.$t("markdown.toolbar.button.invisibles") + this.formatKeyName(this.keys()[0]),
       command: this.command,
     };
   }
 
   get command() {
     return () => this.editor.toggleSpecialChars()
+  }
+
+  keys() {
+    return [
+      {
+        mac: "Ctrl-Alt-i",
+        key: "Alt-Shift-i",
+        run: this.command,
+        preventDefault: true,
+      }
+    ];
   }
 
   get name() {

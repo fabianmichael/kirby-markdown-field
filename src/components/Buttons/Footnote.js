@@ -6,7 +6,7 @@ export default class Footnote extends Button {
   get button() {
     return {
       icon: "footnote",
-      label: this.input.$t("markdown.toolbar.button.footnote"),
+      label: this.input.$t("markdown.toolbar.button.footnote") + this.formatKeyName(this.keys()[0]),
       command: this.command,
     };
   }
@@ -14,7 +14,8 @@ export default class Footnote extends Button {
   keys() {
     return [
       {
-        mac: "Mod-Ctrl-k",
+        mac: "Ctrl-Alt-f",
+        key: "Alt-Shift-f",
         run: this.command,
       }
     ];

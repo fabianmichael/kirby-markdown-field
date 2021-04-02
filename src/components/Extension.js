@@ -1,3 +1,5 @@
+import { formatKeyName } from "./Utils/keymap.js";
+
 export default class Extension {
 
   constructor(options = {}) {
@@ -44,5 +46,9 @@ export default class Extension {
 
   plugins() {
     return [];
+  }
+
+  formatKeyName(name, before, after) {
+    return formatKeyName(name, this.input.$t, before, after);
   }
 }

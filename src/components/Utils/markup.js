@@ -1,17 +1,23 @@
 import { syntaxTree } from "@codemirror/language";
-import { Direction } from "@codemirror/view";
+import { Direction, logException } from "@codemirror/view";
 import { CharCategory } from "@codemirror/state";
 import { ltrim, rtrim } from "./strings.js";
 import {
   BlockTypes,
   BlockMarks,
   InlineTypes,
-  getCurrentInlineToken
+  getCurrentInlineTokens
 } from "./syntax.js";
+import { step } from "seamless-scroll-polyfill/dist/esm/common";
 
 function isBoundaryChar(state, from, to) {
   const categorize = state.charCategorizer(from);
   return categorize(state.sliceDoc(from, to)) != CharCategory.Word;
+}
+
+function isWordChar(state, from, to) {
+  const categorize = state.charCategorizer(from);
+  return categorize(state.sliceDoc(from, to)) == CharCategory.Word;
 }
 
 function getPrevCharRange(view) {
@@ -50,10 +56,10 @@ function getNextGroupRange(view) {
     : null;
 }
 
-export function toggleLines(view, type, selection = null) {
+export function toggleBlockFormat(view, type) {
   const state = view.state;
   const tree = syntaxTree(state);
-  const { from, to } = selection || view.state.selection.main;
+  const { from, to } = view.state.selection.main;
   const firstLine = state.doc.lineAt(from);
   const lastLine = state.doc.lineAt(to);
 
@@ -179,73 +185,310 @@ export function toggleLines(view, type, selection = null) {
 }
 
 
-export function toggleMark(view, type, selection = null) {
-  selection = selection || view.state.selection.main;
-  const mark = InlineTypes[type];
-  const { from, to } = selection;
-  const { format, node } = getCurrentInlineToken(view);
+/*
 
-  if (format !== null && view.state.sliceDoc(node.from, node.from + mark.length) === mark) {
-    // Format already applied => remove
-    view.dispatch({
-      changes: {
-        from: node.from,
-        to: node.to,
-        insert: view.state.sliceDoc(node.from + mark.length, node.to - mark.length)
-      },
-      selection: { anchor: selection.from - mark.length }
-    });
+How inline formatting should work:
+
+wo|rd                     => **wo|rd**
+|word                     => **|word**
+word|                     => **word|**
+word|.                    => **word|**. (full stop not bold)
+[word|                    => **[word|**
+[multiple words|          => **  **[multiple words|**
+a few[ words|             => a few **words**
+
+
+Bold in italic, remove italic from bold:
+
+Just *a few **ita|lic** words* => Just *a few* **ita|lic** *words*
+
+Bold, add italic:
+
+**word|**                 => ***word|***
+**word*|*                 => ***word|***
+**wo[rd|**                => **wo*rd***
+
+Multiline:
+
+First [line               => First **[line**
+Second| line                 **second|** line
+
+Multline bold, add italic:
+
+First **[line**           => First ***[line***
+**second|** line             ***Second|*** line
+
+
+
+
+*/
+// const contexts = {
+//   "word|word": "*word|word*",
+//   "|word": "*|word*",
+//   "word|": "*word|*",
+//   "[word+]": "*[word|*",
+
+//   "[ word+] ": "[ *word]*",
+//   "[word+ ] ": "*[word* ]",
+
+//   "*word [word]* ": "*word* [word]",
+//   "*word[ word]* ": "*word* [word]",
+//   "*[word] word* ": "[word] *word*",
+//   "*[word ]word* ": "[word] *word*",
+// };
+
+function toggleWordFormat(view, type) {
+  const state = view.state;
+  const selection = state.selection.main;
+  const pos = selection.head;
+  const mark = InlineTypes[type];
+  const tokens = getCurrentInlineTokens(view);
+  const tokenNames = tokens.reduce((r, { node: n }) => [...r, n.name], []);
+  const activeIndex = tokenNames.indexOf(type);
+
+  if (activeIndex !== -1) {
+    // remove formatting
+
+    if (activeIndex === 0) {
+      // type (e.g. StrongEmphasis) is first format in stack (e.g. StrongEmphasis inside Emphasis)
+
+      let { from, to } = tokens[0];
+      let insert;
+      let pos = selection.head;
+
+      const tokenText     = view.state.sliceDoc(from, to);
+      const parts         = tokenText.split(/(\s+)/); // contains all words and spaces
+      const partsCount    = parts.length;
+
+      const isInFirstWord = pos > from && pos <= from + parts[0].length;
+      const isInLastWord  = pos >= to - parts[partsCount - 1].length && pos < to;
+
+      if (isInFirstWord && isInLastWord) {
+        // token spans only one word: **wo|rd** => wo|rd
+        insert = view.state.sliceDoc(from + mark.length, to - mark.length);
+        pos -= mark.length;
+      } else if (isInFirstWord) {
+        // first word in token: **word| word** => word| **word**
+        insert = [parts[0].slice(mark.length), parts[1], mark, ...parts.slice(2)].join("");
+        pos -= mark.length
+      } else if (isInLastWord) {
+        // last word in token: **word word|** => **word** word|
+        insert = [...parts.slice(0, partsCount - 2), mark, parts[partsCount - 2], parts[partsCount - 1].slice(0, -1 * mark.length)].join("");
+        pos += mark.length
+      } else if (!isInFirstWord && !isInLastWord) {
+        // middle word: **word word| word** => **word** word| **word**
+        let i = 0;
+        let cursor = pos - from;
+
+        // get index of current word in parts array
+        for (let partStart = 0, partEnd = 0;i < partsCount; i++) {
+          const isWord = /\S/.test(parts[i]);
+          partStart += i > 0 ? parts[i - 1].length : 0;
+          partEnd += parts[i].length;
+          if (isWord && cursor >= partStart && cursor <= partEnd) {
+            break;
+          }
+        }
+
+        insert = [...parts.slice(0, i - 1), mark, ...parts.slice(i - 1, i + 2), mark, ...parts.slice(i + 2)].join("");
+        pos += mark.length;
+      } else {
+        // cursor probably surrounded by whitespace, do nothing
+      }
+
+      if (insert) {
+        // update editor only, if there was a valid transformation
+        view.dispatch({
+          changes: { from, to, insert },
+          selection: { anchor: pos }
+        });
+      }
+    } else {
+      // toggle outer format
+
+      for (let name of tokenNames) {
+        // remove all formats first
+        toggleWordFormat(view, name);
+      }
+
+      for (let name of tokenNames.reverse().slice(1)) {
+        // re-apply all formats, except for the last on in opposite order
+        toggleWordFormat(view, name);
+      }
+    }
+
   } else {
-    // Apply format, based on context
+    // add formatting to current word
+
+    let from   = pos;
+    let to     = pos;
+    let insert = "";
 
     const prevChar = getPrevCharRange(view);
     const prevGroupRange = prevChar !== null ? getPrevGroupRange(view) : null;
-    const isBoundaryBefore = !prevChar || isBoundaryChar(view.state, prevChar.from, selection.head);
+    const isBoundaryBefore = !prevChar || isBoundaryChar(view.state, prevChar.from, pos);
+
     const nextChar = getNextCharRange(view);
     const nextGroupRange = nextChar !== null ? getNextGroupRange(view) : null;
-    const isBoundaryAfter = !nextChar || isBoundaryChar(view.state, selection.head, nextChar.from);
+    const isBoundaryAfter = !nextChar || isBoundaryChar(view.state, pos, nextChar.from);
 
     if (isBoundaryBefore && isBoundaryAfter) {
       // Cursor sorrounded by boundaries, e.g. `word | word`
-      view.dispatch({
-        changes: { from: selection.from, to: selection.to, insert: mark + mark },
-        selection: { anchor: selection.from + mark.length }
-      });
+      insert = mark + mark;
     } else if (isBoundaryBefore && !isBoundaryAfter) {
       // before word, e.g. ` |word`
-      view.dispatch({
-        changes: {
-          from: selection.from,
-          to: nextGroupRange.to,
-          insert: mark + view.state.sliceDoc(selection.from, nextGroupRange.to) + mark
-        },
-        selection: { anchor: selection.from + mark.length }
-      });
+      to     = nextGroupRange.to;
+      insert = mark + view.state.sliceDoc(pos, nextGroupRange.to) + mark;
     } else if (isBoundaryAfter && !isBoundaryBefore) {
       // after word, e.g. `word| `, `word|.`
-
-      view.dispatch({
-        changes: {
-          from: prevGroupRange.from,
-          to: selection.to,
-          insert: mark + view.state.sliceDoc(prevGroupRange.from, selection.to) + mark
-        },
-        selection: { anchor: selection.to + mark.length }
-      });
-
+      from   = prevGroupRange.from;
+      insert = mark + view.state.sliceDoc(prevGroupRange.from, pos) + mark;
     } else if (!isBoundaryBefore && !isBoundaryAfter) {
       // within word, e.g. `wo|rd`
-
-      view.dispatch({
-        changes: {
-          from: prevGroupRange.from,
-          to: nextGroupRange.to,
-          insert:
-            mark + view.state.sliceDoc(prevGroupRange.from, nextGroupRange.to) + mark
-        },
-        selection: { anchor: selection.from + mark.length }
-      });
-
+      from   = prevGroupRange.from;
+      to     = nextGroupRange.to;
+      insert = mark + view.state.sliceDoc(prevGroupRange.from, nextGroupRange.to) + mark
+    } else {
+      console.warn("Cthulhu!");
     }
+
+    view.dispatch({
+      changes: { from, to, insert },
+      selection: { anchor: pos + mark.length }
+    });
   }
 }
+
+function toggleLineFormat(view, n, type) {
+  const state = view.state;
+  const line = state.doc.lineAt(n);
+  const selection = state.selection.main;
+  const mark = InlineTypes[type];
+
+  const from = Math.max(line.from, selection.from);
+  const to = Math.min(line.to, selection.to);
+
+  const selectedText = state.sliceDoc(from, to);
+  const [whiteSpaceBefore, whiteSpaceAfter] = selectedText.match(/^(\s*)|(\s*)$/g);
+
+  // console.log("whitespace", whiteSpaceBefore, whiteSpaceAfter);
+
+
+  // view.dispatch({
+  //   changes: { from, to, insert: mark + state.doc.slice(from, to) + mark }
+  // })
+
+  console.log("ll", line);
+}
+
+function toggleSelectionFormat(view, type) {
+  const state = view.state;
+  const selection = state.selection.main;
+  const firstLine = state.doc.lineAt(selection.from).number;
+  const lastLine = state.doc.lineAt(selection.to).number;
+
+  console.log("lines", firstLine, lastLine)
+
+  for (let i = firstLine; i <= lastLine; i++) {
+    // Inline formats cannot span multiple lines in Markdown, so apply
+    // toggle to every line.
+    toggleLineFormat(view, i, type);
+  }
+}
+
+
+export function toggleInlineFormat(view, type) {
+  const state = view.state;
+  const selection = state.selection.main;
+
+  if (selection.from === selection.to) {
+    // Selection is empty, just deal wit single word
+    return toggleWordFormat(view, type);
+  } else {
+    return toggleSelectionFormat(view, type);
+  }
+  //else {
+  //   // We have a selection
+  //   const firstLine = state.doc.lineAt(selFrom);
+  //   const lastLine = state.doc.lineAt(selTo);
+  //   console.log("selection …")
+
+  //   for (let start = firstLine.number, end = lastLine.number; start < end; start++) {
+
+  //   }
+  // }
+  // const context = getContext(view, type);
+}
+
+// export function toggleInlineFormat(view, type, selection = null) {
+//   selection = selection || view.state.selection.main;
+//   const mark = InlineTypes[type];
+//   const { from, to } = selection;
+//   const { format, node } = getCurrentInlineToken(view);
+
+//   if (format !== null && view.state.sliceDoc(node.from, node.from + mark.length) === mark) {
+//     // Format already applied => remove
+//     view.dispatch({
+//       changes: {
+//         from: node.from,
+//         to: node.to,
+//         insert: view.state.sliceDoc(node.from + mark.length, node.to - mark.length)
+//       },
+//       selection: { anchor: selection.from - mark.length }
+//     });
+//   } else {
+//     // Apply format, based on context
+
+//     const prevChar = getPrevCharRange(view);
+//     const prevGroupRange = prevChar !== null ? getPrevGroupRange(view) : null;
+//     const isBoundaryBefore = !prevChar || isBoundaryChar(view.state, prevChar.from, selection.head);
+//     const nextChar = getNextCharRange(view);
+//     const nextGroupRange = nextChar !== null ? getNextGroupRange(view) : null;
+//     const isBoundaryAfter = !nextChar || isBoundaryChar(view.state, selection.head, nextChar.from);
+
+//     if (isBoundaryBefore && isBoundaryAfter) {
+//       // Cursor sorrounded by boundaries, e.g. `word | word`
+//       view.dispatch({
+//         changes: { from: selection.from, to: selection.to, insert: mark + mark },
+//         selection: { anchor: selection.from + mark.length }
+//       });
+//     } else if (isBoundaryBefore && !isBoundaryAfter) {
+//       // before word, e.g. ` |word`
+//       view.dispatch({
+//         changes: {
+//           from: selection.from,
+//           to: nextGroupRange.to,
+//           insert: mark + view.state.sliceDoc(selection.from, nextGroupRange.to) + mark
+//         },
+//         selection: { anchor: selection.from + mark.length }
+//       });
+//     } else if (isBoundaryAfter && !isBoundaryBefore) {
+//       // after word, e.g. `word| `, `word|.`
+
+//       view.dispatch({
+//         changes: {
+//           from: prevGroupRange.from,
+//           to: selection.to,
+//           insert: mark + view.state.sliceDoc(prevGroupRange.from, selection.to) + mark
+//         },
+//         selection: { anchor: selection.to + mark.length }
+//       });
+
+//     } else if (!isBoundaryBefore && !isBoundaryAfter) {
+//       // within word, e.g. `wo|rd`
+
+//       view.dispatch({
+//         changes: {
+//           from: prevGroupRange.from,
+//           to: nextGroupRange.to,
+//           insert:
+//             mark + view.state.sliceDoc(prevGroupRange.from, nextGroupRange.to) + mark
+//         },
+//         selection: { anchor: selection.from + mark.length }
+//       });
+
+//     }
+//   }
+// }
+
+

@@ -1,4 +1,3 @@
-import Extension from "../Extension.js";
 import Button from "./Button.js";
 
 export default class Headlines extends Button {
@@ -34,48 +33,54 @@ export default class Headlines extends Button {
       {
         name: "h1",
         icon: `h1`,
-        label: this.input.$t("markdown.toolbar.button.heading.1"), //  + '<kbd>⌃⌥1</kbd>'
-        command: () => this.editor.toggleLines(`ATXHeading1`),
+        label: this.input.$t("markdown.toolbar.button.heading.1")
+          + this.formatKeyName({mac: `Ctrl-Alt-1`, key: `Alt-Shift-1`}, "<kbd>", "</kbd>"),
+        command: () => this.editor.toggleBlockFormat(`ATXHeading1`),
         token: `ATXHeading1`,
         tokenType: "block",
       },
       {
         name: "h2",
         icon: `h2`,
-        label: this.input.$t("markdown.toolbar.button.heading.2"),
-        command: () => this.editor.toggleLines(`ATXHeading2`),
+        label: this.input.$t("markdown.toolbar.button.heading.2")
+          + this.formatKeyName({mac: `Ctrl-Alt-2`, key: `Alt-Shift-2`}, "<kbd>", "</kbd>"),
+        command: () => this.editor.toggleBlockFormat(`ATXHeading2`),
         token: `ATXHeading2`,
         tokenType: "block",
       },
       {
         name: "h3",
         icon: `h3`,
-        label: this.input.$t("markdown.toolbar.button.heading.3"),
-        command: () => this.editor.toggleLines(`ATXHeading3`),
+        label: this.input.$t("markdown.toolbar.button.heading.3")
+          + this.formatKeyName({mac: `Ctrl-Alt-3`, key: `Alt-Shift-3`}, "<kbd>", "</kbd>"),
+        command: () => this.editor.toggleBlockFormat(`ATXHeading3`),
         token: `ATXHeading3`,
         tokenType: "block",
       },
       {
         name: "h4",
         icon: `h4`,
-        label: this.input.$t("markdown.toolbar.button.heading.4"),
-        command: () => this.editor.toggleLines(`ATXHeading4`),
+        label: this.input.$t("markdown.toolbar.button.heading.4")
+          + this.formatKeyName({mac: `Ctrl-Alt-4`, key: `Alt-Shift-4`}, "<kbd>", "</kbd>"),
+        command: () => this.editor.toggleBlockFormat(`ATXHeading4`),
         token: `ATXHeading4`,
         tokenType: "block",
       },
       {
         name: "h5",
         icon: `h5`,
-        label: this.input.$t("markdown.toolbar.button.heading.5"),
-        command: () => this.editor.toggleLines(`ATXHeading5`),
+        label: this.input.$t("markdown.toolbar.button.heading.5")
+          + this.formatKeyName({mac: `Ctrl-Alt-5`, key: `Alt-Shift-5`}, "<kbd>", "</kbd>"),
+        command: () => this.editor.toggleBlockFormat(`ATXHeading5`),
         token: `ATXHeading5`,
         tokenType: "block",
       },
       {
         name: "h6",
         icon: `h6`,
-        label: this.input.$t("markdown.toolbar.button.heading.6"),
-        command: () => this.editor.toggleLines(`ATXHeading6`),
+        label: this.input.$t("markdown.toolbar.button.heading.6")
+          + this.formatKeyName({mac: `Ctrl-Alt-6`, key: `Alt-Shift-6`}, "<kbd>", "</kbd>"),
+        command: () => this.editor.toggleBlockFormat(`ATXHeading6`),
         token: `ATXHeading6`,
         tokenType: "block",
       },
@@ -88,8 +93,9 @@ export default class Headlines extends Button {
         return [
         ...accumulator,
         {
-          key: `Ctrl-Alt-${level}`,
-          run: () => this.editor.toggleLines(`ATXHeading${level}`),
+          mac: `Ctrl-Alt-${level}`,
+          key: `Alt-Shift-${level}`,
+          run: () => this.editor.toggleBlockFormat(`ATXHeading${level}`),
           preventDefault: true,
         }
       ]

@@ -4,7 +4,7 @@ export default class Link extends Button {
   get button() {
     return {
       icon: "url",
-      label: this.input.$t("toolbar.button.link"),
+      label: this.input.$t("toolbar.button.link") + this.formatKeyName(this.keys()[0]),
       command: () => this.editor.emit("dialog", this),
     };
   }
@@ -59,7 +59,7 @@ export default class Link extends Button {
   keys() {
     return [
       {
-        mac: "Mod-k",
+        key: "Mod-k",
         run: () => this.editor.emit("dialog", this),
       }
     ];
