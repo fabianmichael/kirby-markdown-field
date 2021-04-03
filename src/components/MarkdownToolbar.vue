@@ -41,7 +41,7 @@
             :key="buttonIndex"
             :icon="button.icon"
             :tooltip="button.label"
-            :class="(isDisabled() ? 'is-disabled ' : '') + (isActive() || (name === 'invisibles' && specialChars) ? 'is-active ' : '') + 'k-toolbar-button k-markdown-button' + (button.align === 'right' ? ' k-markdown-toolbar-button-right' : '')"
+            :class="(isDisabled() ? 'is-disabled ' : '') + (isActive() || (name === 'invisibles' && invisibles) ? 'is-active ' : '') + 'k-toolbar-button k-markdown-button' + (button.align === 'right' ? ' k-markdown-toolbar-button-right' : '')"
             tabindex="-1"
             @click="button.command"
           />
@@ -59,7 +59,7 @@ export default {
     buttons: Array,
     editor: Object,
     modals: Boolean,
-    specialChars: Boolean,
+    invisibles: Boolean,
     uploads: [Boolean, Object, Array],
     active: Array,
   },

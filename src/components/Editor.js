@@ -10,7 +10,7 @@ import {
 
 import lineStyles from "./theme/line-styles";
 import { theme, highlightStyle, scrollMargin } from "./theme/theme.js";
-import specialChars from "./theme/special-chars";
+import invisibles from "./theme/invisibles.js";
 import Emitter from "./Emitter.js";
 import Extensions from "./Extensions.js";
 import {
@@ -18,7 +18,6 @@ import {
   toggleInlineFormat,
 } from "./Utils/markup.js";
 import { getActiveTokensAt } from "./Utils/syntax.js";
-
 
 import browser from "./browser.js";
 const isKnownDesktopBrowser = (browser.safari || browser.chrome || browser.gecko) && (!browser.android && !browser.ios);
@@ -38,7 +37,7 @@ export default class Editor extends Emitter {
       extensions: [],
       input: null,
       placeholder: null,
-      specialChars: false,
+      invisibles: false,
       spellcheck: true,
       value: "",
     };
@@ -79,7 +78,7 @@ export default class Editor extends Emitter {
       ...this.kirbytags,
       markdown({ base: markdownLanguage }),
       ...this.highlights,
-      this.options.specialChars && specialChars(),
+      this.options.invisibles && invisibles(),
       lineStyles(),
       /**
        * Firefox has a known Bug, that casuses the caret to disappear,
@@ -123,7 +122,7 @@ export default class Editor extends Emitter {
 
         const value  = this.view.state.doc.toString();
         this.activeTokens = getActiveTokensAt(this.view, this.tokens, this.state.selection);
-        this.emit("update", value, this.activeTokens, this.options.specialChars);
+        this.emit("update", value, this.activeTokens, this.options.invisibles);
       },
     });
   }
@@ -222,14 +221,14 @@ export default class Editor extends Emitter {
     return toggleInlineFormat(this.view, type);
   }
 
-  toggleSpecialChars(force = null) {
-    if (force === this.options.specialChars) {
+  toggleInvisibles(force = null) {
+    if (force === this.options.invisibles) {
       return;
     }
 
-    this.options.specialChars = typeof force === "boolean" ? force : !this.options.specialChars;
+    this.options.invisibles = typeof force === "boolean" ? force : !this.options.invisibles;
     this.updateState();
-    this.emit("specialChars", this.options.specialChars);
+    this.emit("invisibles", this.options.invisibles);
   }
 
   updateState() {

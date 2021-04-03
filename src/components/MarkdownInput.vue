@@ -13,7 +13,7 @@
       ref="toolbar"
       :buttons="toolbarButtons"
       :active="active"
-      :specialChars="specialChars"
+      :invisibles="invisibles"
       @mousedown.native.prevent
     />
     <div
@@ -101,7 +101,7 @@ export default {
       currentDialog: null,
       activeMarks: [],
       isDragOver: false,
-      specialChars: false,
+      invisibles: false,
       toolbarButtons: [],
       active: [],
       dialogs: [],
@@ -148,7 +148,7 @@ export default {
       element: this.$refs.input,
       input: this,
       placeholder: this.placeholder,
-      specialChars: this.specialChars,
+      invisibles: this.invisibles,
       spellcheck: this.spellcheck,
       extensions: [
         ...this.createKirbytags(),
@@ -170,8 +170,8 @@ export default {
           this.$emit("input", value);
           this.active = active;
         },
-        specialChars: (value) => {
-          this.specialChars = value;
+        invisibles: (value) => {
+          this.invisibles = value;
         }
       }
     });

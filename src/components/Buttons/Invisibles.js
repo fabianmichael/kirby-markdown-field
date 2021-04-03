@@ -12,7 +12,7 @@ export default class Invisibles extends Button {
   }
 
   get command() {
-    return () => this.editor.toggleSpecialChars()
+    return () => this.editor.toggleInvisibles()
   }
 
   keys() {
