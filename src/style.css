@@ -276,11 +276,11 @@
 .k-markdown-input .cm-kirbytag {
   background: rgba(66, 113, 174, .15);
   border: .0625em solid rgba(66, 113, 174, .3);
-  border-width: .0625em 0;
+  border-radius: .1875em;
   box-decoration-break: clone;
   font-weight: 400;
-  margin: -.0625em 0 0;
-  padding: .0625em 0 .0625em;
+  margin: -.0625em;
+  padding: .0625em;
 }
 
 .k-markdown-input .cm-kirbytag > * {
@@ -295,7 +295,7 @@
   color: currentColor; /* 1 */
 }
 
-.k-markdown-input .cm-kirbytag-open {
+/* .k-markdown-input .cm-kirbytag-open {
   border-left-width: .0625em;
   border-radius: .125em 0 0 .125em;
   margin-left: -.0625em;
@@ -324,7 +324,7 @@
 .k-markdown-input .cm-kirbytag-open + .cm-kirbytag-attr::before,
 .k-markdown-input .cm-line > .cm-kirbytag-attr:first-child::before {
   content: none;
-}
+} */
 
 /* Custom highlights plugin */
 

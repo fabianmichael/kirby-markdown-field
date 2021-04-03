@@ -31,7 +31,12 @@ export default class SpecialChars extends Button {
     }
   }
 
+  get isDisabled() {
+    return () => false;
+  }
+
   get name() {
     return "chars";
   }
+
 }

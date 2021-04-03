@@ -52,7 +52,6 @@ export function nodeIsKirbytag(node) {
       return false;
     }
   }
-
   return nodeIsKirbytag(node.parentNode);
 }
 

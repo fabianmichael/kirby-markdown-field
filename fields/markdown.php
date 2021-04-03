@@ -76,12 +76,7 @@ $options = A::merge($options, [
          * positives.
          */
         'knownKirbytags' => function () {
-            // return array_keys(kirby()->extensions('tags'));
-            $tags = [];
-            foreach (kirby()->extensions('tags') as $name => $tag) {
-                $tags[$name] = $tag['attr'] ?? [];
-            }
-            return $tags;
+            return array_keys(kirby()->extensions('tags'));
         },
         'customHighlights' => function () {
             $highlights = [];
