@@ -15,7 +15,7 @@ const theme = EditorView.theme(
       fontFamily: "var(--cm-font-family)",
       lineHeight: "var(--cm-line-height)",
       fontSize:   "var(--cm-font-size)",
-      overflowX:  "hidden",
+      overflow:   "visible", // Ensures, that no scrollbar will every become visible on the editor element.
     },
 
     ".cm-content": {
