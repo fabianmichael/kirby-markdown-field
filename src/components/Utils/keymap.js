@@ -7,7 +7,8 @@ const currentPlatform = typeof navigator === "undefined" ? "key"
 
 export function formatKeyName(keys, translate, before = " (", after = ")") {
 
-  let keyName = keys[currentPlatform] ?? keys.key ?? null;
+  let keyName = keys[currentPlatform] ? keys[currentPlatform]
+    : keys.key ? keys.key : null;
 
   if (keyName === null) {
     return "";
