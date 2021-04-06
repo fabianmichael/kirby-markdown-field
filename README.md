@@ -44,6 +44,7 @@ Enhanced, extensible Markdown field for Kirby CMS. Version 2!
     - [6 Migrating from Version 1](#7-migrating-from-version-1)
     - [7 License](#6-license)
     - [8 Credits](#8-credits)
+  - [8. Credits](#8-credits)
 
 ****
 
@@ -288,6 +289,7 @@ MIT
 
 **Inspirations**
 
+- [ProseMirror](https://prosemirror.net/) by [Marijn Haverbeke](https://marijnhaverbeke.nl/)
 - [Visual Markdown Editor for Kirby 2](https://github.com/JonasDoebertin/kirby-visual-markdown) by [Jonas Döbertin](https://github.com/JonasDoebertin)
 - [SimpleMDE for Kirby 2](https://github.com/medienbaecker/kirby-simplemde) by [Thomas Günther](https://github.com/medienbaecker)
 - [Kirby’s Writer Field](https://getkirby.com/docs/reference/panel/fields/writer) by [Bastian Allgeier](https://bastianallgeier.com/)

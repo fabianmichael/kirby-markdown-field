@@ -32,13 +32,11 @@
 .k-markdown-input-wrap[data-layout="narrow"] .cm-line {
   --cm-mark: 0 !important;
   --cm-indent: 0 !important;
-  --cm-extra-indent: 0 !important;
 }
 
 .k-markdown-input-wrap[data-font-family="sans-serif"] .cm-line {
   --cm-mark: 0 !important;
   --cm-indent: 0 !important;
-  --cm-extra-indent: 0 !important;
 }
 
 /**
@@ -165,7 +163,7 @@
 
 /* All lines */
 .k-markdown-input .cm-line {
-  --cm-line-indent: calc(var(--cm-indent, 0ch) + var(--cm-mark, 0ch) + var(--cm-extra-indent, 0ch));
+  --cm-line-indent: calc(var(--cm-indent, 0ch) + var(--cm-mark, 0ch));
   margin-left: var(--cm-line-indent);
   padding: 0 var(--cm-line-padding-x);
   text-indent: calc(-1 * var(--cm-indent, 0ch) - var(--cm-mark, 0ch));
@@ -182,13 +180,22 @@
 
 /* Blockquote */
 .k-markdown-input .cm-blockquote {
-  --cm-extra-indent: -.25em;
-  border-left: .25em solid var(--cm-color-light-gray);
+  position: relative;
 }
 
-.k-markdown-input-wrap[data-font-family="sans-serif"] .cm-blockquote {
-  --cm-line-indent: .75em;
+.k-markdown-input .cm-blockquote::before {
+  content: "";
+  background: var(--cm-color-light-gray);
+  height: 100%;
+  right: calc(100% + var(--cm-mark, 0ch) - 1.5ch);
+  width: .25em;
+  position: absolute;
+  top: 0;
 }
+
+/* .k-markdown-input-wrap[data-font-family="sans-serif"] .cm-blockquote {
+  --cm-line-indent: .75em;
+} */
 
 /* Horizontal Rule */
 .k-markdown-input  .cm-hr {

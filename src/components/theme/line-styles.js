@@ -1,63 +1,10 @@
 import { Decoration } from "@codemirror/view";
 import { RangeSetBuilder } from "@codemirror/rangeset";
 import { ViewPlugin } from "@codemirror/view";
-import { getBlockNameAt } from "../Utils/syntax.js";
+import { BlockStyles, getBlockNameAt } from "../Utils/syntax.js";
 
-const blockStyles = {
-  FencedCode: {
-    class: "cm-codeblock",
-  },
-  HorizontalRule: {
-    class: "cm-hr",
-  },
-  Blockquote: {
-    class: "cm-blockquote",
-    mark: /^( *)(>)( +)/,
-    multiLine: true,
-  },
-  ATXHeading1: {
-    class: "cm-heading",
-    mark: /^( {0,3})(#{1})( +)/,
-    multiLine: false,
-  },
-  ATXHeading2: {
-    class: "cm-heading",
-    mark: /^( {0,3})(#{2})( +)/,
-    multiLine: false,
-  },
-  ATXHeading3: {
-    class: "cm-heading",
-    mark: /^( {0,3})(#{3})( +)/,
-    multiLine: false,
-  },
-  ATXHeading4: {
-    class: "cm-heading",
-    mark: /^( {0,3})(#{4})( +)/,
-    multiLine: false,
-  },
-  ATXHeading5: {
-    class: "cm-heading",
-    mark: /^( {0,3})(#{5})( +)/,
-    multiLine: false,
-  },
-  ATXHeading6: {
-    class: "cm-heading",
-    mark: /^( {0,3})(#{6})( +)/,
-    multiLine: false,
-  },
-  OrderedList: {
-    class: "cm-ol",
-    mark: /^( *)(\d+\.)( +)/,
-    multiLine: true,
-  },
-  BulletList: {
-    class: "cm-ol",
-    mark: /^( *)(-|\+|\*)( +)/,
-    multiLine: true,
-  },
-};
 
-const blockNames = Object.keys(blockStyles);
+const blockNames = Object.keys(BlockStyles);
 
 function lineDeco(view) {
   const builder = new RangeSetBuilder();
@@ -70,9 +17,9 @@ function lineDeco(view) {
       const blockToken = getBlockNameAt(view, pos + line.text.match(/^ */)[0].length, blockNames);
       let matches = null;
 
-      if (blockStyles[blockToken]) {
-        // builder.add(line.from, line.from, blockStyles[blockToken](view, line, prefixLength));
-        const style = blockStyles[blockToken];
+      if (BlockStyles[blockToken]) {
+        // builder.add(line.from, line.from, BlockStyles[blockToken](view, line, prefixLength));
+        const style = BlockStyles[blockToken];
 
         if (!style.mark) {
           // Block type without mark

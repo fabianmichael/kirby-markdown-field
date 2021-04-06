@@ -13,6 +13,60 @@ export const BlockTypes = {
   "HorizontalRule": "***",
 };
 
+export const BlockStyles = {
+  FencedCode: {
+    class: "cm-codeblock",
+  },
+  HorizontalRule: {
+    class: "cm-hr",
+  },
+  Blockquote: {
+    class: "cm-blockquote",
+    mark: /^(\s*)(>+)(\s*)/,
+    multiLine: true,
+  },
+  ATXHeading1: {
+    class: "cm-heading",
+    mark: /^(\s{0,3})(#{1})(\s+)/,
+    multiLine: false,
+  },
+  ATXHeading2: {
+    class: "cm-heading",
+    mark: /^(\s{0,3})(#{2})(\s+)/,
+    multiLine: false,
+  },
+  ATXHeading3: {
+    class: "cm-heading",
+    mark: /^(\s{0,3})(#{3})(\s+)/,
+    multiLine: false,
+  },
+  ATXHeading4: {
+    class: "cm-heading",
+    mark: /^(\s{0,3})(#{4})(\s+)/,
+    multiLine: false,
+  },
+  ATXHeading5: {
+    class: "cm-heading",
+    mark: /^(\s{0,3})(#{5})(\s+)/,
+    multiLine: false,
+  },
+  ATXHeading6: {
+    class: "cm-heading",
+    mark: /^(\s{0,3})(#{6})(\s+)/,
+    multiLine: false,
+  },
+  OrderedList: {
+    class: "cm-ol",
+    mark: /^(\s*)(\d+\.)(\s+)/,
+    multiLine: true,
+  },
+  BulletList: {
+    class: "cm-ol",
+    mark: /^(\s*)(-|\+|\*)(\s+)/,
+    multiLine: true,
+  },
+};
+
 export const BlockMarks = [
   "HeaderMark",
   "QuoteMark",
@@ -20,10 +74,30 @@ export const BlockMarks = [
 ];
 
 export const InlineTypes = {
-  Emphasis: "*",
-  StrongEmphasis: "**",
-  InlineCode: "`",
-  Strikethrough: "~~",
+  Emphasis: {
+    mark: "_",
+    escape: true,
+    mixable: true,
+    expelEnclosingWhitespace: true,
+  },
+  StrongEmphasis: {
+    mark: "**",
+    escape: true,
+    mixable: true,
+    expelEnclosingWhitespace: true,
+  },
+  InlineCode: {
+    mark: "`",
+    escape: false,
+    mixable: false,
+    expelEnclosingWhitespace: true,
+  },
+  Strikethrough: {
+    mark: "~~",
+    escape: true,
+    mixable: true,
+    expelEnclosingWhitespace: true,
+  }
 };
 
 export const InlineMarks = [
@@ -137,27 +211,6 @@ export function getActiveTokensAt(view, {block, inline}, selection) {
 
   return tokens;
 }
-
-// export function getCurrentInlineToken(view) {
-//   const tree = syntaxTree(view.state);
-
-//   let inlineFormat = null;
-//   let inlineNode = null;
-//   let n =  tree.resolve(view.state.selection.main.head, 0);
-
-//   do {
-//     if (InlineTypes[n.name]) {
-//       inlineFormat = InlineTypes[n.name];
-//       inlineNode = n;
-//       break;
-//     }
-//   } while ((n = n.parent));
-
-//   return {
-//     format: inlineFormat,
-//     node: inlineNode,
-//   };
-// }
 
 export function getCurrentInlineTokens(view) {
   const { head, from, to } = view.state.selection.main;
