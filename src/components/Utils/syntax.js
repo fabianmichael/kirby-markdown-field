@@ -26,6 +26,12 @@ export const InlineTypes = {
   Strikethrough: "~~",
 };
 
+export const InlineMarks = [
+  "EmphasisMark",
+  "CodeMark",
+  "StrikethroughMark",
+]
+
 export function getBlockNameAt(view, pos, blockNames) {
   const tree = syntaxTree(view.state);
   const trees = [
@@ -132,74 +138,32 @@ export function getActiveTokensAt(view, {block, inline}, selection) {
   return tokens;
 }
 
-export function getCurrentInlineToken(view) {
-  const tree = syntaxTree(view.state);
-
-  let inlineFormat = null;
-  let inlineNode = null;
-  let n =  tree.resolve(view.state.selection.main.head, 0);
-
-  do {
-    if (InlineTypes[n.name]) {
-      inlineFormat = InlineTypes[n.name];
-      inlineNode = n;
-      break;
-    }
-  } while ((n = n.parent));
-
-  return {
-    format: inlineFormat,
-    node: inlineNode,
-  };
-}
-
-// export function getCurrentInlineTokens(view) {
+// export function getCurrentInlineToken(view) {
 //   const tree = syntaxTree(view.state);
 
+//   let inlineFormat = null;
+//   let inlineNode = null;
 //   let n =  tree.resolve(view.state.selection.main.head, 0);
-
-//   const tokens = [];
 
 //   do {
 //     if (InlineTypes[n.name]) {
-//       tokens.push({
-//         format: InlineTypes[n.name],
-//         node: n,
-//       });
+//       inlineFormat = InlineTypes[n.name];
+//       inlineNode = n;
+//       break;
 //     }
 //   } while ((n = n.parent));
 
-//   return tokens;
+//   return {
+//     format: inlineFormat,
+//     node: inlineNode,
+//   };
 // }
-
 
 export function getCurrentInlineTokens(view) {
   const { head, from, to } = view.state.selection.main;
   const state = view.state;
   const tree = syntaxTree(state);
   const tokens = [];
-
-  // if (from !== to) {
-  //   // selection, possibly has multiple lines
-  //   const firstLine = state.doc.lineAt(from);
-  //   const lastLine  = state.doc.lineAt(to);
-
-  //   if (firstLine.number !== lastLine.number) {
-  //     // Multiline selection, just look for blocks
-
-  //     tree.iterate({
-  //       enter: ({ name }) => {
-  //         if (block.includes(name)) {
-  //           tokens.push(name)
-  //         }
-  //       },
-  //       from: firstLine.from,
-  //       to: lastLine.to,
-  //     });
-
-  //     return tokens;
-  //   }
-  // }
 
   // Selection spans only a single linge, get current block token and all
   // inline tokens
@@ -233,7 +197,6 @@ export function getCurrentInlineTokens(view) {
     from,
     to,
   });
-
 
   return tokens.reverse();
 }

@@ -7,30 +7,45 @@
 - CodeMirror 6 is still in beta. Its API might still be subject to minor changes, so this plugin will not reach a stable version until CodeMirror 6 does.
 - Size options are not implemented yet
 
-Enhanced markdown editor for Kirby 3, community built.
+Enhanced, extensible Markdown field for Kirby CMS. Version 2!
+
+**Features:**
+
+- Syntax highlighting for Markdown and Kirbytext
+- Context-based format toggling (almost WYSIWYG-like)
+- Smart indentation for multi-line headlines and list items
+- Custom toolbar buttons
+- Custom syntax highlights
+- Option to show whitespace characters
+- Support for touch-based devices (thanks to CodeMirror 6)
+
+💡 **TL;DR:** The Markdown field, you all have been waiting for!
 
 ![screenshot](https://user-images.githubusercontent.com/14079751/50606008-7cb31200-0ec4-11e9-9685-a48a8ba398a4.jpg)
-
-<br/>
 
 ## Overview
 
 > This plugin is completely free and published under the MIT license. However, if you are using it in a commercial project and want to help me keep up with maintenance, please consider [making a donation of your choice](https://paypal.me/sylvainjl) or purchasing your license(s) through [my affiliate link](https://a.paddle.com/v2/click/1129/36369?link=1170).
 
-- [1. Installation](#1-installation)
-- [2. Setup](#2-setup)
-- [3. Options](#3-options)
-  - [3.1. Available options](#31-available-options)
-  - [3.2. Font-settings](#32-font-settings)
-  - [3.3. Buttons](#33-buttons)
-  - [3.4. Query](#34-query)
-  - [3.5. Size](#35-size)
-- [4. Custom buttons](#4-custom-buttons)
-- [5. Development](#5-development)
-- [6. License](#6-license)
-- [7. Credits](#7-credits)
+## Table of Contents
 
-<br/>
+- [1 Installation](#1-installation)
+- [2 Setup](#2-setup)
+- [3 Options](#3-options)
+    - [3.1 Available options](#31-available-options)
+    - [3.2 Font settings](#32-font-settings)
+    - [3.3 Buttons](#33-buttons)
+    - [3.4 Keyboard Shortcuts](#34-keyboard-shortcuts)
+    - [3.5 Other](#other)
+        - [3.5 Query](#35-query)
+        - [3.6 Size](#36-size)
+    - [4 Extension API](#4-extension-api)
+    - [5 Development](#5-development)
+    - [6 Migrating from Version 1](#7-migrating-from-version-1)
+    - [7 License](#6-license)
+    - [8 Credits](#8-credits)
+
+****
 
 ## 1. Installation
 
@@ -76,13 +91,13 @@ While the sans-serif might be more appealing to non-technical writers at first, 
 
 ### 3.3. Buttons
 
-This field is packing the usual textarea buttons, and some more.
+This field is packing the usual [textarea](https://getkirby.com/docs/reference/panel/fields/textarea) buttons, and many more.
 
-`headlines` can contain the whole range of headings from `h1` to `h6`, and therefore accepts a sub-array (default is `['h1', 'h2', 'h3']`). Use `headlines` as key in this case, instead of prepending a dash, like for items without configuration:
+`headlines` can contain the whole range of headings from `h1` to `h6`, and therefore accepts an array of allowed leves (default is `h1, h2, h3`). Use `headlines` as key in this case:
 
 ```yaml
 buttons:
-  headlines:
+  headlines: # no dash before the key name
     - h1
     - h2
     - h3
@@ -138,7 +153,42 @@ buttons:
   - divider # can be used multiple times
 ```
 
-### 3.4. Query
+### 3.4. Keyboard Shortcuts
+
+ℹ️ Keyboard shortcuts are only available for those buttons/heading levels, which are enabled in the toolbar.
+
+#### Block Formats
+
+| Format         | Mac/iOS        | Linux/Windows  |
+|:---------------|:---------------|:---------------|
+| Heading 1      | `⌥⌃1`          | `Alt+Shift+1`  |
+| Heading 2      | `⌥⌃2`          | `Alt+Shift+2`  |
+| Heading 3      | `⌥⌃3`          | `Alt+Shift+3`  |
+| Heading 4      | `⌥⌃4`          | `Alt+Shift+4`  |
+| Heading 5      | `⌥⌃5`          | `Alt+Shift+5`  |
+| Heading 6      | `⌥⌃6`          | `Alt+Shift+6`  |
+| Quote          | `⌥⌃q`          | `Alt+Shift+q`  |
+| Bullet List    | `⌥⌃U`          | `Alt+Shift+u`  |
+| Ordered List   | `⌥⌃O`          | `Alt+Shift+o`  |
+
+#### Inline Formats
+
+| Format         | Mac/iOS        | Linux/Windows  |
+|:---------------|:---------------|:---------------|
+| Bold           | `⌘B`           | `Ctrl+b`       |
+| Italic         | `⌘I`           | `Ctrl+i`       |
+| Link           | `⌘K`           | `Ctrl+k`       |
+| Strikethrough  | `⌥⌃D`          | `Alt+Shift+d`  |
+| Code           | `⌥⌃X`          | `Alt+Shift+x`  |
+| Footnote       | `⌥⌃F`          | `Alt+Shift+f`  |
+
+#### Other Functionality
+
+| Format          | Mac/iOS        | Linux/Windows  |
+|:----------------|:---------------|:---------------|
+| Show Whitespace | `⌥⌃I`          | `Alt+Shift+i   |
+
+### 3.5. Query
 
 ⛔️ Not implemented yet, should follow textarea field.
 
@@ -149,7 +199,7 @@ query:
   pagelink: kirby.page('my-page').children
 ```
 
-### 3.5. Size
+### 3.6. Size
 
 ⛔️ Not implemented in version 2 yet
 
@@ -183,13 +233,14 @@ Then in your `panel.css`:
 }
 ```
 
-## 4. Custom buttons
+## 4. Extension API
 
-~~Since 1.0.8 you can register your own buttons. This functionnality has [a dedicated guide](custom-buttons).~~~
+The API has changed from version 1, old plugins are not compatible any more and require a few adjustments. See `extension-examples` folder.
 
-API has changed, see `extension-examples` folder.
+There are two types of extensions, which allow you to extend the editor to adjust it better to your specific needs:
 
-<br/>
+- **Custom buttons:** You can define your own buttons, which can be added to the editor toolbar. Buttons can define keyboard shortcuts, displays dropdowns and even show a popup.
+- **Custom highlights:** You can define regex-based custom highlights, which allow you to highlight any text, such as markup for custom syntax (e.g. global text snippets or Wiki-style links)
 
 ## 5. Development
 
@@ -208,17 +259,9 @@ npm run build
 
 > You **must** run the build process before pushing the repo, else the hot-reload code will prevent it to work in any install.
 
-<br/>
-
-## 6. License
-
-MIT
-
-<br/>
-
 ## 7. Migrating from Version 1
 
-- Setting avaiable **headline levels** now work a bit differently, see [3.3. Buttons](#33-buttons). This was necessary to allow for multiple, configurable dropdowns in the future/extensions.
+- Setting available **headline levels** now work a bit differently, see [3.3. Buttons](#33-buttons). This was necessary to allow for multiple, configurable dropdowns in the future/extensions.
 - The `horizontal-rule` button was renamed to `hr`.
 - The `modals` option has been removed. Clicking the link button will always display a modal.
 - The `link` and `email` buttons have been merged into a single popup.
@@ -229,11 +272,15 @@ MIT
 - The global field options have been removed. Use field presets instead. (see <https://getkirby.com/docs/guide/blueprints/extending-blueprints#reusing-and-extending-single-fields>).
 - The `direction` option has been removed. CodeMirror 6 automatically determines the current text direction of the panel.
 
+## 7. License
+
+MIT
+
 ## 8. Credits
 
 **Text editor:**
 
-- [CodeMirror](https://codemirror.net/)
+- [CodeMirror 6](https://codemirror.net/6/) by [Marijn Haverbeke](https://marijnhaverbeke.nl/)
 
 **Contributors:**
 

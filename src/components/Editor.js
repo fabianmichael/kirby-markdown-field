@@ -43,6 +43,11 @@ export default class Editor extends Emitter {
     };
 
     this.init(value, options);
+    setTimeout(() => {
+      this.view.dispatch({ selection: { anchor: 2, head: 8 }});
+      this.view.focus();
+      this.toggleInlineFormat("Emphasis");
+    }, 100);
   }
 
   createKeymap() {
