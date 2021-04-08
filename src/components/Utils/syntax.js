@@ -136,84 +136,94 @@ export function nodeIsKirbytag(node) {
 }
 
 export function getActiveTokensAt(view, {block, inline}, selection) {
-  const { head, from, to } = selection.main;
-  const state = view.state;
+  const { head, from, to } = selection.main;
+  const { state } = view;
+  const { doc } = state;
   const tree = syntaxTree(state);
   const tokens = [];
 
-  if (from !== to) {
+
+  let line = doc.lineAt(from);
+
+  do {
+    console.log("line", line)
+    line = doc.line(line.number + 1);
+  } while (line && line.from < to);
+
+  // if (from !== to) {
     // selection, possibly has multiple lines
-    const firstLine = state.doc.lineAt(from);
-    const lastLine  = state.doc.lineAt(to);
+    // const firstLine = state.doc.lineAt(from);
+    // const lastLine  = state.doc.lineAt(to);
 
-    if (firstLine.number !== lastLine.number) {
-      // Multiline selection, just look for blocks
+  //   if (firstLine.number !== lastLine.number) {
+  //     // Multiline selection, just look for blocks
 
-      tree.iterate({
-        enter: ({ name }) => {
-          if (block.includes(name)) {
-            tokens.push(name)
-          }
-        },
-        from: firstLine.from,
-        to: lastLine.to,
-      });
+  //     tree.iterate({
+  //       enter: ({ name }) => {
+  //         if (block.includes(name)) {
+  //           tokens.push(name)
+  //         }
+  //       },
+  //       from: firstLine.from,
+  //       to: lastLine.to,
+  //     });
 
-      return tokens;
-    }
-  }
+  //     return tokens;
+  //   }
+  // }
 
-  // Selection spans only a single linge, get current block token and all
-  // inline tokens
-  tree.iterate({
-    enter: ({ name }, start, end) => {
-      let inlineMatch;
+  // // Selection spans only a single linge, get current block token and all
+  // // inline tokens
 
-      if (from !== to) {
-        // selection
-        if (start <= from && to <= end) {
-          // Matches, if selection is larger or equal to token
-          inlineMatch = true;
-        }
-      } else {
-        // no selection
-        if (head > start && head < end) {
-          // Only match inline tokens, where the cursor is
-          // inside of if (not before/after the token)
-          inlineMatch = true
-        }
-      }
+  // tree.iterate({
+  //   enter: ({ name }, start, end) => {
+  //     let inlineMatch;
 
-      if (block.includes(name)) {
-        tokens.push(name)
-      }
+  //     if (from !== to) {
+  //       // selection
+  //       if (start <= from && to <= end) {
+  //         // Matches, if selection is larger or equal to token
+  //         inlineMatch = true;
+  //       }
+  //     } else {
+  //       // no selection
+  //       if (head > start && head < end) {
+  //         // Only match inline tokens, where the cursor is
+  //         // inside of if (not before/after the token)
+  //         inlineMatch = true
+  //       }
+  //     }
 
-      if (inlineMatch && inline.includes(name)) {
-        tokens.push(name);
-      }
-    },
-    from,
-    to,
-  });
+  //     if (block.includes(name)) {
+  //       tokens.push(name)
+  //     }
 
-  // Check if selection start or end (or cursor) is inside Kirbytag
-  let isKirbytag = nodeIsKirbytag(view.domAtPos(from).node);
+  //     if (inlineMatch && inline.includes(name)) {
+  //       tokens.push(name);
+  //     }
+  //   },
+  //   from,
+  //   to,
+  // });
 
-  if (from !== to) {
-    if (!isKirbytag) {
-      isKirbytag = nodeIsKirbytag(view.domAtPos(to).node);
-    }
-  }
+  // // Check if selection start or end (or cursor) is inside Kirbytag
+  // let isKirbytag = nodeIsKirbytag(view.domAtPos(from).node);
 
-  if (isKirbytag) {
-    tokens.push("kirbytag");
-  }
+  // if (from !== to) {
+  //   if (!isKirbytag) {
+  //     isKirbytag = nodeIsKirbytag(view.domAtPos(to).node);
+  //   }
+  // }
+
+  // if (isKirbytag) {
+  //   tokens.push("kirbytag");
+  // }
 
   return tokens;
 }
 
 export function getCurrentInlineTokens(view) {
-  const { head, from, to } = view.state.selection.main;
+  const { head, from, to } = view.state.selection.main;
   const state = view.state;
   const tree = syntaxTree(state);
   const tokens = [];

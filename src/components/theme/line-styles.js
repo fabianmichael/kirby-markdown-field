@@ -10,7 +10,7 @@ function lineDeco(view) {
   const builder = new RangeSetBuilder();
 
   for (let { from, to } of view.visibleRanges) {
-    let lastLine = null;
+    // let lastLine = null;
 
     for (let pos = from; pos <= to;) {
       const line = view.state.doc.lineAt(pos);
@@ -44,10 +44,10 @@ function lineDeco(view) {
         }
       }
 
-      lastLine = {
-        token: blockToken,
-        matches: matches,
-      };
+      // lastLine = {
+      //   token: blockToken,
+      //   matches: matches,
+      // };
 
       pos = line.to + 1;
     }
@@ -73,4 +73,4 @@ export default function lineStyles() {
       decorations: (v) => v.decorations,
     }
   );
-};
+}

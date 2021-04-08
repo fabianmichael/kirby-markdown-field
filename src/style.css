@@ -8,7 +8,7 @@
   --cm-font-family: var(--font-family-mono);
   --cm-line-height: 1.7;
   --cm-code-background: rgba(0, 0, 0, .05);
-  --cm-color-meta: #aaa;
+  --cm-color-meta: #999;
   --cm-color-light-gray: rgba(0, 0, 0, .1);
   --cm-selection-background: hsla(195, 80%, 40%, .16);
   --cm-color-special-char: #fe4c4c;

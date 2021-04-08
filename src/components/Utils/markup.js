@@ -298,6 +298,7 @@ function toggleWordFormat(view, type) {
       to     = nextGroupRange.to;
       insert = mark + view.state.sliceDoc(prevGroupRange.from, nextGroupRange.to) + mark
     } else {
+      // What context could this be? This should never happen.
       console.warn("Cthulhu!");
     }
 
@@ -318,15 +319,15 @@ function renderLine(nodes) {
   let active = [];
   let trailing = "";
 
-  let progress = (node, _, index) => {
+  let progress = (node /* , _, index*/) => {
     let marks = node ? node.marks : [];
     let leading = trailing;
     trailing = "";
 
     // If whitespace has to be expelled from the node, adjust
     // leading and trailing accordingly.
-    if (node && marks.some(mark => InlineTypes[mark] && InlineTypes[mark].expelEnclosingWhitespace)) {
-      let [_, lead, inner, trail] = /^(\s*)(.*?)(\s*)$/.exec(node.text);
+    if (node && marks.some((mark) => InlineTypes[mark] && InlineTypes[mark].expelEnclosingWhitespace)) {
+      let [_, lead, inner, trail] = /^(\s*)(.*?)(\s*)$/.exec(node.text); // eslint-disable-line no-unused-vars
       leading += lead;
       trailing = trail;
       if (lead || trail) {
@@ -455,10 +456,10 @@ function toggleSelectedLine(view, n, type) {
 
   // Filter out all syntax chars (e.g. the asterisks in `**strong**`),
   // because they will be re-rendered and are not needed any longer.
-  let selectionOffset = 0;
-  chars = chars.filter(({ char, isSyntax }) => {
+  // let selectionOffset = 0;
+  chars = chars.filter(({ /*char,*/ isSyntax }) => {
     if (isSyntax) {
-      selectionOffset -= char.length;
+      // selectionOffset -= char.length;
       return false;
     }
 

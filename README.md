@@ -6,6 +6,8 @@
 
 - CodeMirror 6 is still in beta. Its API might still be subject to minor changes, so this plugin will not reach a stable version until CodeMirror 6 does.
 - Size options are not implemented yet
+- Active state of toolbar buttons is broken at the moment
+- Format toggling does not work yet
 
 Enhanced, extensible Markdown field for Kirby CMS. Version 2!
 
@@ -29,21 +31,25 @@ Enhanced, extensible Markdown field for Kirby CMS. Version 2!
 
 ## Table of Contents
 
-- [1 Installation](#1-installation)
-- [2 Setup](#2-setup)
-- [3 Options](#3-options)
-    - [3.1 Available options](#31-available-options)
-    - [3.2 Font settings](#32-font-settings)
-    - [3.3 Buttons](#33-buttons)
-    - [3.4 Keyboard Shortcuts](#34-keyboard-shortcuts)
-    - [3.5 Other](#other)
-        - [3.5 Query](#35-query)
-        - [3.6 Size](#36-size)
-    - [4 Extension API](#4-extension-api)
-    - [5 Development](#5-development)
-    - [6 Migrating from Version 1](#7-migrating-from-version-1)
-    - [7 License](#6-license)
-    - [8 Credits](#8-credits)
+- [Kirby – Markdown field](#kirby--markdown-field)
+  - [Overview](#overview)
+  - [Table of Contents](#table-of-contents)
+  - [1. Installation](#1-installation)
+  - [2. Setup](#2-setup)
+  - [3. Options](#3-options)
+    - [3.1. Available options](#31-available-options)
+    - [3.2. Font settings](#32-font-settings)
+    - [3.3. Buttons](#33-buttons)
+    - [3.4. Keyboard Shortcuts](#34-keyboard-shortcuts)
+      - [Block Formats](#block-formats)
+      - [Inline Formats](#inline-formats)
+      - [Other Functionality](#other-functionality)
+    - [3.5. Query](#35-query)
+    - [3.6. Size](#36-size)
+  - [4. Extension API](#4-extension-api)
+  - [5. Development](#5-development)
+  - [7. Migrating from Version 1](#7-migrating-from-version-1)
+  - [7. License](#7-license)
   - [8. Credits](#8-credits)
 
 ****

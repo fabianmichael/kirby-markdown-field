@@ -76,6 +76,16 @@ const styleDef = HighlightStyle.define([
     color: "currentColor",
   },
   {
+    tag: t.strong,
+    fontWeight: "700",
+    color: "currentColor",
+  },
+  {
+    tag: t.emphasis,
+    fontStyle: "italic",
+    color: "currentColor",
+  },
+  {
     tag: [
       t.name,
       t.angleBracket,
@@ -88,21 +98,13 @@ const styleDef = HighlightStyle.define([
     ],
     color: "var(--cm-color-meta)",
   },
-  {
-    tag: t.strong,
-    fontWeight: "700",
-    color: "currentColor",
-  },
+
   {
     // table header
     tag: t.heading,
     fontWeight: "700",
   },
-  {
-    tag: t.emphasis,
-    fontStyle: "italic",
-    color: "currentColor",
-  },
+
   {
     tag: t.deleted,
     textDecoration: "line-through",
@@ -122,9 +124,9 @@ const styleDef = HighlightStyle.define([
     // Inline Code,
     tag: t.monospace,
     backgroundColor: "var(--cm-code-background)",
-    padding: ".1em",
-    margin: "-.1em",
-    borderRadius: ".125em",
+    padding: ".1em 0",
+    margin: "-.1em 0",
+    // borderRadius: ".125em",
   },
   {
     tag: [t.labelName, t.link],
