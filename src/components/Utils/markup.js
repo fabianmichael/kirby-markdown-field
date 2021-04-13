@@ -1,4 +1,4 @@
-import { syntaxTree } from "@codemirror/language";
+import { ensureSyntaxTree } from "@codemirror/language";
 import { Direction } from "@codemirror/view";
 import { CharCategory } from "@codemirror/state";
 import { ltrim, rtrim } from "./strings.js";
@@ -6,9 +6,10 @@ import {
   BlockTypes,
   BlockStyles,
   BlockMarks,
-  InlineTypes,
+  InlineFormats,
   InlineMarks,
-  getCurrentInlineTokens
+  getCurrentInlineTokens,
+  getActiveTokens
 } from "./syntax.js";
 
 function isBoundaryChar(state, from, to) {
@@ -55,10 +56,10 @@ function getNextGroupRange(view) {
 // Toggles the block format of all currently selected lines
 export function toggleBlockFormat(view, type) {
   const state = view.state;
-  const tree = syntaxTree(state);
   const { from, to } = view.state.selection.main;
   const firstLine = state.doc.lineAt(from);
   const lastLine = state.doc.lineAt(to);
+  const tree = ensureSyntaxTree(state, lastLine.to, 500);
 
   const lines = [];
   let output = [];
@@ -115,9 +116,11 @@ export function toggleBlockFormat(view, type) {
         // Remove whole line content for rules
         return "";
       } else if (mark) {
-        const text = ltrim(line.text.substring(mark.to - line.from));
+        // TODO: Broken, if cursor at end of document (out-of-bounds error)
+        // TODO: Cursor position not stable => re-calculation of cursor position wrong.
+        const text = line.text.substring(mark.to - line.from);
         selectionOffset -= line.text.length - text.length;
-        return text;
+        return ltrim(text);
       }
 
       // no mark to remove, do nothing. Should never occur, but let’s
@@ -183,16 +186,16 @@ export function toggleBlockFormat(view, type) {
 
 // Toggles the formatting of a single word, where the cursor has either to be
 // right before, in the middle of after a word and not on the outer edge of the
-// mark characters. This could probably be merged with the toggleSelectedLine()
+// mark characters. This could probably be merged with the toggleInlineFormat()
 // function, but I’m just glad that it works pretty great. So yeay, leave it here
 // for now …
 function toggleWordFormat(view, type) {
-  const state = view.state;
-  const selection = state.selection.main;
-  const pos = selection.head;
-  const mark = InlineTypes[type].mark;
-  const tokens = getCurrentInlineTokens(view);
-  const tokenNames = tokens.reduce((r, { node: n }) => [...r, n.name], []);
+  const state       = view.state;
+  const selection   = state.selection.main;
+  const pos         = selection.head;
+  const mark        = InlineFormats[type].mark;
+  const tokens      = getCurrentInlineTokens(view);
+  const tokenNames  = tokens.reduce((r, { node: n }) => [...r, n.name], []);
   const activeIndex = tokenNames.indexOf(type);
 
   if (activeIndex !== -1) {
@@ -326,7 +329,7 @@ function renderLine(nodes) {
 
     // If whitespace has to be expelled from the node, adjust
     // leading and trailing accordingly.
-    if (node && marks.some((mark) => InlineTypes[mark] && InlineTypes[mark].expelEnclosingWhitespace)) {
+    if (node && marks.some((mark) => InlineFormats[mark] && InlineFormats[mark].expelEnclosingWhitespace)) {
       let [_, lead, inner, trail] = /^(\s*)(.*?)(\s*)$/.exec(node.text); // eslint-disable-line no-unused-vars
       leading += lead;
       trailing = trail;
@@ -338,7 +341,7 @@ function renderLine(nodes) {
     }
 
     let inner = marks.length && marks[marks.length - 1];
-    let noEsc = inner && InlineTypes[inner].escape === false;
+    let noEsc = inner && InlineFormats[inner].escape === false;
     let len = marks.length - (noEsc ? 1 : 0);
 
     // Try to reorder 'mixable' marks, such as em and strong, which
@@ -347,10 +350,10 @@ function renderLine(nodes) {
     // active.
     outer: for (let i = 0; i < len; i++) {
       let mark = marks[i];
-      if (!InlineTypes[mark].mixable) break;
+      if (!InlineFormats[mark].mixable) break;
       for (let j = 0; j < active.length; j++) {
         let other = active[j];
-        if (!InlineTypes[other].mixable) break;
+        if (!InlineFormats[other].mixable) break;
         if (mark === other) {
           if (i > j) {
             marks = marks.slice(0, j).concat(mark).concat(marks.slice(j, i)).concat(marks.slice(i + 1, len));
@@ -370,7 +373,7 @@ function renderLine(nodes) {
 
     // Close the marks that need to be closed
     while (keep < active.length) {
-      result += InlineTypes[active.pop()].mark;
+      result += InlineFormats[active.pop()].mark;
     }
 
     // Output any previously expelled trailing whitespace outside the marks
@@ -383,13 +386,13 @@ function renderLine(nodes) {
       while (active.length < len) {
         let add = marks[active.length];
         active.push(add);
-        result += InlineTypes[add].mark;
+        result += InlineFormats[add].mark;
       }
 
       // Render the node. Special case code marks, since their content
       // may not be escaped.
       if (noEsc) {
-        result += InlineTypes[inner].mark + node.text + InlineTypes[inner].mark;
+        result += InlineFormats[inner].mark + node.text + InlineFormats[inner].mark;
       } else {
         result += node.text;
       }
@@ -402,17 +405,16 @@ function renderLine(nodes) {
   return result;
 }
 
-function toggleSelectedLine(view, n, type) {
-  const state = view.state;
-  const line = state.doc.line(n);
+function toggleLineFormat(view, n, type, action) {
+  const state     = view.state;
+  const line      = state.doc.line(n);
   const selection = state.selection.main;
-  const tokens = [];
-  let text = text;
+  const tokens    = [];
 
   // get all relevant inline formats of current line
-  syntaxTree(state).iterate({
+  ensureSyntaxTree(state, line.to, 500).iterate({
     enter: ({ name }, start, end) => {
-      if (!Object.keys(InlineTypes).includes(name) && !InlineMarks.includes(name)) {
+      if (!Object.keys(InlineFormats).includes(name) && !InlineMarks.includes(name)) {
         return;
       }
       tokens.push({
@@ -443,8 +445,17 @@ function toggleSelectedLine(view, n, type) {
       }
     }
 
-    if (pos > selection.from && pos <= selection.to && !marks.includes(type)) {
-      marks.push(type);
+    if (pos > selection.from && pos <= selection.to) {
+      const hasMark = marks.includes(type);
+      if (action ==="add") {
+        if (!hasMark) {
+          marks.push(type);
+        }
+      } else {
+        if (hasMark) {
+          marks = marks.filter(v => v !== type);
+        }
+      }
     }
 
     chars.push({
@@ -534,24 +545,48 @@ function toggleSelectedLine(view, n, type) {
     }
   }
 
-  console.info("nodes", ...nodes);
-  console.info("result", renderLine(nodes));
-  // view.dispatch({
-  //   changes: { insert: renderLine(nodes), from: line.from, to: line.to },
-  // })
+  return renderLine(nodes);
 }
 
 function toggleSelectionFormat(view, type) {
-  const state = view.state;
-  const selection = state.selection.main;
-  const firstLine = state.doc.lineAt(selection.from).number;
-  const lastLine = state.doc.lineAt(selection.to).number;
+  const state            = view.state;
+  const selection        = state.selection.main;
+  const firstLine        = state.doc.lineAt(selection.from);
+  const lastLine         = state.doc.lineAt(selection.to);
+  const action           = getActiveTokens(view, true).includes(type) ? "remove" : "add";
+  const lines            = [];
+  let { anchor, head }   = selection;
+  let lengthBefore       = 0;
 
-  for (let i = firstLine; i <= lastLine; i++) {
+  for (let n = firstLine.number; n <= lastLine.number; n++) {
     // Inline formats cannot span multiple lines in Markdown, so apply
     // toggle to every line.
-    toggleSelectedLine(view, i, type);
+    lengthBefore += state.doc.line(n).text.length;
+    lines.push(toggleLineFormat(view, n, type, action));
   }
+
+  let insert = lines.join(view.state.lineBreak);
+
+  let lengthChange = insert.length - lengthBefore;
+  console.log("length change", insert.length, lengthBefore, lengthChange, { head, anchor});
+  if (head > anchor) {
+    head += lengthChange;
+  } else {
+    anchor += lengthChange;
+  }
+
+  console.log("result", lines, head, anchor);
+  view.dispatch({
+    changes: {
+      insert,
+      from: firstLine.from,
+      to: lastLine.to
+    },
+    selection: {
+      anchor,
+      head
+    }
+  });
 }
 
 

@@ -54,11 +54,8 @@ import Toolbar from "./MarkdownToolbar.vue";
 import LinkDialog from "./Dialogs/LinkDialog.vue";
 
 import Editor from './Editor.js';
-import FencedCodeToken from "./Extensions/FencedCodeToken.js";
 import Highlight from "./Extensions/Highlight.js";
 import Kirbytags from "./Extensions/Kirbytags.js";
-import LinkToken from "./Extensions/LinkToken.js";
-import URLToken from "./Extensions/URLToken.js";
 
 import Blockquote from "./Buttons/Blockquote.js"
 import BulletList from "./Buttons/BulletList.js"
@@ -154,10 +151,6 @@ export default {
         ...this.createKirbytags(),
         ...this.createHighlights(),
         ...this.createToolbarButtons(),
-        // Additional tokens, used by toolbar buttons
-        new FencedCodeToken(),
-        new LinkToken(),
-        new URLToken(),
       ],
       events: {
         dialog: (extension, ...args) => {

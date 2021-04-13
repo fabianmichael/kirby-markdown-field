@@ -1,4 +1,4 @@
-import { syntaxTree } from "@codemirror/language";
+import { ensureSyntaxTree, syntaxTree } from "@codemirror/language";
 
 export const BlockTypes = {
   "ATXHeading1"   : "#",
@@ -11,6 +11,7 @@ export const BlockTypes = {
   "OrderedList"   : "1.",
   "BulletList"    : "-",
   "HorizontalRule": "***",
+  "FencedCode"    : "", // TODO: Validated, if this does not cause any problems.
 };
 
 export const BlockStyles = {
@@ -73,38 +74,49 @@ export const BlockMarks = [
   "ListMark"
 ];
 
-export const InlineTypes = {
+export const InlineFormats = {
   Emphasis: {
     mark: "_",
+    markToken: "EmphasisMark",
     escape: true,
     mixable: true,
     expelEnclosingWhitespace: true,
   },
   StrongEmphasis: {
     mark: "**",
+    markToken: "EmphasisMark",
     escape: true,
     mixable: true,
     expelEnclosingWhitespace: true,
   },
   InlineCode: {
     mark: "`",
+    markToken: "CodeMark",
     escape: false,
     mixable: false,
     expelEnclosingWhitespace: true,
   },
   Strikethrough: {
     mark: "~~",
+    markToken: "StrikethroughMark",
     escape: true,
     mixable: true,
     expelEnclosingWhitespace: true,
   }
 };
 
-export const InlineMarks = [
-  "EmphasisMark",
-  "CodeMark",
-  "StrikethroughMark",
-]
+export const InlineTokens = [
+  ...Object.keys(InlineFormats),
+  "URL",
+  "Link",
+];
+
+export const InlineMarks = Object.keys(InlineFormats).reduce((result, name) => {
+  const item = InlineFormats[name];
+  if (result.includes(item.markToken)) return result;
+  return [...result, item.markToken];
+}, []);
+
 
 export function getBlockNameAt(view, pos, blockNames) {
   const tree = syntaxTree(view.state);
@@ -135,89 +147,148 @@ export function nodeIsKirbytag(node) {
   return nodeIsKirbytag(node.parentNode);
 }
 
-export function getActiveTokensAt(view, {block, inline}, selection) {
-  const { head, from, to } = selection.main;
-  const { state } = view;
-  const { doc } = state;
-  const tree = syntaxTree(state);
-  const tokens = [];
+export function getActiveTokens(view, ensureTree = false) {
+  const { state }          = view;
+  const { doc }            = state;
+  const { head, from, to } = state.selection.main;
+  const tree               = ensureTree ? ensureSyntaxTree(state, to, 500) : syntaxTree(state);
+  let tokens               = [];
 
+  if (from !== to) {
+    // Selection
 
-  let line = doc.lineAt(from);
+    let line         = doc.lineAt(from);
+    let n            = line.number;
+    let nFirst       = line.number;
+    let blockTokens  = [];
+    let inlineTokens = [];
+    let done         = false;
 
-  do {
-    console.log("line", line)
-    line = doc.line(line.number + 1);
-  } while (line && line.from < to);
+    do {
+      let { from: lFrom, to: lTo, text } = line;
+      let isFirstLine = n === nFirst;
+      let lookFrom    = lFrom;
+      let lookTo      = lTo - text.match(/\s*$/)[0].length; // exclude trailing whitespace
+      let candidates  = [];
 
-  // if (from !== to) {
-    // selection, possibly has multiple lines
-    // const firstLine = state.doc.lineAt(from);
-    // const lastLine  = state.doc.lineAt(to);
+      if (text.match(/^\s*$/)) {
+        // skip empty lines
+        continue;
+      }
 
-  //   if (firstLine.number !== lastLine.number) {
-  //     // Multiline selection, just look for blocks
+      tree.iterate({
+        enter: ({ name }, nodeFrom, nodeTo) => {
+          let match;
 
-  //     tree.iterate({
-  //       enter: ({ name }) => {
-  //         if (block.includes(name)) {
-  //           tokens.push(name)
-  //         }
-  //       },
-  //       from: firstLine.from,
-  //       to: lastLine.to,
-  //     });
+          if (BlockTypes[name]) {
+            // look for block token
 
-  //     return tokens;
-  //   }
-  // }
+            if (!tokens.includes(name)) {
+              // only add bloxk tokens, which are not already active
+              blockTokens.push(name);
+            }
 
-  // // Selection spans only a single linge, get current block token and all
-  // // inline tokens
+            if (BlockStyles[name].mark && (match = line.text.match(BlockStyles[name].mark))) {
+              // get block prefix (e.g. `[## ]headline`) length,
+              // because it won’t be analyzed for inline formats
+              lookFrom += match[0].length;
+            }
 
-  // tree.iterate({
-  //   enter: ({ name }, start, end) => {
-  //     let inlineMatch;
+            return;
+          }
 
-  //     if (from !== to) {
-  //       // selection
-  //       if (start <= from && to <= end) {
-  //         // Matches, if selection is larger or equal to token
-  //         inlineMatch = true;
-  //       }
-  //     } else {
-  //       // no selection
-  //       if (head > start && head < end) {
-  //         // Only match inline tokens, where the cursor is
-  //         // inside of if (not before/after the token)
-  //         inlineMatch = true
-  //       }
-  //     }
+          // look from either line start or selection start, whatever
+          // comes last
+          lookFrom = Math.max(lookFrom, from);
 
-  //     if (block.includes(name)) {
-  //       tokens.push(name)
-  //     }
+          // look until line ending or selection ending, whatever
+          // comes first
+          lookTo   = Math.min(lookTo, to);
 
-  //     if (inlineMatch && inline.includes(name)) {
-  //       tokens.push(name);
-  //     }
-  //   },
-  //   from,
-  //   to,
-  // });
+          if (!InlineFormats[name]) {
+            // Skip tokens, which are not markup
+            return;
+          }
 
-  // // Check if selection start or end (or cursor) is inside Kirbytag
-  // let isKirbytag = nodeIsKirbytag(view.domAtPos(from).node);
+          if (nodeFrom <= lookFrom && nodeTo >= lookTo) {
+            if (!candidates.includes(name)) {
+              candidates.push(name);
+            }
+            lookFrom += InlineFormats[name].mark.length;
+            lookTo -= InlineFormats[name].mark.length;
+          }
+        },
+        from: lFrom,
+        to: lTo,
+      });
 
-  // if (from !== to) {
-  //   if (!isKirbytag) {
-  //     isKirbytag = nodeIsKirbytag(view.domAtPos(to).node);
-  //   }
-  // }
+      if (candidates.length === 0) {
+        // line is not empty and does not contain any inline tokens,
+        // stop iterating over lines and return.
+        inlineTokens = [];
+        break;
+      }
 
-  // if (isKirbytag) {
-  //   tokens.push("kirbytag");
-  // }
+      if (isFirstLine) {
+        // The selected tokens from the first line will become the
+        // reference for all other lines. Only tokens, which cover
+        // all of the following lines up until selection end, will
+        // be includes in `inlineTokens` after we’re done.
+        inlineTokens = candidates;
+      } else {
+        // Inline Tokens array is filtered against candidates from
+        // current line. Only tokens, which are present in this line
+        // and all preceding lines are kept.
+        inlineTokens = inlineTokens.filter(name => candidates.includes(name));
+
+        if (inlineTokens.length === 0) {
+          // If no tokens are left, stop iterating.
+          break;
+        }
+      }
+
+    } while (!done && ++n <= doc.lines && (line = doc.line(n)) && line.from < to);
+
+    tokens = [...blockTokens, ...inlineTokens];
+
+  } else {
+    // No selection
+
+    tree.iterate({
+      enter: ({ name }, nodeFrom, nodeTo) => {
+        let inlineMatch;
+
+        if (BlockTypes[name]) {
+          tokens.push(name);
+        }
+
+        if (head > nodeFrom && head < nodeTo) {
+          // Only match inline tokens, where the cursor is
+          // inside of if (not before/after the token)
+          inlineMatch = true
+        }
+
+        if (inlineMatch && InlineTokens.includes(name)) {
+          tokens.push(name);
+        }
+      },
+      from,
+      to,
+    });
+  }
+
+  // Check if selection start or end (or cursor) is inside Kirbytag
+  let isKirbytag = nodeIsKirbytag(view.domAtPos(from).node);
+
+  if (from !== to) {
+    if (!isKirbytag) {
+      isKirbytag = nodeIsKirbytag(view.domAtPos(to).node);
+    }
+  }
+
+  if (isKirbytag) {
+    tokens.push("kirbytag");
+  }
 
   return tokens;
 }
@@ -249,7 +320,7 @@ export function getCurrentInlineTokens(view) {
         }
       }
 
-      if (inlineMatch && InlineTypes[node.name]) {
+      if (inlineMatch && InlineFormats[node.name]) {
         tokens.push({
           node,
           from: start,

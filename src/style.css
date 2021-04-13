@@ -69,8 +69,11 @@
 }
 
 .k-markdown-input-wrap:focus-within .k-toolbar .k-markdown-button.is-active {
+  color: #3872be;
+}
+
+.k-markdown-input-wrap:focus-within .k-toolbar .k-markdown-button.is-active:hover {
   background: rgba(66, 113, 174, .075);
-  color: #4271ae;
 }
 
 .k-markdown-toolbar {
@@ -94,7 +97,7 @@
 
 /** Active state for dropdown items */
 .k-markdown-toolbar .k-button.k-dropdown-item[aria-current="true"] {
-  color: #aacfff;
+  color: #8fbfff;
 }
 
 .k-markdown-toolbar .k-button-text {
@@ -361,4 +364,23 @@
 /* Tab character */
 .k-markdown-input .cm-invisible-char[data-code="9"] {
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath fill='%23fe4c4c' d='M9.85355339,3.14644661 C9.94403559,3.23692881 10,3.36192881 10,3.5 C10,3.63807119 9.94403559,3.76307119 9.85355339,3.85355339 L7.85355339,5.85355339 C7.65829124,6.04881554 7.34170876,6.04881554 7.14644661,5.85355339 C6.95118446,5.65829124 6.95118446,5.34170876 7.14644661,5.14644661 L8.29289322,4 L1.5,4 C1.22385763,4 1,3.77614237 1,3.5 C1,3.22385763 1.22385763,3 1.5,3 L8.29289322,3 L7.14644661,1.85355339 C6.95118446,1.65829124 6.95118446,1.34170876 7.14644661,1.14644661 C7.34170876,0.951184464 7.65829124,0.951184464 7.85355339,1.14644661 L9.85355339,3.14644661 Z'/%3E%3C/svg%3E%0A") left center no-repeat;
+}
+
+/* Hardbreak (2 consecutive spaces at end of line */
+.k-markdown-input .cm-hardbreak {
+  position: relative;
+}
+
+/**
+ * 1. Unset text-indent, set by line styles.
+ */
+.k-markdown-input .cm-hardbreak::before {
+  color: var(--cm-color-special-char);
+  content: "\21A9"; /* LEFTWARDS ARROW WITH HOOK */
+  display: inline-block;
+  margin-right: -2ch;
+  pointer-events: none;
+  text-align: center;
+  text-indent: 0; /* 1 */
+  width: 2ch;
 }

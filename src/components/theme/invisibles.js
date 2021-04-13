@@ -15,15 +15,19 @@ const Invisibles = [
   "\u200b", // Zero-width Space
   "\u0009", // Tab
 ];
-const InvisiblesRegex = new RegExp(`[${Invisibles.join("")}]`, UnicodeRegexpSupport);
+const InvisiblesRegex = new RegExp(`(\u0020{2}$)|([${Invisibles.join("")}])`, UnicodeRegexpSupport);
 
 export default() => {
   const decorator = new MatchDecorator({
     regexp: InvisiblesRegex,
     decoration: (match) => {
+      if (match[1]) {
+        return Decoration.mark({ class: "cm-hardbreak" });
+      }
+
       return Decoration.mark({
         class: "cm-invisible-char",
-        attributes: { "data-code": match[0].charCodeAt(0) }
+        attributes: { "data-code": match[2].charCodeAt(0) }
       });
     },
   });

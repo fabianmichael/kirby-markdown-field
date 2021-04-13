@@ -17,7 +17,7 @@ import {
   toggleBlockFormat,
   toggleInlineFormat,
 } from "./Utils/markup.js";
-import { getActiveTokensAt } from "./Utils/syntax.js";
+import { getActiveTokens } from "./Utils/syntax.js";
 
 import browser from "./browser.js";
 const isKnownDesktopBrowser = (browser.safari || browser.chrome || browser.gecko) && (!browser.android && !browser.ios);
@@ -43,11 +43,6 @@ export default class Editor extends Emitter {
     };
 
     this.init(value, options);
-    // setTimeout(() => {
-    //   this.view.dispatch({ selection: { anchor: 0, head: 11 }});
-    //   this.view.focus();
-    //   this.toggleInlineFormat("Emphasis");
-    // }, 100);
   }
 
   createKeymap() {
@@ -126,7 +121,8 @@ export default class Editor extends Emitter {
         }
 
         const value  = this.view.state.doc.toString();
-        this.activeTokens = getActiveTokensAt(this.view, this.tokens, this.state.selection);
+        this.activeTokens = getActiveTokens(this.view);
+        console.log("active", this.activeTokens);
         this.emit("update", value, this.activeTokens, this.options.invisibles);
       },
     });
@@ -175,7 +171,7 @@ export default class Editor extends Emitter {
     this.keymap         = this.createKeymap();
     this.buttons        = this.extensions.getButtons();
     this.dialogs        = this.extensions.getDialogs();
-    this.tokens         = this.extensions.getTokens();
+    // this.tokens         = this.extensions.getTokens();
     this.view           = this.createView(value);
 
     // Enable spell-checking to enable browser extensions, such as Language Tool
