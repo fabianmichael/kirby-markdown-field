@@ -1,6 +1,6 @@
-import { EditorState } from "@codemirror/state";
+import { Compartment, EditorState } from "@codemirror/state";
 import { EditorView, drawSelection, placeholder, keymap } from "@codemirror/view";
-import { history, historyKeymap } from "@codemirror/history";
+import { history, historyKeymap, undoDepth } from "@codemirror/history";
 import { standardKeymap } from "@codemirror/commands";
 import {
   markdown,
@@ -46,6 +46,7 @@ export default class Editor extends Emitter {
     this.activeTokens  = [];
     this.preventUpdate = false;
     this.metaKeyDown   = false;
+    this.invisibles    = new Compartment();
 
     this.defaults = {
       editable: true,
@@ -96,7 +97,7 @@ export default class Editor extends Emitter {
       ...this.highlights,
       markdown({ base: markdownLanguage }),
       ...this.kirbytags,
-      this.options.invisibles && invisibles(),
+      this.invisibles.of([]),
       lineStyles(),
       /**
        * Firefox has a known Bug, that casuses the caret to disappear,
@@ -145,6 +146,7 @@ export default class Editor extends Emitter {
 
         const value = this.view.state.doc.toString();
         this.emit("update", value);
+        console.log("history depth", undoDepth(this.view.state));
         debouncedUpdateActiveTokens();
       },
     });
@@ -156,7 +158,7 @@ export default class Editor extends Emitter {
     }
 
     this.view.destroy();
-    instances = instances.filter(i => !Object.is(i, this));
+    instances = instances.filter((i) => !Object.is(i, this));
   }
 
   dispatch(transaction, emitUpdate = true) {
@@ -258,7 +260,10 @@ export default class Editor extends Emitter {
     }
 
     this.options.invisibles = typeof force === "boolean" ? force : !this.options.invisibles;
-    this.updateState();
+    // this.updateState();
+    this.view.dispatch({
+      effects: this.invisibles.reconfigure(this.options.invisibles ? invisibles() : []),
+    })
     this.emit("invisibles", this.options.invisibles);
   }
 
@@ -266,9 +271,9 @@ export default class Editor extends Emitter {
     this.activeTokens = getActiveTokens(this.view);
   }
 
-  updateState() {
-    this.view.setState(this.createState(this.value));
-  }
+  // updateState() {
+  //   this.view.setState(this.createState(this.value));
+  // }
 
   get value() {
     return this.view ? this.view.state.doc.toString() : "";
