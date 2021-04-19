@@ -15,6 +15,9 @@
 </template>
 
 <script>
+
+import { isEmail, isURL } from "../Utils/strings.js";
+
 export default {
   props: {
     blank: [Boolean, String],
@@ -84,26 +87,16 @@ export default {
     }
   },
   methods: {
-    isEmail(str) {
-      // https://emailregex.com/
-      return str.match(
-        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      );
-    },
-    isLink(str) {
-      // starts with http:// | https:// and doesn't contain any space
-      return str.match(/^https?:\/\//) && !str.match(/\s/)
-    },
     open() {
       // make sure we're starting with an empty form
       this.resetValue();
 
       // // figure out if the selection is a link
       const selection = this.extension.editor.getSelection();
-      if (this.isEmail(selection)) {
+      if (isEmail(selection)) {
         this.value.type = "email";
         this.value.email = selection;
-      } else if (this.isLink(selection)) {
+      } else if (isURL(selection)) {
         this.value.type = "url";
         this.value.url = selection;
       } else {

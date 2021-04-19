@@ -98,7 +98,10 @@ const styleDef = HighlightStyle.define([
     ],
     color: "var(--cm-color-meta)",
   },
-
+  {
+    tag: t.atom,
+    color: "currentColor", // just there, so it can be picked-up by extensions
+  },
   {
     // table header
     tag: t.heading,
@@ -112,9 +115,13 @@ const styleDef = HighlightStyle.define([
   {
     tag: t.url,
     color: "var(--cm-color-meta)",
-    textDecoration: ".05em solid underline",
-    textUnderlineOffset: ".14em",
   },
+  // {
+  //   tag: t.url,
+  //   color: "var(--cm-color-meta)",
+  //   textDecoration: ".05em solid underline",
+  //   textUnderlineOffset: ".14em",
+  // },
   {
     // HTML Entity
     tag: t.character,

@@ -1,7 +1,6 @@
 import { ViewPlugin, Decoration } from "@codemirror/view";
 import { RangeSetBuilder } from "@codemirror/rangeset";
 import Extension from "../Extension.js";
-
 export default class Kirbytags extends Extension {
   get type() {
     return "kirbytags";

@@ -19,9 +19,13 @@ Enhanced, extensible Markdown field for Kirby CMS. Version 2!
 - Custom toolbar buttons
 - Custom syntax highlights
 - Option to show whitespace characters
+- Clickable URLs
+- Task lists*
 - Support for touch-based devices (thanks to CodeMirror 6)
 
 💡 **TL;DR:** The Markdown field, you all have been waiting for!
+
+<small>*) not supported by Kirby’s default Markdown parser</small>
 
 ![screenshot](https://user-images.githubusercontent.com/14079751/50606008-7cb31200-0ec4-11e9-9685-a48a8ba398a4.jpg)
 
@@ -191,9 +195,11 @@ buttons:
 
 #### Other Functionality
 
-| Format          | Mac/iOS        | Linux/Windows  |
-|:----------------|:---------------|:---------------|
-| Show Whitespace | `⌥⌃I`          | `Alt+Shift+i   |
+| Format                | Mac/iOS        | Linux/Windows  |
+|:----------------------|:---------------|:---------------|
+| Show Whitespace       | `⌥⌃I`          | `Alt+Shift+i   |
+| Mark task as complete | `⌘.`           | `Ctrl+.`       |
+|
 
 ### 3.5. Query
 

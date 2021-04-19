@@ -19,6 +19,7 @@ export default class StrongEmphasis extends Button {
       {
         key: "Mod-b",
         run: this.command,
+        preventDefault: true,
       }
     ];
   }

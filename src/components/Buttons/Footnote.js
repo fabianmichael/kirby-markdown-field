@@ -17,6 +17,7 @@ export default class Footnote extends Button {
         mac: "Ctrl-Alt-f",
         key: "Alt-Shift-f",
         run: this.command,
+        preventDefault: true,
       }
     ];
   }

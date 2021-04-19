@@ -18,17 +18,34 @@ import {
   toggleInlineFormat,
 } from "./Utils/markup.js";
 import { getActiveTokens } from "./Utils/syntax.js";
+import debounce from "./Utils/debounce.js";
 
 import browser from "./browser.js";
 const isKnownDesktopBrowser = (browser.safari || browser.chrome || browser.gecko) && (!browser.android && !browser.ios);
+
+let instances = [];
+
+function globalToggleMetaKeyDown(e) {
+  for (let i of instances) {
+    i.toggleMetaKeyDown(e.metaKey);
+  }
+};
+
+window.addEventListener("keydown", globalToggleMetaKeyDown);
+window.addEventListener("keyup", globalToggleMetaKeyDown);
+window.addEventListener("onpagehide", () => globalToggleMetaKeyDown({ metaKey: false }));
+window.addEventListener("blur", () => globalToggleMetaKeyDown({ metaKey: false }));
+document.addEventListener("visibilitychange", () => (document.hidden ? globalToggleMetaKeyDown({ metaKey: false }) : null));
+
 
 export default class Editor extends Emitter {
 
   constructor(value, options = {}) {
     super();
 
-    this.activeTokens   = [];
+    this.activeTokens  = [];
     this.preventUpdate = false;
+    this.metaKeyDown   = false;
 
     this.defaults = {
       editable: true,
@@ -42,6 +59,7 @@ export default class Editor extends Emitter {
       value: "",
     };
 
+    instances.push(this);
     this.init(value, options);
   }
 
@@ -75,9 +93,9 @@ export default class Editor extends Emitter {
       history(),
       this.keymap,
       highlightStyle(),
-      ...this.kirbytags,
-      markdown({ base: markdownLanguage }),
       ...this.highlights,
+      markdown({ base: markdownLanguage }),
+      ...this.kirbytags,
       this.options.invisibles && invisibles(),
       lineStyles(),
       /**
@@ -108,6 +126,11 @@ export default class Editor extends Emitter {
   }
 
   createView(value) {
+    const debouncedUpdateActiveTokens = debounce(() => {
+      this.activeTokens = getActiveTokens(this.view);
+      this.emit("active", this.activeTokens);
+    }, 50);
+
     return new EditorView({
       state: this.createState(value),
       parent: this.options.element,
@@ -120,10 +143,9 @@ export default class Editor extends Emitter {
           return;
         }
 
-        const value  = this.view.state.doc.toString();
-        this.activeTokens = getActiveTokens(this.view);
-        console.log("active", this.activeTokens);
-        this.emit("update", value, this.activeTokens, this.options.invisibles);
+        const value = this.view.state.doc.toString();
+        this.emit("update", value);
+        debouncedUpdateActiveTokens();
       },
     });
   }
@@ -134,6 +156,7 @@ export default class Editor extends Emitter {
     }
 
     this.view.destroy();
+    instances = instances.filter(i => !Object.is(i, this));
   }
 
   dispatch(transaction, emitUpdate = true) {
@@ -164,15 +187,14 @@ export default class Editor extends Emitter {
       ...options,
     };
 
-    this.events         = this.createEvents();
-    this.extensions     = this.createExtensions();
-    this.kirbytags      = this.extensions.getHighlightPlugins();
-    this.highlights     = this.extensions.getKirbytagsPlugins();
-    this.keymap         = this.createKeymap();
-    this.buttons        = this.extensions.getButtons();
-    this.dialogs        = this.extensions.getDialogs();
-    // this.tokens         = this.extensions.getTokens();
-    this.view           = this.createView(value);
+    this.events          = this.createEvents();
+    this.extensions      = this.createExtensions();
+    this.kirbytags       = this.extensions.getKirbytagsPlugins();
+    this.highlights      = this.extensions.getHighlightPlugins();
+    this.keymap          = this.createKeymap();
+    this.buttons         = this.extensions.getButtons();
+    this.dialogs         = this.extensions.getDialogs();
+    this.view            = this.createView(value);
 
     // Enable spell-checking to enable browser extensions, such as Language Tool
     if (this.options.spellcheck) {
@@ -222,6 +244,14 @@ export default class Editor extends Emitter {
     return toggleInlineFormat(this.view, type);
   }
 
+  toggleMetaKeyDown(isTrue) {
+    if (!this.view || isTrue === this.metaKeyDown) {
+      return;
+    }
+    this.view.dom.classList[isTrue ? "add" : "remove"]("is-meta-key");
+    this.metaKeyDown = isTrue;
+  }
+
   toggleInvisibles(force = null) {
     if (force === this.options.invisibles) {
       return;
@@ -230,6 +260,10 @@ export default class Editor extends Emitter {
     this.options.invisibles = typeof force === "boolean" ? force : !this.options.invisibles;
     this.updateState();
     this.emit("invisibles", this.options.invisibles);
+  }
+
+  updateActiveTokens() {
+    this.activeTokens = getActiveTokens(this.view);
   }
 
   updateState() {

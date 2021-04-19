@@ -56,6 +56,9 @@ import LinkDialog from "./Dialogs/LinkDialog.vue";
 import Editor from './Editor.js';
 import Highlight from "./Extensions/Highlight.js";
 import Kirbytags from "./Extensions/Kirbytags.js";
+import TaskLists from "./Extensions/TaskLists.js";
+import ClickableLinks from "./Extensions/ClickableLinks.js";
+import PasteUrls from "./Extensions/PasteUrls.js";
 
 import Blockquote from "./Buttons/Blockquote.js"
 import BulletList from "./Buttons/BulletList.js"
@@ -153,15 +156,17 @@ export default {
         ...this.createToolbarButtons(),
       ],
       events: {
+        active: (active) => {
+          this.active = active;
+        },
         dialog: (extension, ...args) => {
           this.openDialog(extension, ...args);
         },
-        update: (value, active) => {
+        update: (value) => {
           if (this.$refs.toolbar) {
             this.$refs.toolbar.closeDropdowns();
           }
           this.$emit("input", value);
-          this.active = active;
         },
         invisibles: (value) => {
           this.invisibles = value;
@@ -295,7 +300,13 @@ export default {
     },
 
     createKirbytags() {
-      return this.kirbytext ? [new Kirbytags()] : [];
+      const extensions = [
+        new ClickableLinks(),
+        new PasteUrls(),
+        new TaskLists(),
+      ];
+
+      return this.kirbytext ? [...extensions, new Kirbytags()] : extensions;
     },
     /**
      * Extension dialogs

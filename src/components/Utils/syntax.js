@@ -11,8 +11,12 @@ export const BlockTypes = {
   "OrderedList"   : "1.",
   "BulletList"    : "-",
   "HorizontalRule": "***",
-  "FencedCode"    : "", // TODO: Validated, if this does not cause any problems.
 };
+
+const BlockTokens = [
+  ...Object.keys(BlockTypes),
+  "FencedCode"
+]
 
 export const BlockStyles = {
   FencedCode: {
@@ -108,7 +112,7 @@ export const InlineFormats = {
 export const InlineTokens = [
   ...Object.keys(InlineFormats),
   "URL",
-  "Link",
+  // "Link",
 ];
 
 export const InlineMarks = Object.keys(InlineFormats).reduce((result, name) => {
@@ -180,11 +184,13 @@ export function getActiveTokens(view, ensureTree = false) {
         enter: ({ name }, nodeFrom, nodeTo) => {
           let match;
 
-          if (BlockTypes[name]) {
+          console.info({ name }, nodeFrom, nodeTo)
+
+          if (BlockTokens.includes(name)) {
             // look for block token
 
             if (!tokens.includes(name)) {
-              // only add bloxk tokens, which are not already active
+              // only add block tokens, which are not already active
               blockTokens.push(name);
             }
 
@@ -205,7 +211,7 @@ export function getActiveTokens(view, ensureTree = false) {
           // comes first
           lookTo   = Math.min(lookTo, to);
 
-          if (!InlineFormats[name]) {
+          if (!InlineTokens.includes(name)) {
             // Skip tokens, which are not markup
             return;
           }
@@ -214,8 +220,11 @@ export function getActiveTokens(view, ensureTree = false) {
             if (!candidates.includes(name)) {
               candidates.push(name);
             }
-            lookFrom += InlineFormats[name].mark.length;
-            lookTo -= InlineFormats[name].mark.length;
+
+            if (InlineFormats[name] && InlineFormats[name].mark) {
+              lookFrom += InlineFormats[name].mark.length;
+              lookTo -= InlineFormats[name].mark.length;
+            }
           }
         },
         from: lFrom,
@@ -258,7 +267,7 @@ export function getActiveTokens(view, ensureTree = false) {
       enter: ({ name }, nodeFrom, nodeTo) => {
         let inlineMatch;
 
-        if (BlockTypes[name]) {
+        if (BlockTokens.includes(name)) {
           tokens.push(name);
         }
 
@@ -320,7 +329,7 @@ export function getCurrentInlineTokens(view) {
         }
       }
 
-      if (inlineMatch && InlineFormats[node.name]) {
+      if (inlineMatch && InlineTokens.includes(node.name)) {
         tokens.push({
           node,
           from: start,
