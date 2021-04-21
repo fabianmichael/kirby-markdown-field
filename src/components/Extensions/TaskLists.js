@@ -65,7 +65,7 @@ function toggleListItemsComplete(view) {
     to: lastLine.to,
   });
 
-  const allChecked  = markers.filter(v => !v.checked).length === 0;
+  const allChecked  = markers.filter((v) => !v.checked).length === 0;
 
   markers.forEach(({ from, to }) => {
     const checkbox = allChecked ? "[ ]" : "[x]";
@@ -76,10 +76,6 @@ function toggleListItemsComplete(view) {
 }
 
 export default class TaskLists extends Extension {
-  get type() {
-    return "kirbytags";
-  }
-
   keys() {
     return [
       {
@@ -102,11 +98,11 @@ export default class TaskLists extends Extension {
         }
       }
     }, {
-      decorations: v => v.decorations,
+      decorations: (v) => v.decorations,
 
       eventHandlers: {
         mousedown: ({ target }, view) => {
-          if (target.classList && target.classList.contains("cm-taskmarker") || target.closest(".cm-taskmarker")) {
+          if (target.classList && target.classList.contains("cm-taskmarker") || target.closest(".cm-taskmarker")) {
             return toggleTaskListCheckbox(view, view.posAtDOM(target));
           }
         }
@@ -116,5 +112,9 @@ export default class TaskLists extends Extension {
     return [
       taskListPlugin,
     ];
+  }
+
+  get type() {
+    return "language";
   }
 }

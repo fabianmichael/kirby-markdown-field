@@ -1,41 +1,23 @@
 import { Compartment, EditorState } from "@codemirror/state";
 import { EditorView, drawSelection, placeholder, keymap } from "@codemirror/view";
-import { history, historyKeymap, undoDepth } from "@codemirror/history";
+import { history, historyKeymap } from "@codemirror/history";
 import { standardKeymap } from "@codemirror/commands";
-import {
-  markdown,
-  markdownKeymap,
-  markdownLanguage,
-} from "@codemirror/lang-markdown";
 
-import lineStyles from "./theme/line-styles";
-import { theme, highlightStyle, scrollMargin } from "./theme/theme.js";
-import invisibles from "./theme/invisibles.js";
 import Emitter from "./Emitter.js";
-import Extensions from "./Extensions.js";
-import {
-  toggleBlockFormat,
-  toggleInlineFormat,
-} from "./Utils/markup.js";
+import { toggleBlockFormat, toggleInlineFormat } from "./Utils/markup.js";
 import { getActiveTokens } from "./Utils/syntax.js";
 import debounce from "./Utils/debounce.js";
-
-import browser from "./browser.js";
+import browser from "./Utils/browser.js";
 const isKnownDesktopBrowser = (browser.safari || browser.chrome || browser.gecko) && (!browser.android && !browser.ios);
 
-let instances = [];
-
-function globalToggleMetaKeyDown(e) {
-  for (let i of instances) {
-    i.toggleMetaKeyDown(e.metaKey);
-  }
-};
-
-window.addEventListener("keydown", globalToggleMetaKeyDown);
-window.addEventListener("keyup", globalToggleMetaKeyDown);
-window.addEventListener("onpagehide", () => globalToggleMetaKeyDown({ metaKey: false }));
-window.addEventListener("blur", () => globalToggleMetaKeyDown({ metaKey: false }));
-document.addEventListener("visibilitychange", () => (document.hidden ? globalToggleMetaKeyDown({ metaKey: false }) : null));
+import ClickableLinks from "./Extensions/ClickableLinks.js";
+import Extensions from "./Extensions.js";
+import Invisibles from "./Extensions/Invisibles.js";
+import KirbytextLanguage from "./Extensions/KirbytextLanguage.js";
+import LineStyles from "./Extensions/LineStyles.js";
+import PasteUrls from "./Extensions/PasteUrls.js";
+import TaskLists from "./Extensions/TaskLists.js";
+import Theme from "./Extensions/Theme.js";
 
 
 export default class Editor extends Emitter {
@@ -60,17 +42,30 @@ export default class Editor extends Emitter {
       value: "",
     };
 
-    instances.push(this);
-    this.init(value, options);
+    this.options = {
+      ...this.defaults,
+      ...options,
+    };
+
+    this.events          = this.createEvents();
+    this.extensions      = this.createExtensions();
+
+    this.buttons         = this.extensions.getButtons();
+    this.dialogs         = this.extensions.getDialogs();
+    this.view            = this.createView(value);
+
+    // Enable spell-checking to enable browser extensions, such as Language Tool
+    if (this.options.spellcheck) {
+      this.view.contentDOM.setAttribute("spellcheck", "true");
+    }
   }
 
-  createKeymap() {
+  keymap() {
     const customKeymap = this.extensions.getKeymap();
 
     return keymap.of([
       ...standardKeymap,
       ...historyKeymap,
-      ...markdownKeymap,
       ...customKeymap,
     ]);
   }
@@ -86,19 +81,25 @@ export default class Editor extends Emitter {
   }
 
   createExtensions() {
-    return new Extensions(this.options.extensions, this, this.options.input);
+    return new Extensions([
+      ...this.options.extensions,
+      new KirbytextLanguage(),
+      new LineStyles(),
+      new ClickableLinks(),
+      new Invisibles(),
+      new PasteUrls(),
+      new TaskLists(),
+      new Theme(),
+    ], this, this.options.input);
   }
 
   createState(value) {
     const extensions = [
       history(),
-      this.keymap,
-      highlightStyle(),
-      ...this.highlights,
-      markdown({ base: markdownLanguage }),
-      ...this.kirbytags,
+      this.keymap(),
+      ...this.extensions.getPluginsByType("highlight"),
+      ...this.extensions.getPluginsByType("language"),
       this.invisibles.of([]),
-      lineStyles(),
       /**
        * Firefox has a known Bug, that casuses the caret to disappear,
        * when text is dropped into an element with contenteditable="true".
@@ -114,8 +115,7 @@ export default class Editor extends Emitter {
        */
       isKnownDesktopBrowser && drawSelection(),
       this.options.placeholder && placeholder(this.options.placeholder),
-      theme,
-      scrollMargin(),
+      this.extensions.getPluginsByType("theme")
     ].filter((v) => !!v);
 
     return EditorState.create({
@@ -146,7 +146,6 @@ export default class Editor extends Emitter {
 
         const value = this.view.state.doc.toString();
         this.emit("update", value);
-        console.log("history depth", undoDepth(this.view.state));
         debouncedUpdateActiveTokens();
       },
     });
@@ -158,7 +157,6 @@ export default class Editor extends Emitter {
     }
 
     this.view.destroy();
-    instances = instances.filter((i) => !Object.is(i, this));
   }
 
   dispatch(transaction, emitUpdate = true) {
@@ -181,27 +179,6 @@ export default class Editor extends Emitter {
       this.state.selection.main.from,
       this.state.selection.main.to
     );
-  }
-
-  init(value, options = {}) {
-    this.options = {
-      ...this.defaults,
-      ...options,
-    };
-
-    this.events          = this.createEvents();
-    this.extensions      = this.createExtensions();
-    this.kirbytags       = this.extensions.getKirbytagsPlugins();
-    this.highlights      = this.extensions.getHighlightPlugins();
-    this.keymap          = this.createKeymap();
-    this.buttons         = this.extensions.getButtons();
-    this.dialogs         = this.extensions.getDialogs();
-    this.view            = this.createView(value);
-
-    // Enable spell-checking to enable browser extensions, such as Language Tool
-    if (this.options.spellcheck) {
-      this.view.contentDOM.setAttribute("spellcheck", "true");
-    }
   }
 
   insert(text, scrollIntoView = true) {
@@ -246,34 +223,21 @@ export default class Editor extends Emitter {
     return toggleInlineFormat(this.view, type);
   }
 
-  toggleMetaKeyDown(isTrue) {
-    if (!this.view || isTrue === this.metaKeyDown) {
-      return;
-    }
-    this.view.dom.classList[isTrue ? "add" : "remove"]("is-meta-key");
-    this.metaKeyDown = isTrue;
-  }
-
   toggleInvisibles(force = null) {
     if (force === this.options.invisibles) {
       return;
     }
 
     this.options.invisibles = typeof force === "boolean" ? force : !this.options.invisibles;
-    // this.updateState();
-    this.view.dispatch({
-      effects: this.invisibles.reconfigure(this.options.invisibles ? invisibles() : []),
-    })
+    const effects = this.invisibles.reconfigure(this.options.invisibles ? this.extensions.getPluginsByType("invisibles") : []);
+
+    this.dispatch({ effects });
     this.emit("invisibles", this.options.invisibles);
   }
 
   updateActiveTokens() {
     this.activeTokens = getActiveTokens(this.view);
   }
-
-  // updateState() {
-  //   this.view.setState(this.createState(this.value));
-  // }
 
   get value() {
     return this.view ? this.view.state.doc.toString() : "";

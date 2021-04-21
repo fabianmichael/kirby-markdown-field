@@ -2,6 +2,7 @@ import { Decoration } from "@codemirror/view";
 import { RangeSetBuilder } from "@codemirror/rangeset";
 import { ViewPlugin } from "@codemirror/view";
 import { BlockStyles, getBlockNameAt } from "../Utils/syntax.js";
+import Extension from "../Extension.js";
 
 
 const blockNames = Object.keys(BlockStyles);
@@ -56,21 +57,29 @@ function lineDeco(view) {
   return builder.finish();
 }
 
-export default function lineStyles() {
-  return ViewPlugin.fromClass(
-    class {
-      constructor(view) {
-        this.decorations = lineDeco(view);
-      }
+export default class LineStyles extends Extension {
+  plugins() {
+    return [
+      ViewPlugin.fromClass(
+        class {
+          constructor(view) {
+            this.decorations = lineDeco(view);
+          }
 
-      update(update) {
-        if (update.docChanged || update.viewportChanged) {
-          this.decorations = lineDeco(update.view);
+          update(update) {
+            if (update.docChanged || update.viewportChanged) {
+              this.decorations = lineDeco(update.view);
+            }
+          }
+        },
+        {
+          decorations: (v) => v.decorations,
         }
-      }
-    },
-    {
-      decorations: (v) => v.decorations,
-    }
-  );
+      ),
+    ];
+  }
+
+  get type() {
+    return "language";
+  }
 }

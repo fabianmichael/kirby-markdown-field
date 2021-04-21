@@ -5,17 +5,13 @@ import Extension from "../Extension.js";
 import { isURL } from "../Utils/strings.js";
 
 export default class TaskLists extends Extension {
-  get type() {
-    return "kirbytags";
-  }
-
   plugins() {
     const useKirbytext = this.input.kirbytext;
 
     const pasteUrlsPlugin = ViewPlugin.define(() => ({}), {
       eventHandlers: {
         paste(e, view) {
-          let pasted = e.clipboardData.getData('text');
+          let pasted = e.clipboardData.getData("text");
 
           if (!isURL(pasted)) {
             return;
@@ -57,5 +53,9 @@ export default class TaskLists extends Extension {
     return [
       pasteUrlsPlugin,
     ];
+  }
+
+  get type() {
+    return "language";
   }
 }

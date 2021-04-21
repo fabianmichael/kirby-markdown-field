@@ -24,7 +24,7 @@ export default class Highlight extends Extension {
 
     const decorator = new MatchDecorator({
       regexp: new RegExp(this.options.regex, flags),
-      decoration: (match) => deco,
+      decoration: () => deco,
     });
 
     return [

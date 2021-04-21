@@ -106,6 +106,13 @@ export const InlineFormats = {
     escape: true,
     mixable: true,
     expelEnclosingWhitespace: true,
+  },
+  Highlight: {
+    mark: "==",
+    markToken: "HighlightMark",
+    escape: true,
+    mixable: true,
+    expelEnclosingWhitespace: true,
   }
 };
 
@@ -121,6 +128,7 @@ export const InlineMarks = Object.keys(InlineFormats).reduce((result, name) => {
   return [...result, item.markToken];
 }, []);
 
+console.log("inline marks", InlineMarks);
 
 export function getBlockNameAt(view, pos, blockNames) {
   const tree = syntaxTree(view.state);

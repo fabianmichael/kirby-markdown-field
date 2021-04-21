@@ -1,4 +1,4 @@
-export default function(fn, delay) {
+export default function debounce(fn, delay) {
   let timer = null;
   return function () {
     const args = arguments;

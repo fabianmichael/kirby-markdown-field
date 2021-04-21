@@ -15,17 +15,14 @@ Enhanced, extensible Markdown field for Kirby CMS. Version 2!
 
 - Syntax highlighting for Markdown and Kirbytext
 - Context-based format toggling (almost WYSIWYG-like)
-- Smart indentation for multi-line headlines and list items
+- Smart indentation for wrapping headlines and list items
 - Custom toolbar buttons
 - Custom syntax highlights
 - Option to show whitespace characters
 - Clickable URLs
-- Task lists*
 - Support for touch-based devices (thanks to CodeMirror 6)
 
 💡 **TL;DR:** The Markdown field, you all have been waiting for!
-
-<small>*) not supported by Kirby’s default Markdown parser</small>
 
 ![screenshot](https://user-images.githubusercontent.com/14079751/50606008-7cb31200-0ec4-11e9-9685-a48a8ba398a4.jpg)
 
@@ -47,7 +44,8 @@ Enhanced, extensible Markdown field for Kirby CMS. Version 2!
     - [3.4. Keyboard Shortcuts](#34-keyboard-shortcuts)
       - [Block Formats](#block-formats)
       - [Inline Formats](#inline-formats)
-      - [Other Functionality](#other-functionality)
+      - [Other](#other)
+    - [URLs](#urls)
     - [3.5. Query](#35-query)
     - [3.6. Size](#36-size)
   - [4. Extension API](#4-extension-api)
@@ -184,22 +182,25 @@ buttons:
 
 #### Inline Formats
 
-| Format         | Mac/iOS        | Linux/Windows  |
-|:---------------|:---------------|:---------------|
-| Bold           | `⌘B`           | `Ctrl+b`       |
-| Italic         | `⌘I`           | `Ctrl+i`       |
-| Link           | `⌘K`           | `Ctrl+k`       |
-| Strikethrough  | `⌥⌃D`          | `Alt+Shift+d`  |
-| Code           | `⌥⌃X`          | `Alt+Shift+x`  |
-| Footnote       | `⌥⌃F`          | `Alt+Shift+f`  |
+| Format                  | Mac/iOS        | Linux/Windows  |
+|:------------------------|:---------------|:---------------|
+| Bold                    | `⌘B`           | `Ctrl+b`       |
+| Italic                  | `⌘I`           | `Ctrl+i`       |
+| Link                    | `⌘K`           | `Ctrl+k`       |
+| Strikethrough           | `⌥⌃D`          | `Alt+Shift+d`  |
+| Code                    | `⌥⌃X`          | `Alt+Shift+x`  |
+| Footnote                | `⌥⌃F`          | `Alt+Shift+f`  |
 
-#### Other Functionality
+#### Other
 
-| Format                | Mac/iOS        | Linux/Windows  |
-|:----------------------|:---------------|:---------------|
-| Show Whitespace       | `⌥⌃I`          | `Alt+Shift+i   |
-| Mark task as complete | `⌘.`           | `Ctrl+.`       |
-|
+| Format                        | Mac/iOS        | Linux/Windows  |
+|:------------------------------|:---------------|:---------------|
+| Show Whitespace               | `⌥⌃I`          | `Alt+Shift+i   |
+| Open clicked URL in new tab   | `⌘+Click`      | `Ctrl+Click`   |
+
+### URLs
+
+- When you select some text and paste a URL, it will automatically create a link tag and use the current selection as link text.
 
 ### 3.5. Query
 

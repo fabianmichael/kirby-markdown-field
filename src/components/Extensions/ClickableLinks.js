@@ -2,6 +2,37 @@ import { ViewPlugin, Decoration } from "@codemirror/view";
 import { syntaxTree } from "@codemirror/language";
 import { RangeSetBuilder } from "@codemirror/rangeset";
 import Extension from "../Extension.js";
+import browser from "../Utils/browser.js";
+
+
+/**
+ * Handle modifier key for clickable URLs globally, so it does not depend on the
+ * editor being focused.
+ */
+let isModifierKeydown = false;
+
+function toggleModifierKeydown(e) {
+  const isTrue = (browser.mac || browser.ios) ? e.metaKey : e.ctrlKey; // CMD on Apple devices, otherwise CTRL
+
+  if (isTrue === isModifierKeydown) {
+    return;
+  }
+
+  if (isTrue) {
+    document.documentElement.setAttribute("data-markdown-modkey", "true");
+  } else {
+    document.documentElement.removeAttribute("data-markdown-modkey");
+  }
+
+  isModifierKeydown = isTrue;
+}
+
+
+window.addEventListener("keydown", toggleModifierKeydown);
+window.addEventListener("keyup", toggleModifierKeydown);
+window.addEventListener("onpagehide", () => toggleModifierKeydown({ metaKey: false, ctrlKey: false }));
+window.addEventListener("blur", () => toggleModifierKeydown({ metaKey: false, ctrlKey: false }));
+document.addEventListener("visibilitychange", () => (document.hidden ? toggleModifierKeydown({ metaKey: false, ctrlKey: false }) : null));
 
 /**
  * Use a custom highlighter, for being able to click URL elements and
@@ -39,14 +70,7 @@ function highlightURLs(view) {
 }
 
 export default class ClickableLinks extends Extension {
-  get type() {
-    return "kirbytags";
-  }
-
   plugins() {
-
-    // let metaKeyDown = false;
-
     const clickableLinksPlugin = ViewPlugin.fromClass(class {
       constructor(view) {
         this.decorations = highlightURLs(view);
@@ -55,11 +79,10 @@ export default class ClickableLinks extends Extension {
       update(update) {
         if (update.docChanged || update.viewportChanged) {
           this.decorations = highlightURLs(update.view);
-          // console.log("deco", this.decorations);
         }
       }
     }, {
-      decorations: v => v.decorations,
+      decorations: (v) => v.decorations,
 
       eventHandlers: {
         click(e) {
@@ -68,33 +91,18 @@ export default class ClickableLinks extends Extension {
 
             if (link) {
               window.open(link.dataset.url, "_blank", "noopener,noreferrer");
-              // metaKeyDown = false;
             }
           }
         },
-        /**
-         * Handled globally, because othrwise these events only fire, when the
-         * editor has focus.
-         */
-        // keydown(e, view) {
-        //   if (e.metaKey) {
-        //     console.log("meta down");
-        //     view.dom.classList.add("is-meta-key");
-        //     // view.contentDOM.querySelectorAll("a.cm-url").forEach((el) => el.setAttribute("contenteditable", "false"));
-        //   }
-        // },
-        // keyup(e, view) {
-        //   if (!e.metaKey) {
-        //     console.log("meta up");
-        //     view.dom.classList.remove("is-meta-key");
-        //     // view.contentDOM.querySelectorAll("a.cm-url").forEach((el) => el.removeAttribute("contenteditable"));
-        //   }
-        // },
       }
     });
 
     return [
       clickableLinksPlugin,
     ];
+  }
+
+  get type() {
+    return "language";
   }
 }

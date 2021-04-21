@@ -55,10 +55,6 @@ import LinkDialog from "./Dialogs/LinkDialog.vue";
 
 import Editor from './Editor.js';
 import Highlight from "./Extensions/Highlight.js";
-import Kirbytags from "./Extensions/Kirbytags.js";
-import TaskLists from "./Extensions/TaskLists.js";
-import ClickableLinks from "./Extensions/ClickableLinks.js";
-import PasteUrls from "./Extensions/PasteUrls.js";
 
 import Blockquote from "./Buttons/Blockquote.js"
 import BulletList from "./Buttons/BulletList.js"
@@ -68,6 +64,7 @@ import Emphasis from "./Buttons/Emphasis.js"
 import File from "./Buttons/File.js"
 import Footnote from "./Buttons/Footnote.js"
 import Headlines from "./Buttons/Headlines.js"
+import HighlightButton from "./Buttons/Highlight.js"
 import HorizontalRule from "./Buttons/HorizontalRule.js"
 import InlineCode from "./Buttons/InlineCode.js"
 import Invisibles from "./Buttons/Invisibles.js"
@@ -151,7 +148,6 @@ export default {
       invisibles: this.invisibles,
       spellcheck: this.spellcheck,
       extensions: [
-        ...this.createKirbytags(),
         ...this.createHighlights(),
         ...this.createToolbarButtons(),
       ],
@@ -237,6 +233,7 @@ export default {
         new File(),
         new Footnote(),
         new Headlines(),
+        new HighlightButton(),
         new HorizontalRule(),
         new InlineCode(),
         new Invisibles(),
@@ -297,16 +294,6 @@ export default {
       if (this.highlights === false) return [];
       let highlights = this.customHighlights.filter(definition => this.highlights === true || Array.isArray(this.highlights) && this.highlights.includes(definition.name));
       return highlights.map(definition => new Highlight(definition));
-    },
-
-    createKirbytags() {
-      const extensions = [
-        new ClickableLinks(),
-        new PasteUrls(),
-        new TaskLists(),
-      ];
-
-      return this.kirbytext ? [...extensions, new Kirbytags()] : extensions;
     },
     /**
      * Extension dialogs

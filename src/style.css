@@ -13,6 +13,7 @@
   --cm-selection-background: hsla(195, 80%, 40%, .16);
   --cm-color-special-char: #df5f5f;
   --cm-color-cursor: #5588ca;
+  --cm-colors-highlight: rgba(255, 230, 0, .4); /* #fdc500; */
 }
 
 .k-markdown-input-wrap[data-font-family="sans-serif"] {
@@ -423,7 +424,7 @@
   text-underline-offset: .14em;
 }
 
-.k-markdown-input .cm-editor.is-meta-key .cm-url,
-.k-markdown-input .cm-editor.is-meta-key .cm-url * {
+:root[data-markdown-modkey="true"] .k-markdown-input .cm-url,
+:root[data-markdown-modkey="true"] .k-markdown-input .cm-url * {
   cursor: pointer;
 }
