@@ -33,7 +33,7 @@ export default class Extensions {
   }
 
   getDialogs() {
-    return this.getButtons()
+    return this.extensions
       .filter((extension) => extension.dialog)
       .reduce((accumulator, extension) => [
         ...accumulator,

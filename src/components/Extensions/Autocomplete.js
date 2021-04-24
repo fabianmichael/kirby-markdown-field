@@ -5,7 +5,7 @@
 //   currentCompletions, completionStatus, completeFromList } from "@codemirror/autocomplete"
 
 
-
+// export default function autocomplete() {
 //   function from(list) {
 //     return cx => { /* cx = completitionContext */
 //       let word = cx.matchBefore(/\(\w*$/)
@@ -32,4 +32,8 @@
 //     }
 //   }
 
-//   autocompletion({override: [from("link image")]})
+//   return autocompletion({override: [from("link image")]})
+// }
+
+
+

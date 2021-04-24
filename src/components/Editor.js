@@ -12,13 +12,13 @@ const isKnownDesktopBrowser = (browser.safari || browser.chrome || browser.gecko
 
 import ClickableLinks from "./Extensions/ClickableLinks.js";
 import Extensions from "./Extensions.js";
+// import FilePicker from "./Extensions/FilePicker.js";
 import Invisibles from "./Extensions/Invisibles.js";
 import KirbytextLanguage from "./Extensions/KirbytextLanguage.js";
 import LineStyles from "./Extensions/LineStyles.js";
 import PasteUrls from "./Extensions/PasteUrls.js";
 import TaskLists from "./Extensions/TaskLists.js";
 import Theme from "./Extensions/Theme.js";
-
 
 export default class Editor extends Emitter {
 
@@ -86,6 +86,7 @@ export default class Editor extends Emitter {
       new KirbytextLanguage(),
       new LineStyles(),
       new ClickableLinks(),
+      // new FilePicker(),
       new Invisibles(),
       new PasteUrls(),
       new TaskLists(),
@@ -99,6 +100,7 @@ export default class Editor extends Emitter {
       this.keymap(),
       ...this.extensions.getPluginsByType("highlight"),
       ...this.extensions.getPluginsByType("language"),
+      ...this.extensions.getPluginsByType("button"),
       this.invisibles.of([]),
       /**
        * Firefox has a known Bug, that casuses the caret to disappear,
@@ -115,7 +117,7 @@ export default class Editor extends Emitter {
        */
       isKnownDesktopBrowser && drawSelection(),
       this.options.placeholder && placeholder(this.options.placeholder),
-      this.extensions.getPluginsByType("theme")
+      this.extensions.getPluginsByType("theme"),
     ].filter((v) => !!v);
 
     return EditorState.create({
