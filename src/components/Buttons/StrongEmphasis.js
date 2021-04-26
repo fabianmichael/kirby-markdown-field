@@ -14,6 +14,24 @@ export default class StrongEmphasis extends Button {
     return () => !this.isDisabled() && this.editor.toggleInlineFormat(this.token);
   }
 
+  configure(options) {
+    if (typeof options === "string") {
+      options = { mark: options };
+    }
+
+    Button.prototype.configure.call(this, options);
+
+    if (!["**", "__"].includes(this.options.mark)) {
+      throw "Bold mark must be either `**` or `__`.";
+    }
+  }
+
+  get defaults() {
+    return {
+      mark: "**",
+    };
+  }
+
   keys() {
     return [
       {
@@ -26,6 +44,16 @@ export default class StrongEmphasis extends Button {
 
   get name() {
     return "bold";
+  }
+
+  get syntax() {
+    return {
+      mark: this.options.mark,
+      markToken: "EmphasisMark",
+      escape: true,
+      mixable: true,
+      expelEnclosingWhitespace: true,
+    };
   }
 
   get token() {

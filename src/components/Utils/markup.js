@@ -6,8 +6,6 @@ import {
   BlockTypes,
   BlockStyles,
   BlockMarks,
-  InlineFormats,
-  InlineMarks,
   getCurrentInlineTokens,
   getActiveTokens
 } from "./syntax.js";
@@ -189,12 +187,12 @@ export function toggleBlockFormat(view, type) {
 // mark characters. This could probably be merged with the toggleInlineFormat()
 // function, but I’m just glad that it works pretty great. So yeay, leave it here
 // for now …
-function toggleWordFormat(view, type) {
+function toggleWordFormat(view, inlineFormats, type) {
   const state       = view.state;
   const selection   = state.selection.main;
   const pos         = selection.head;
-  const mark        = InlineFormats[type].mark;
-  const tokens      = getCurrentInlineTokens(view);
+  const mark        = inlineFormats.get(type).mark;
+  const tokens      = getCurrentInlineTokens(view, inlineFormats);
   const tokenNames  = tokens.reduce((r, { node: n }) => [...r, n.name], []);
   const activeIndex = tokenNames.indexOf(type);
 
@@ -317,7 +315,7 @@ function toggleWordFormat(view, type) {
 // uses to convert richtext to Markdown and thus uses a simplified version
 // of ProseMirror’s document model.
 // See https://github.com/ProseMirror/prosemirror-markdown
-function renderLine(nodes) {
+function renderLine(nodes, inlineFormats) {
   let result = "";
   let active = [];
   let trailing = "";
@@ -329,7 +327,7 @@ function renderLine(nodes) {
 
     // If whitespace has to be expelled from the node, adjust
     // leading and trailing accordingly.
-    if (node && marks.some((mark) => InlineFormats[mark] && InlineFormats[mark].expelEnclosingWhitespace)) {
+    if (node && marks.some((mark) => inlineFormats.exists(mark) && inlineFormats.get(mark).expelEnclosingWhitespace)) {
       let [_, lead, inner, trail] = /^(\s*)(.*?)(\s*)$/.exec(node.text); // eslint-disable-line no-unused-vars
       leading += lead;
       trailing = trail;
@@ -341,7 +339,7 @@ function renderLine(nodes) {
     }
 
     let inner = marks.length && marks[marks.length - 1];
-    let noEsc = inner && InlineFormats[inner].escape === false;
+    let noEsc = inner && inlineFormats.get(inner).escape === false;
     let len = marks.length - (noEsc ? 1 : 0);
 
     // Try to reorder 'mixable' marks, such as em and strong, which
@@ -350,10 +348,10 @@ function renderLine(nodes) {
     // active.
     outer: for (let i = 0; i < len; i++) {
       let mark = marks[i];
-      if (!InlineFormats[mark].mixable) break;
+      if (!inlineFormats.get(mark).mixable) break;
       for (let j = 0; j < active.length; j++) {
         let other = active[j];
-        if (!InlineFormats[other].mixable) break;
+        if (!inlineFormats.get(other).mixable) break;
         if (mark === other) {
           if (i > j) {
             marks = marks.slice(0, j).concat(mark).concat(marks.slice(j, i)).concat(marks.slice(i + 1, len));
@@ -373,7 +371,7 @@ function renderLine(nodes) {
 
     // Close the marks that need to be closed
     while (keep < active.length) {
-      result += InlineFormats[active.pop()].mark;
+      result += inlineFormats.get(active.pop()).mark;
     }
 
     // Output any previously expelled trailing whitespace outside the marks
@@ -386,13 +384,13 @@ function renderLine(nodes) {
       while (active.length < len) {
         let add = marks[active.length];
         active.push(add);
-        result += InlineFormats[add].mark;
+        result += inlineFormats.get(add).mark;
       }
 
       // Render the node. Special case code marks, since their content
       // may not be escaped.
       if (noEsc) {
-        result += InlineFormats[inner].mark + node.text + InlineFormats[inner].mark;
+        result += inlineFormats.mark(inner) + node.text + inlineFormats.mark(inner);
       } else {
         result += node.text;
       }
@@ -405,7 +403,7 @@ function renderLine(nodes) {
   return result;
 }
 
-function toggleLineFormat(view, n, type, action) {
+function toggleLineFormat(view, inlineFormats, n, type, action) {
   const state     = view.state;
   const line      = state.doc.line(n);
   const selection = state.selection.main;
@@ -414,7 +412,7 @@ function toggleLineFormat(view, n, type, action) {
   // get all relevant inline formats of current line
   ensureSyntaxTree(state, line.to, 500).iterate({
     enter: ({ name }, start, end) => {
-      if (!Object.keys(InlineFormats).includes(name) && !InlineMarks.includes(name)) {
+      if (!inlineFormats.exists(name) && !inlineFormats.markTokenExists(name)) {
         return;
       }
       tokens.push({
@@ -439,7 +437,7 @@ function toggleLineFormat(view, n, type, action) {
     for (let token of tokens) {
       if (pos > token.from && pos <= token.to) {
         marks.push(token.name);
-        if (InlineMarks.includes(token.name)) {
+        if (inlineFormats.markTokenExists(token.name)) {
           isSyntax = true;
         }
       }
@@ -545,10 +543,10 @@ function toggleLineFormat(view, n, type, action) {
     }
   }
 
-  return renderLine(nodes);
+  return renderLine(nodes, inlineFormats);
 }
 
-function toggleSelectionFormat(view, type) {
+function toggleSelectionFormat(view, inlineFormats, type) {
   const state            = view.state;
   const selection        = state.selection.main;
   const firstLine        = state.doc.lineAt(selection.from);
@@ -562,7 +560,7 @@ function toggleSelectionFormat(view, type) {
     // Inline formats cannot span multiple lines in Markdown, so apply
     // toggle to every line.
     lengthBefore += state.doc.line(n).text.length;
-    lines.push(toggleLineFormat(view, n, type, action));
+    lines.push(toggleLineFormat(view, inlineFormats, n, type, action));
   }
 
   let insert = lines.join(view.state.lineBreak);
@@ -590,15 +588,15 @@ function toggleSelectionFormat(view, type) {
 }
 
 
-export function toggleInlineFormat(view, type) {
+export function toggleInlineFormat(view, inlineFormats, type) {
   const { from, to } = view.state.selection.main;
 
   if (from === to) {
     // Selection is empty, just deal with a single word,
     // based on cursor context
-    return toggleWordFormat(view, type);
+    return toggleWordFormat(view, inlineFormats, type);
   } else {
     // Deal with selection and get a giant headache
-    return toggleSelectionFormat(view, type);
+    return toggleSelectionFormat(view, inlineFormats, type);
   }
 }

@@ -1,4 +1,4 @@
-// import utils from "./Utils";
+import InlineFormats from "./InlineFormats.js"
 
 export default class Extensions {
 
@@ -14,8 +14,8 @@ export default class Extensions {
   getPluginsByType(type = "extension") {
     return this.extensions
       .filter((extension) => extension.type === type)
-      .reduce((accumulator, extension) => [
-        ...accumulator,
+      .reduce((result, extension) => [
+        ...result,
         ...extension.plugins()
       ], []);
   }
@@ -26,8 +26,8 @@ export default class Extensions {
   getButtons() {
     return this.extensions
       .filter((extension) => extension.type === "button")
-      .reduce((accumulator, extension) => [
-        ...accumulator,
+      .reduce((result, extension) => [
+        ...result,
         extension,
       ], [])
   }
@@ -35,10 +35,21 @@ export default class Extensions {
   getDialogs() {
     return this.extensions
       .filter((extension) => extension.dialog)
-      .reduce((accumulator, extension) => [
-        ...accumulator,
+      .reduce((result, extension) => [
+        ...result,
         extension,
       ], []);
+  }
+
+  getInlineFormats() {
+    return new InlineFormats(
+      this.extensions
+        .filter((extension) => extension.tokenType === "inline")
+        .reduce((result, extension) => {
+          result[extension.token] = extension.syntax || true;
+          return result;
+        }, {})
+    );
   }
 
   /**
@@ -47,8 +58,8 @@ export default class Extensions {
   getKeymap() {
     return this.extensions
       .filter((extension) => extension.keys)
-      .reduce((accumulator, extension) => [
-        ...accumulator,
+      .reduce((result, extension) => [
+        ...result,
         ...extension.keys(),
       ], [])
   }

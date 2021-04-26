@@ -19,7 +19,7 @@
     <div
       ref="input"
       class="k-markdown-input"
-      @dragover="onDragOver"
+      @dragenter="onDragEnter"
       @dragleave="onDragLeave"
       @drop="onDrop"
       @keydown.meta.enter="onSubmit"
@@ -365,7 +365,7 @@ export default {
       this.isDragOver = false;
     },
 
-    onDragOver($event) {
+    onDragEnter($event) {
       // drag & drop for files
       if (this.uploads && this.$helper.isUploadEvent($event)) {
         $event.dataTransfer.dropEffect = "copy";

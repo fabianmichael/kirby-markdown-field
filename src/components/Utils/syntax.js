@@ -24,50 +24,70 @@ export const BlockStyles = {
   },
   HorizontalRule: {
     class: "cm-hr",
+    // mark: "^/(\s{0, 3})([-_*]{3,})(\s*)",
+    render: "***",
   },
   Blockquote: {
     class: "cm-blockquote",
     mark: /^(\s*)(>+)(\s*)/,
+    markToken: "QuoteMark",
+    render: "> ",
     multiLine: true,
   },
   ATXHeading1: {
     class: "cm-heading",
     mark: /^(\s{0,3})(#{1})(\s+)/,
+    markToken: "HeaderMark",
+    render: "# ",
     multiLine: false,
   },
   ATXHeading2: {
     class: "cm-heading",
     mark: /^(\s{0,3})(#{2})(\s+)/,
+    markToken: "HeaderMark",
+    render: "## ",
     multiLine: false,
   },
   ATXHeading3: {
     class: "cm-heading",
     mark: /^(\s{0,3})(#{3})(\s+)/,
+    markToken: "HeaderMark",
+    render: "### ",
     multiLine: false,
   },
   ATXHeading4: {
     class: "cm-heading",
     mark: /^(\s{0,3})(#{4})(\s+)/,
+    markToken: "HeaderMark",
+    render: "#### ",
     multiLine: false,
   },
   ATXHeading5: {
     class: "cm-heading",
     mark: /^(\s{0,3})(#{5})(\s+)/,
+    markToken: "HeaderMark",
+    render: "##### ",
     multiLine: false,
   },
   ATXHeading6: {
     class: "cm-heading",
     mark: /^(\s{0,3})(#{6})(\s+)/,
+    markToken: "HeaderMark",
+    render: "###### ",
     multiLine: false,
   },
   OrderedList: {
     class: "cm-ol",
     mark: /^(\s*)(\d+\.)(\s+)/,
+    markToken: "ListMark",
+    render: (n) => `${n}. `,
     multiLine: true,
   },
   BulletList: {
     class: "cm-ol",
-    mark: /^(\s*)(-|\+|\*)(\s+)/,
+    mark: /^(\s*)([-+*])(\s+)/,
+    markToken: "ListMark",
+    render: "- ",
     multiLine: true,
   },
 };
@@ -78,57 +98,49 @@ export const BlockMarks = [
   "ListMark"
 ];
 
-export const InlineFormats = {
-  Emphasis: {
-    mark: "_",
-    markToken: "EmphasisMark",
-    escape: true,
-    mixable: true,
-    expelEnclosingWhitespace: true,
-  },
-  StrongEmphasis: {
-    mark: "**",
-    markToken: "EmphasisMark",
-    escape: true,
-    mixable: true,
-    expelEnclosingWhitespace: true,
-  },
-  InlineCode: {
-    mark: "`",
-    markToken: "CodeMark",
-    escape: false,
-    mixable: false,
-    expelEnclosingWhitespace: true,
-  },
-  Strikethrough: {
-    mark: "~~",
-    markToken: "StrikethroughMark",
-    escape: true,
-    mixable: true,
-    expelEnclosingWhitespace: true,
-  },
-  Highlight: {
-    mark: "==",
-    markToken: "HighlightMark",
-    escape: true,
-    mixable: true,
-    expelEnclosingWhitespace: true,
-  }
-};
+// export const InlineFormats = {
+//   Emphasis: {
+//     mark: "_",
+//     markToken: "EmphasisMark",
+//     escape: true,
+//     mixable: true,
+//     expelEnclosingWhitespace: true,
+//   },
+//   StrongEmphasis: {
+//     mark: "**",
+//     markToken: "EmphasisMark",
+//     escape: true,
+//     mixable: true,
+//     expelEnclosingWhitespace: true,
+//   },
+//   InlineCode: {
+//     mark: "`",
+//     markToken: "CodeMark",
+//     escape: false,
+//     mixable: false,
+//     expelEnclosingWhitespace: true,
+//   },
+//   Strikethrough: {
+//     mark: "~~",
+//     markToken: "StrikethroughMark",
+//     escape: true,
+//     mixable: true,
+//     expelEnclosingWhitespace: true,
+//   },
+//   Highlight: {
+//     mark: "==",
+//     markToken: "HighlightMark",
+//     escape: true,
+//     mixable: true,
+//     expelEnclosingWhitespace: true,
+//   }
+// };
 
-export const InlineTokens = [
-  ...Object.keys(InlineFormats),
-  "URL",
-  // "Link",
-];
-
-export const InlineMarks = Object.keys(InlineFormats).reduce((result, name) => {
-  const item = InlineFormats[name];
-  if (result.includes(item.markToken)) return result;
-  return [...result, item.markToken];
-}, []);
-
-console.log("inline marks", InlineMarks);
+// export const InlineTokens = [
+//   ...Object.keys(InlineFormats),
+//   "URL",
+//   // "Link",
+// ];
 
 export function getBlockNameAt(view, pos, blockNames) {
   const tree = syntaxTree(view.state);
@@ -159,7 +171,7 @@ export function nodeIsKirbytag(node) {
   return nodeIsKirbytag(node.parentNode);
 }
 
-export function getActiveTokens(view, ensureTree = false) {
+export function getActiveTokens(view, inlineFormats, ensureTree = false) {
   const { state }          = view;
   const { doc }            = state;
   const { head, from, to } = state.selection.main;
@@ -219,8 +231,8 @@ export function getActiveTokens(view, ensureTree = false) {
           // comes first
           lookTo   = Math.min(lookTo, to);
 
-          if (!InlineTokens.includes(name)) {
-            // Skip tokens, which are not markup
+          if (!inlineTokens.includes(name)) {
+          // Skip tokens, which are not markup
             return;
           }
 
@@ -229,9 +241,9 @@ export function getActiveTokens(view, ensureTree = false) {
               candidates.push(name);
             }
 
-            if (InlineFormats[name] && InlineFormats[name].mark) {
-              lookFrom += InlineFormats[name].mark.length;
-              lookTo -= InlineFormats[name].mark.length;
+            if (inlineFormats.hasMark(name)) {
+              lookFrom += inlineFormats.mark(name).length;
+              lookTo -= inlineFormats.mark(name).length;
             }
           }
         },
@@ -285,7 +297,7 @@ export function getActiveTokens(view, ensureTree = false) {
           inlineMatch = true
         }
 
-        if (inlineMatch && InlineTokens.includes(name)) {
+        if (inlineMatch && inlineFormats.exists(name)) {
           tokens.push(name);
         }
       },
@@ -310,7 +322,7 @@ export function getActiveTokens(view, ensureTree = false) {
   return tokens;
 }
 
-export function getCurrentInlineTokens(view) {
+export function getCurrentInlineTokens(view, inlineFormats) {
   const { head, from, to } = view.state.selection.main;
   const state = view.state;
   const tree = syntaxTree(state);
@@ -337,7 +349,7 @@ export function getCurrentInlineTokens(view) {
         }
       }
 
-      if (inlineMatch && InlineTokens.includes(node.name)) {
+      if (inlineMatch && inlineFormats.exists(node.name)) {
         tokens.push({
           node,
           from: start,

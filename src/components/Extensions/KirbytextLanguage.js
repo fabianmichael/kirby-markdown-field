@@ -32,7 +32,6 @@ const Highlight = {
   ]
 }
 
-
 /* Kirbytags */
 
 function kirbytags(knownTags) {
@@ -100,9 +99,6 @@ function kirbytags(knownTags) {
     }
   );
 }
-
-/* Line styles */
-
 
 /* Export plugins */
 

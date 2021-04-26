@@ -14,6 +14,24 @@ export default class HorizontalRule extends Button {
     return () => this.editor.toggleBlockFormat(this.token);
   }
 
+  configure(options) {
+    if (typeof options === "string") {
+      options = { mark: options };
+    }
+
+    Button.prototype.configure.call(this, options);
+
+    if (!["***", "---", "___"].includes(this.options.mark)) {
+      throw "Horizontal rule mark must be either `***`, `---` or `___`.";
+    }
+  }
+
+  get defaults() {
+    return {
+      mark: "***",
+    };
+  }
+
   get name() {
     return "hr";
   }

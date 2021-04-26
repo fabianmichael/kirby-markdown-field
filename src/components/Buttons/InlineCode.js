@@ -29,6 +29,16 @@ export default class InlineCode extends Button {
     return "code";
   }
 
+  get syntax() {
+    return {
+      mark: "`",
+      markToken: "CodeMark",
+      escape: false,
+      mixable: false,
+      expelEnclosingWhitespace: true,
+    };
+  }
+
   get token() {
     return "InlineCode";
   }

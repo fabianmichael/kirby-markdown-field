@@ -10,7 +10,8 @@ import debounce from "./Utils/debounce.js";
 import browser from "./Utils/browser.js";
 const isKnownDesktopBrowser = (browser.safari || browser.chrome || browser.gecko) && (!browser.android && !browser.ios);
 
-import ClickableLinks from "./Extensions/ClickableLinks.js";
+import URLs from "./Extensions/URLs.js";
+import DropCursor from "./Extensions/DropCursor.js";
 import Extensions from "./Extensions.js";
 // import FilePicker from "./Extensions/FilePicker.js";
 import Invisibles from "./Extensions/Invisibles.js";
@@ -49,10 +50,13 @@ export default class Editor extends Emitter {
 
     this.events          = this.createEvents();
     this.extensions      = this.createExtensions();
+    this.inlineFormats   = this.extensions.getInlineFormats();
+    console.log("inline formats", this.inlineFormats);
 
     this.buttons         = this.extensions.getButtons();
     this.dialogs         = this.extensions.getDialogs();
     this.view            = this.createView(value);
+
 
     // Enable spell-checking to enable browser extensions, such as Language Tool
     if (this.options.spellcheck) {
@@ -85,11 +89,12 @@ export default class Editor extends Emitter {
       ...this.options.extensions,
       new KirbytextLanguage(),
       new LineStyles(),
-      new ClickableLinks(),
+      new URLs(),
       // new FilePicker(),
       new Invisibles(),
       new PasteUrls(),
       new TaskLists(),
+      new DropCursor(),
       new Theme(),
     ], this, this.options.input);
   }
@@ -130,7 +135,7 @@ export default class Editor extends Emitter {
 
   createView(value) {
     const debouncedUpdateActiveTokens = debounce(() => {
-      this.activeTokens = getActiveTokens(this.view);
+      this.activeTokens = getActiveTokens(this.view, this.inlineFormats);
       this.emit("active", this.activeTokens);
     }, 50);
 
@@ -222,7 +227,7 @@ export default class Editor extends Emitter {
   }
 
   toggleInlineFormat(type) {
-    return toggleInlineFormat(this.view, type);
+    return toggleInlineFormat(this.view, this.inlineFormats, type);
   }
 
   toggleInvisibles(force = null) {
@@ -238,7 +243,7 @@ export default class Editor extends Emitter {
   }
 
   updateActiveTokens() {
-    this.activeTokens = getActiveTokens(this.view);
+    this.activeTokens = getActiveTokens(this.view, this.inlineFormats);
   }
 
   get value() {

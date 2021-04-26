@@ -29,6 +29,16 @@ export default class Strikethrough extends Button {
     return "strikethrough";
   }
 
+  get syntax() {
+    return {
+      mark: "~~",
+      markToken: "StrikethroughMark",
+      escape: true,
+      mixable: true,
+      expelEnclosingWhitespace: true,
+    }
+  }
+
   get token() {
     return "Strikethrough";
   }

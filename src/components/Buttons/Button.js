@@ -44,7 +44,7 @@ export default class Button extends Extension {
   }
 
   /**
-   * Creates a custom button
+   * Creates a custom button from an object
    */
   static factory(definition) {
     const button = new Button();

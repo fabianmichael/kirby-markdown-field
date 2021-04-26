@@ -14,6 +14,24 @@ export default class BulletList extends Button {
     return () => this.editor.toggleBlockFormat(this.token);
   }
 
+  configure(options) {
+    if (typeof options === "string") {
+      options = { mark: options };
+    }
+
+    Button.prototype.configure.call(this, options);
+
+    if (!["-", "*", "+"].includes(this.options.mark)) {
+      throw "Bullet list mark must be either `-`, `*` or `+`.";
+    }
+  }
+
+  get defaults() {
+    return {
+      mark: "-",
+    };
+  }
+
   keys() {
     return [
       {

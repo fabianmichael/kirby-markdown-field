@@ -114,6 +114,14 @@ export default class TaskLists extends Extension {
     ];
   }
 
+  get token() {
+    return "TaskMarker";
+  }
+
+  get tokenType() {
+    return "inline";
+  }
+
   get type() {
     return "language";
   }

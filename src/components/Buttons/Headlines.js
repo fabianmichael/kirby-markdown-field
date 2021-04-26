@@ -6,10 +6,12 @@ export default class Headlines extends Button {
     super(options)
   }
 
-  get defaults() {
+  get button() {
     return {
-      levels: ["h1", "h2", "h3"],
-    };
+      icon: "title",
+      label: this.input.$t("toolbar.button.headings"),
+      dropdown: this.dropdownItems().filter(item => this.options.levels.includes(item.name)),
+    }
   }
 
   configure(options) {
@@ -20,12 +22,10 @@ export default class Headlines extends Button {
     Button.prototype.configure.call(this, options);
   }
 
-  get button() {
+  get defaults() {
     return {
-      icon: "title",
-      label: this.input.$t("toolbar.button.headings"),
-      dropdown: this.dropdownItems().filter(item => this.options.levels.includes(item.name)),
-    }
+      levels: ["h1", "h2", "h3"],
+    };
   }
 
   dropdownItems() {
@@ -87,6 +87,10 @@ export default class Headlines extends Button {
     ];
   }
 
+  get isDisabled() {
+    return () => false;
+  }
+
   keys() {
     return this.options.levels.reduce((accumulator, level) => {
         level = level.replace(/^h/, "");
@@ -104,9 +108,5 @@ export default class Headlines extends Button {
 
   get name() {
     return "headlines";
-  }
-
-  get isDisabled() {
-    return () => false;
   }
 }

@@ -69,7 +69,7 @@ function highlightURLs(view) {
   return b.finish();
 }
 
-export default class ClickableLinks extends Extension {
+export default class URLs extends Extension {
   plugins() {
     const clickableLinksPlugin = ViewPlugin.fromClass(class {
       constructor(view) {
@@ -100,6 +100,14 @@ export default class ClickableLinks extends Extension {
     return [
       clickableLinksPlugin,
     ];
+  }
+
+  get token() {
+    return "URL";
+  }
+
+  get tokenType() {
+    return "inline";
   }
 
   get type() {

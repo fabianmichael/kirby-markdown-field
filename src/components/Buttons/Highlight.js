@@ -29,6 +29,16 @@ export default class Highlight extends Button {
     return "highlight";
   }
 
+  get syntax() {
+    return {
+      mark: "==",
+      markToken: "HighlightMark",
+      escape: true,
+      mixable: true,
+      expelEnclosingWhitespace: true,
+    };
+  }
+
   get token() {
     return "Highlight";
   }
