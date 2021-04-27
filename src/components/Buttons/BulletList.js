@@ -48,14 +48,11 @@ export default class BulletList extends Button {
   }
 
   get syntax() {
+    // Override default with configured syntax
     return {
       token: this.token,
       type: this.tokenType,
-      class: "cm-ol",
-      mark: /^(\s*)([-+*])(\s+)/,
-      markToken: "ListMark",
-      render: () => this.options.mark + " ",
-      multiLine: true,
+      render: this.options.mark + " ",
     };
   }
 

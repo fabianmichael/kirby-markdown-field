@@ -2,7 +2,9 @@ export default class InlineFormats {
   constructor(defs) {
 
     this.defs = defs.reduce((result, def) => {
-      result[def.token] = def;
+      result[def.token] = result[def.token]
+        ? Object.assign(result[def.token], def)
+        : def;
       return result;
     }, {});
 

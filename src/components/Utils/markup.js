@@ -47,7 +47,7 @@ function getNextGroupRange(view) {
 // Toggles the block format of all currently selected lines
 export function toggleBlockFormat(view, blockFormats, type) {
   const state = view.state;
-  const { from, to, anchor, head } = state.selection.main;
+  let { from, to, anchor, head } = state.selection.main;
   const firstLine = state.doc.lineAt(from);
   const lastLine = state.doc.lineAt(to);
   const tree = ensureSyntaxTree(state, lastLine.to, 500);
@@ -90,7 +90,8 @@ export function toggleBlockFormat(view, blockFormats, type) {
   }
 
   // Checks if all selected lines already have target block type. Skip empty lines
-  const isTargetBlockType = lines.reduce((result, { block, line }) => (result && (block === type || !line.length)), true);
+  // const isTargetBlockType = lines.reduce((result, { block, line }) => (result && (block === type || !line.length)), true);
+  const isTargetBlockType = lines.filter(({ block }) => block !== type).length === 0;
   let selFrom   = from;
   let selLength = to - from;
   let output;
@@ -139,7 +140,7 @@ export function toggleBlockFormat(view, blockFormats, type) {
       const newMark = blockFormats.render(type, n++);
 
       if (index === 0) {
-        selFrom += (from > line.from + oldMarkLength)
+        selFrom += (from > line.from + oldMarkLength || line.length === 0)
           ? newMark.length - oldMarkLength
           : 0;
 
@@ -154,17 +155,31 @@ export function toggleBlockFormat(view, blockFormats, type) {
     });
   }
 
+
   view.dispatch({
     changes: {
       from: firstLine.from,
       to: lastLine.to,
       insert: output.join(state.lineBreak),
     },
-    selection: {
-      anchor: anchor > head ? (selFrom + selLength) : selFrom,
-      head: head >= anchor ? (selFrom + selLength) : selFrom,
-    }
   });
+
+  // Sanitize selection to stay within document bounds. This is necessary,
+  // since the re-calculation of the selection is not absolutely correct for
+  // any edge-case and setting an invalid selection on the editor would cause it
+  // to crash.
+
+  if (head > anchor) {
+    head = selFrom + selLength;
+    head = Math.min(view.state.doc.length, head);
+    anchor = Math.max(selFrom, 0);
+  } else {
+    anchor = selFrom + selLength;
+    anchor = Math.min(view.state.doc.length, anchor);
+    head = Math.max(selFrom, 0);
+  }
+
+  view.dispatch({ selection: { anchor, head } });
 }
 
 // Toggles the formatting of a single word, where the cursor has either to be

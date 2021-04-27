@@ -223,8 +223,6 @@ query:
 
 ### 3.6. Size
 
-⛔️ Not implemented in version 2 yet
-
 You can define the height of the field when empty. Default is `two-lines`, which mimics the textarea's default empty height.
 
 If you want the field to mimic a text field but with some markdown highlighting on top of it, set the size to `one-line` and `buttons: false`.
@@ -249,9 +247,8 @@ size: custom-size
 Then in your `panel.css`:
 
 ```css
-.k-markdown-input-wrapper[data-size="custom-size"] .cm-s-default,
-.k-markdown-input-wrapper[data-size="custom-size"] .CodeMirror-scroll {
-    min-height: 15rem;
+.k-markdown-input-wrap[data-size="custom-size"] {
+  --cm-min-lines: 20;
 }
 ```
 

@@ -61,8 +61,7 @@ export default class HorizontalRule extends Button {
     return {
       token: this.token,
       type: this.tokenType,
-      class: "cm-hr",
-      render: () => this.options.mark,
+      render: this.options.mark,
     };
   }
 

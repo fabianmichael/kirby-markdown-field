@@ -167,14 +167,157 @@ export default class MarkdownLanguage extends Extension {
     ];
   }
 
+  // Base formats, can be extended or overridden by their respective buttons
   get syntax() {
-    // All other block and inline formats are defined in their respective
-    // buttons.
-    return {
-      token: "FencedCode",
-      type: "block",
-      class: "cm-codeblock",
-    }
+    return [
+
+      // Block formats
+
+      {
+        token: "FencedCode",
+        type: "block",
+        class: "cm-codeblock",
+      },
+      {
+        token: "Blockquote",
+        type: "block",
+        class: "cm-blockquote",
+        mark: /^(\s*)(>+)(\s*)/,
+        markToken: "QuoteMark",
+        render: "> ",
+        multiLine: true,
+      },
+      {
+        token: "BulletList",
+        type: "block",
+        class: "cm-ol",
+        mark: /^(\s*)([-+*])(\s+)/,
+        markToken: "ListMark",
+        render: "- ",
+        multiLine: true,
+      },
+      {
+        token: "OrderedList",
+        type: "block",
+        class: "cm-ol",
+        mark: /^(\s*)(\d+\.)(\s+)/,
+        markToken: "ListMark",
+        render: (n) => `${n}. `,
+        multiLine: true,
+      },
+      {
+        token: "ATXHeading1",
+        type: "block",
+        class: "cm-heading",
+        mark: /^(\s{0,3})(#{1})(\s+)/,
+        markToken: "HeaderMark",
+        render: "# ",
+        multiLine: false,
+      },
+      {
+        token: "ATXHeading2",
+        type: "block",
+        class: "cm-heading",
+        mark: /^(\s{0,3})(#{2})(\s+)/,
+        markToken: "HeaderMark",
+        render: "## ",
+        multiLine: false,
+      },
+      {
+        token: "ATXHeading3",
+        type: "block",
+        class: "cm-heading",
+        mark: /^(\s{0,3})(#{3})(\s+)/,
+        markToken: "HeaderMark",
+        render: "### ",
+        multiLine: false,
+      },
+      {
+        token: "ATXHeading4",
+        type: "block",
+        class: "cm-heading",
+        mark: /^(\s{0,3})(#{4})(\s+)/,
+        markToken: "HeaderMark",
+        render: "#### ",
+        multiLine: false,
+      },
+      {
+        token: "ATXHeading5",
+        type: "block",
+        class: "cm-heading",
+        mark: /^(\s{0,3})(#{5})(\s+)/,
+        markToken: "HeaderMark",
+        render: "##### ",
+        multiLine: false,
+      },
+      {
+        token: "ATXHeading6",
+        type: "block",
+        class: "cm-heading",
+        mark: /^(\s{0,3})(#{6})(\s+)/,
+        markToken: "HeaderMark",
+        render: "###### ",
+        multiLine: false,
+      },
+      {
+        token: "HorizontalRule",
+        type: "block",
+        class: "cm-hr",
+        render: "***",
+      },
+
+      // Inline formats
+
+      {
+        token: "Emphasis",
+        type: "inline",
+        mark: "*",
+        markToken: "EmphasisMark",
+        escape: true,
+        mixable: true,
+        expelEnclosingWhitespace: true,
+      },
+      {
+        token: "Highlight",
+        type: "inline",
+        mark: "==",
+        markToken: "HighlightMark",
+        escape: true,
+        mixable: true,
+        expelEnclosingWhitespace: true,
+      },
+      {
+        token: "InlineCode",
+        type: "inline",
+        mark: "`",
+        markToken: "CodeMark",
+        escape: false,
+        mixable: false,
+        expelEnclosingWhitespace: true,
+      },
+      {
+        token: "Strikethrough",
+        type: "inline",
+        mark: "~~",
+        markToken: "StrikethroughMark",
+        escape: true,
+        mixable: true,
+        expelEnclosingWhitespace: true,
+      },
+      {
+        token: "StrongEmphasis",
+        type: "inline",
+        mark: "**",
+        markToken: "EmphasisMark",
+        escape: true,
+        mixable: true,
+        expelEnclosingWhitespace: true,
+      },
+      {
+        token: "URL",
+        type: "inline",
+      },
+    ];
   }
 
   get type() {

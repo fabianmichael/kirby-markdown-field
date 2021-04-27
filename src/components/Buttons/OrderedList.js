@@ -29,18 +29,6 @@ export default class OrderedList extends Button {
     return "ol";
   }
 
-  get syntax() {
-    return {
-      token: this.token,
-      type: this.tokenType,
-      class: "cm-ol",
-      mark: /^(\s*)(\d+\.)(\s+)/,
-      markToken: "ListMark",
-      render: (n) => `${n}. `,
-      multiLine: true,
-    };
-  }
-
   get token() {
     return "OrderedList";
   }

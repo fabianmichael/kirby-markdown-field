@@ -109,22 +109,4 @@ export default class Headlines extends Button {
   get name() {
     return "headlines";
   }
-
-  get syntax() {
-    const defs = [];
-
-    for (let level = 1; level <= 6; level++) {
-      defs.push({
-        token: `ATXHeading${level}`,
-        type: "block",
-        class: "cm-heading",
-        mark: new RegExp(`^(\\s{0,3})(#{${level}})(\\s+)`),
-        markToken: "HeaderMark",
-        render: "#".repeat(level) + " ",
-        multiLine: false,
-      });
-    }
-
-    return defs;
-  }
 }

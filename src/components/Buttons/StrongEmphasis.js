@@ -51,10 +51,6 @@ export default class StrongEmphasis extends Button {
       token: this.token,
       type: this.tokenType,
       mark: this.options.mark,
-      markToken: "EmphasisMark",
-      escape: true,
-      mixable: true,
-      expelEnclosingWhitespace: true,
     };
   }
 

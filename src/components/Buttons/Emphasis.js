@@ -47,14 +47,11 @@ export default class Emphasis extends Button {
   }
 
   get syntax() {
+    // Override default with configured syntax
     return {
       token: this.token,
       type: this.tokenType,
       mark: this.options.mark,
-      markToken: "EmphasisMark",
-      escape: true,
-      mixable: true,
-      expelEnclosingWhitespace: true,
     };
   }
 

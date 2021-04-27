@@ -84,7 +84,6 @@ export default class Editor extends Emitter {
 
   createExtensions() {
     return new Extensions([
-      ...this.options.extensions,
       new KirbytextLanguage(),
       new LineStyles(),
       new URLs(),
@@ -94,6 +93,7 @@ export default class Editor extends Emitter {
       new TaskLists(),
       new DropCursor(),
       new Theme(),
+      ...this.options.extensions,
     ], this, this.options.input);
   }
 
