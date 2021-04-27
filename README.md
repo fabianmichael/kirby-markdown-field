@@ -5,9 +5,7 @@
 **Known issues of the alpha:**
 
 - CodeMirror 6 is still in beta. Its API might still be subject to minor changes, so this plugin will not reach a stable version until CodeMirror 6 does.
-- Size options are not implemented yet
-- Active state of toolbar buttons is broken at the moment
-- Format toggling does not work yet
+- Format toggling sometimes changes the selection in unexpected ways
 
 Enhanced, extensible Markdown field for Kirby CMS. Version 2!
 
@@ -20,6 +18,7 @@ Enhanced, extensible Markdown field for Kirby CMS. Version 2!
 - Custom syntax highlights
 - Option to show whitespace characters
 - Clickable URLs
+- Configurable syntax (e.g. choose `_italic` or `*italic`)
 - Support for touch-based devices (thanks to CodeMirror 6)
 
 💡 **TL;DR:** The Markdown field, you all have been waiting for!
@@ -126,8 +125,8 @@ buttons:
   - footnote
 ```
 
-If you don't need it, you can also hide the toolbar. This will also disable
-the shortcuts for all formats.
+If you don't need it, you can hide the toolbar. This will also disable
+the keyboard shortcuts for all formats. 
 
 ```yaml
 buttons: false
@@ -135,7 +134,7 @@ buttons: false
 
 The full list of available buttons. As you can see, some buttons can also have
 configuration options. Take the `bold` button for example. Markdown allows different
-syntax for bold text, i.e. `__bold__` and `**bold**`. The editor’s syntax highlighter
+syntaxes for bold text, i.e. `__bold__` and `**bold**`. The editor’s syntax highlighter
 will always recognize both, but you can adjust, what the editor will use, when
 you click the toolbar button or hitting the respective keyboard shortcut.
 
@@ -172,7 +171,7 @@ buttons:
 
 ### 3.4. Keyboard Shortcuts
 
-ℹ️ Keyboard shortcuts are only available for those buttons/heading levels, which are enabled in the toolbar.
+ℹ️ Keyboard shortcuts are only available for those buttons/heading levels enabled in the toolbar.
 
 #### Block Formats
 
@@ -291,11 +290,18 @@ npm run build
 - The global field options have been removed. Use field presets instead. (see <https://getkirby.com/docs/guide/blueprints/extending-blueprints#reusing-and-extending-single-fields>).
 - The `direction` option has been removed. CodeMirror 6 automatically determines the current text direction of the panel.
 
-## 7. License
+## 8. What’s not supported (and never will be)
+
+They way how Markdown is used nowadays has changed since its inception, especially since GFM ("GitHub-Flavored Markdown") became popular and added some elements to the language.
+
+- **Setext-style headings:** If you don’t know what these are, just forget about theme. There is basic highlighting, but they are neither recognized as headings nor respected when changing formats. Use ATX-style headings instead (e.g. `## Heading Level 2`).
+- **Indended code blocks:** Use fenced code blocks instead.
+
+## 9. License
 
 MIT
 
-## 8. Credits
+## 10. Credits
 
 **Text editor:**
 
