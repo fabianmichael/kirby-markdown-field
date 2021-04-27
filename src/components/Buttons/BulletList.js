@@ -47,6 +47,18 @@ export default class BulletList extends Button {
     return "ul";
   }
 
+  get syntax() {
+    return {
+      token: this.token,
+      type: this.tokenType,
+      class: "cm-ol",
+      mark: /^(\s*)([-+*])(\s+)/,
+      markToken: "ListMark",
+      render: () => this.options.mark + " ",
+      multiLine: true,
+    };
+  }
+
   get token() {
     return "BulletList";
   }

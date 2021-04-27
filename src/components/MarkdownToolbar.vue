@@ -5,7 +5,11 @@
 
         <!-- divider -->
         <template v-if="button.divider">
-          <span :key="buttonIndex" class="k-toolbar-divider" />
+          <hr
+            :key="buttonIndex"
+            aria-orientation="vertical"
+            class="k-toolbar-divider"
+          />
         </template>
 
         <!-- dropdown -->

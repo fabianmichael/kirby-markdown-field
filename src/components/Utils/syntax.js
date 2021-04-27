@@ -1,157 +1,13 @@
 import { ensureSyntaxTree, syntaxTree } from "@codemirror/language";
 
-export const BlockTypes = {
-  "ATXHeading1"   : "#",
-  "ATXHeading2"   : "##",
-  "ATXHeading3"   : "###",
-  "ATXHeading4"   : "####",
-  "ATXHeading5"   : "#####",
-  "ATXHeading6"   : "######",
-  "Blockquote"    : ">",
-  "OrderedList"   : "1.",
-  "BulletList"    : "-",
-  "HorizontalRule": "***",
-};
-
-const BlockTokens = [
-  ...Object.keys(BlockTypes),
-  "FencedCode"
-]
-
-export const BlockStyles = {
-  FencedCode: {
-    class: "cm-codeblock",
-  },
-  HorizontalRule: {
-    class: "cm-hr",
-    // mark: "^/(\s{0, 3})([-_*]{3,})(\s*)",
-    render: "***",
-  },
-  Blockquote: {
-    class: "cm-blockquote",
-    mark: /^(\s*)(>+)(\s*)/,
-    markToken: "QuoteMark",
-    render: "> ",
-    multiLine: true,
-  },
-  ATXHeading1: {
-    class: "cm-heading",
-    mark: /^(\s{0,3})(#{1})(\s+)/,
-    markToken: "HeaderMark",
-    render: "# ",
-    multiLine: false,
-  },
-  ATXHeading2: {
-    class: "cm-heading",
-    mark: /^(\s{0,3})(#{2})(\s+)/,
-    markToken: "HeaderMark",
-    render: "## ",
-    multiLine: false,
-  },
-  ATXHeading3: {
-    class: "cm-heading",
-    mark: /^(\s{0,3})(#{3})(\s+)/,
-    markToken: "HeaderMark",
-    render: "### ",
-    multiLine: false,
-  },
-  ATXHeading4: {
-    class: "cm-heading",
-    mark: /^(\s{0,3})(#{4})(\s+)/,
-    markToken: "HeaderMark",
-    render: "#### ",
-    multiLine: false,
-  },
-  ATXHeading5: {
-    class: "cm-heading",
-    mark: /^(\s{0,3})(#{5})(\s+)/,
-    markToken: "HeaderMark",
-    render: "##### ",
-    multiLine: false,
-  },
-  ATXHeading6: {
-    class: "cm-heading",
-    mark: /^(\s{0,3})(#{6})(\s+)/,
-    markToken: "HeaderMark",
-    render: "###### ",
-    multiLine: false,
-  },
-  OrderedList: {
-    class: "cm-ol",
-    mark: /^(\s*)(\d+\.)(\s+)/,
-    markToken: "ListMark",
-    render: (n) => `${n}. `,
-    multiLine: true,
-  },
-  BulletList: {
-    class: "cm-ol",
-    mark: /^(\s*)([-+*])(\s+)/,
-    markToken: "ListMark",
-    render: "- ",
-    multiLine: true,
-  },
-};
-
-export const BlockMarks = [
-  "HeaderMark",
-  "QuoteMark",
-  "ListMark"
-];
-
-// export const InlineFormats = {
-//   Emphasis: {
-//     mark: "_",
-//     markToken: "EmphasisMark",
-//     escape: true,
-//     mixable: true,
-//     expelEnclosingWhitespace: true,
-//   },
-//   StrongEmphasis: {
-//     mark: "**",
-//     markToken: "EmphasisMark",
-//     escape: true,
-//     mixable: true,
-//     expelEnclosingWhitespace: true,
-//   },
-//   InlineCode: {
-//     mark: "`",
-//     markToken: "CodeMark",
-//     escape: false,
-//     mixable: false,
-//     expelEnclosingWhitespace: true,
-//   },
-//   Strikethrough: {
-//     mark: "~~",
-//     markToken: "StrikethroughMark",
-//     escape: true,
-//     mixable: true,
-//     expelEnclosingWhitespace: true,
-//   },
-//   Highlight: {
-//     mark: "==",
-//     markToken: "HighlightMark",
-//     escape: true,
-//     mixable: true,
-//     expelEnclosingWhitespace: true,
-//   }
-// };
-
-// export const InlineTokens = [
-//   ...Object.keys(InlineFormats),
-//   "URL",
-//   // "Link",
-// ];
-
-export function getBlockNameAt(view, pos, blockNames) {
+// Get block name at given position.
+export function getBlockNameAt(view, blockFormats, pos) {
   const tree = syntaxTree(view.state);
-  const trees = [
-    tree.resolve(pos, -1),
-    tree.resolve(pos, 1),
-  ];
+  const trees = [tree.resolve(pos, -1), tree.resolve(pos, 1)];
 
   for (let n of trees) {
     do {
-      if (blockNames.includes(n.name)) {
+      if (blockFormats.exists(n.name)) {
         return n.name;
       }
     } while ((n = n.parent));
@@ -171,7 +27,12 @@ export function nodeIsKirbytag(node) {
   return nodeIsKirbytag(node.parentNode);
 }
 
-export function getActiveTokens(view, inlineFormats, ensureTree = false) {
+// Return all active block and inline tokens, based on current selection:
+// - Any block style counts as active, any of the lines touched by the selection
+//   has this style. This can mean, that multiple block styles are active.
+// - Any inline style is active, if it is surrounded by the selection. Block marks
+//   are skipped.
+export function getActiveTokens(view, blockFormats, inlineFormats, ensureTree = false) {
   const { state }          = view;
   const { doc }            = state;
   const { head, from, to } = state.selection.main;
@@ -186,7 +47,7 @@ export function getActiveTokens(view, inlineFormats, ensureTree = false) {
     let nFirst       = line.number;
     let blockTokens  = [];
     let inlineTokens = [];
-    let done         = false;
+    let inlineDone   = false;
 
     do {
       let { from: lFrom, to: lTo, text } = line;
@@ -196,7 +57,7 @@ export function getActiveTokens(view, inlineFormats, ensureTree = false) {
       let candidates  = [];
 
       if (text.match(/^\s*$/)) {
-        // skip empty lines
+        // skip empty and whitespace-only lines
         continue;
       }
 
@@ -204,9 +65,7 @@ export function getActiveTokens(view, inlineFormats, ensureTree = false) {
         enter: ({ name }, nodeFrom, nodeTo) => {
           let match;
 
-          console.info({ name }, nodeFrom, nodeTo)
-
-          if (BlockTokens.includes(name)) {
+          if (blockFormats.exists(name)) {
             // look for block token
 
             if (!tokens.includes(name)) {
@@ -214,7 +73,7 @@ export function getActiveTokens(view, inlineFormats, ensureTree = false) {
               blockTokens.push(name);
             }
 
-            if (BlockStyles[name].mark && (match = line.text.match(BlockStyles[name].mark))) {
+            if (blockFormats.hasMark(name) && (match = line.text.match(blockFormats.mark(name)))) {
               // get block prefix (e.g. `[## ]headline`) length,
               // because it won’t be analyzed for inline formats
               lookFrom += match[0].length;
@@ -223,27 +82,29 @@ export function getActiveTokens(view, inlineFormats, ensureTree = false) {
             return;
           }
 
-          // look from either line start or selection start, whatever
-          // comes last
-          lookFrom = Math.max(lookFrom, from);
+          if (!inlineDone) {
+            // look from either line start or selection start, whatever
+            // comes last
+            lookFrom = Math.max(lookFrom, from);
 
-          // look until line ending or selection ending, whatever
-          // comes first
-          lookTo   = Math.min(lookTo, to);
+            // look until line ending or selection ending, whatever
+            // comes first
+            lookTo   = Math.min(lookTo, to);
 
-          if (!inlineTokens.includes(name)) {
-          // Skip tokens, which are not markup
-            return;
-          }
-
-          if (nodeFrom <= lookFrom && nodeTo >= lookTo) {
-            if (!candidates.includes(name)) {
-              candidates.push(name);
+            if (!inlineFormats.exists(name)) {
+              // Skip tokens, which are not markup
+              return;
             }
 
-            if (inlineFormats.hasMark(name)) {
-              lookFrom += inlineFormats.mark(name).length;
-              lookTo -= inlineFormats.mark(name).length;
+            if (nodeFrom <= lookFrom && nodeTo >= lookTo) {
+              if (!candidates.includes(name)) {
+                candidates.push(name);
+              }
+
+              if (inlineFormats.hasMark(name)) {
+                lookFrom += inlineFormats.mark(name).length;
+                lookTo -= inlineFormats.mark(name).length;
+              }
             }
           }
         },
@@ -251,32 +112,34 @@ export function getActiveTokens(view, inlineFormats, ensureTree = false) {
         to: lTo,
       });
 
-      if (candidates.length === 0) {
-        // line is not empty and does not contain any inline tokens,
-        // stop iterating over lines and return.
-        inlineTokens = [];
-        break;
-      }
+      if (!inlineDone) {
+        if (candidates.length === 0) {
+          // line is not empty and does not contain any inline tokens,
+          // stop iterating over lines and return.
+          inlineTokens = [];
+          inlineDone = true;
+        }
 
-      if (isFirstLine) {
-        // The selected tokens from the first line will become the
-        // reference for all other lines. Only tokens, which cover
-        // all of the following lines up until selection end, will
-        // be includes in `inlineTokens` after we’re done.
-        inlineTokens = candidates;
-      } else {
-        // Inline Tokens array is filtered against candidates from
-        // current line. Only tokens, which are present in this line
-        // and all preceding lines are kept.
-        inlineTokens = inlineTokens.filter(name => candidates.includes(name));
+        if (isFirstLine) {
+          // The selected tokens from the first line will become the
+          // reference for all other lines. Only tokens, which cover
+          // all of the following lines up until selection end, will
+          // be includes in `inlineTokens` after we’re done.
+          inlineTokens = candidates;
+        } else {
+          // Inline Tokens array is filtered against candidates from
+          // current line. Only tokens, which are present in this line
+          // and all preceding lines are kept.
+          inlineTokens = inlineTokens.filter((name) => candidates.includes(name));
 
-        if (inlineTokens.length === 0) {
-          // If no tokens are left, stop iterating.
-          break;
+          if (inlineTokens.length === 0) {
+            // If no tokens are left, stop iterating.
+            inlineDone = true;
+          }
         }
       }
 
-    } while (!done && ++n <= doc.lines && (line = doc.line(n)) && line.from < to);
+    } while (++n <= doc.lines && (line = doc.line(n)) && line.from < to);
 
     tokens = [...blockTokens, ...inlineTokens];
 
@@ -287,7 +150,7 @@ export function getActiveTokens(view, inlineFormats, ensureTree = false) {
       enter: ({ name }, nodeFrom, nodeTo) => {
         let inlineMatch;
 
-        if (BlockTokens.includes(name)) {
+        if (blockFormats.exists(name)) {
           tokens.push(name);
         }
 
@@ -322,7 +185,7 @@ export function getActiveTokens(view, inlineFormats, ensureTree = false) {
   return tokens;
 }
 
-export function getCurrentInlineTokens(view, inlineFormats) {
+export function getCurrentInlineTokens(view, blockFormats, inlineFormats) {
   const { head, from, to } = view.state.selection.main;
   const state = view.state;
   const tree = syntaxTree(state);

@@ -1,4 +1,6 @@
+import { EditorSelection } from "@codemirror/state";
 import Button from "./Button.js";
+import { ltrim, rtrim } from "../Utils/strings.js";
 
 export default class HorizontalRule extends Button {
 
@@ -11,7 +13,26 @@ export default class HorizontalRule extends Button {
   }
 
   get command() {
-    return () => this.editor.toggleBlockFormat(this.token);
+    return () => {
+      const { view } = this.editor;
+      const { state } = view;
+      const selection = state.selection.main;
+      let textBefore = rtrim(state.doc.slice(0, selection.from).toString());
+      let textAfter = ltrim(state.doc.slice(selection.to).toString());
+
+      textBefore = textBefore + (textBefore.length > 0 ? "\n\n" : "") + this.syntax.render();
+      textAfter = "\n\n" + textAfter;
+
+      view.dispatch({
+        changes: {
+          from: 0,
+          to: state.doc.length,
+          insert: textBefore + textAfter
+        },
+        selection: EditorSelection.cursor(textBefore.length),
+        scrollIntoView: true
+      });
+    }
   }
 
   configure(options) {
@@ -36,12 +57,25 @@ export default class HorizontalRule extends Button {
     return "hr";
   }
 
+  get syntax() {
+    return {
+      token: this.token,
+      type: this.tokenType,
+      class: "cm-hr",
+      render: () => this.options.mark,
+    };
+  }
+
   get token() {
     return "HorizontalRule";
   }
 
   get tokenType() {
     return "block";
+  }
+
+  get isActive() {
+    return () => false;
   }
 
   get isDisabled() {

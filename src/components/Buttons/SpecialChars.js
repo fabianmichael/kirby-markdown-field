@@ -8,7 +8,7 @@ export default class SpecialChars extends Button {
       label: this.input.$t("toolbar.button.headings"),
       dropdown: [
         {
-          label: "No-Break Space" + this.formatKeyName({ mac: "Alt-Space"}, '<kbd>', '</kbd>'),
+          label: "No-Break Space" + this.formatKeyName({ mac: "Alt-Space"}, "<kbd>", "</kbd>"),
           command: () => this.editor.insert("\u00a0"),
         },
         {

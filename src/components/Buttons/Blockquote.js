@@ -29,6 +29,18 @@ export default class BlockQuote extends Button {
     return "blockquote";
   }
 
+  get syntax() {
+    return {
+      token: this.token,
+      type: this.tokenType,
+      class: "cm-blockquote",
+      mark: /^(\s*)(>+)(\s*)/,
+      markToken: "QuoteMark",
+      render: "> ",
+      multiLine: true,
+    }
+  }
+
   get token() {
     return "Blockquote";
   }

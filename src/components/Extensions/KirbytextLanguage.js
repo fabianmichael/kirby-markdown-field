@@ -32,6 +32,56 @@ const Highlight = {
   ]
 }
 
+// https://github.com/lezer-parser/markdown/blob/master/src/markdown.ts
+// function isDefinitionListDefinition(line) {
+//   if (line.next != 58 /* ':' */ || line.indent >= line.baseIndent + 4) return -1
+//   let pos = line.pos + 1
+//   while (pos < line.text.length && line.text.charCodeAt(pos) == line.next) pos++
+//   let end = pos
+//   while (pos < line.text.length && space(line.text.charCodeAt(pos))) pos++
+//   return pos == line.text.length ? end : -1
+// }
+
+// class DefinitionListParser {
+//   nextLine(cx, line, leaf) {
+//     let underline = line.depth < cx.stack.length ? -1 : isDefinitionListDefinition(line)
+//     let next = line.next
+//     if (underline < 0) return false
+//     let underlineMark = elt(Type.HeaderMark, cx.lineStart + line.pos, cx.lineStart + underline)
+//     cx.nextLine()
+//     cx.addLeafElement(leaf, elt(next == 61 ? Type.SetextHeading1 : Type.SetextHeading2, leaf.start, cx.prevLineEnd(), [
+//       ...cx.parser.parseInline(leaf.content, leaf.start),
+//       underlineMark
+//     ]))
+//     return true
+//   }
+
+//   finish() {
+//     return false
+//   }
+// }
+
+
+// const DefinitionList = {
+//   // defineNodes: ["Highlight", "HighlightMark"],
+//   parseBlock: [{
+//     name: "DefinitionList",
+//     parse(cx, next, pos) {
+//       if (next != 61 /* '=' */ || cx.char(pos + 1) != 61) {
+//         return -1;
+//       }
+//       return cx.addDelimiter(HighlightDelim, pos, pos + 2, true, true);
+//     },
+//     after: "Emphasis"
+//   }],
+//   props: [
+//     styleTags({
+//       HighlightMark: defaultTags.processingInstruction,
+//       "Highlight/...": tags.highlight,
+//     })
+//   ]
+// }
+
 /* Kirbytags */
 
 function kirbytags(knownTags) {
@@ -115,6 +165,16 @@ export default class MarkdownLanguage extends Extension {
       }),
       this.input.kirbytext ? kirbytags(this.input.knownKirbytags) : null,
     ];
+  }
+
+  get syntax() {
+    // All other block and inline formats are defined in their respective
+    // buttons.
+    return {
+      token: "FencedCode",
+      type: "block",
+      class: "cm-codeblock",
+    }
   }
 
   get type() {

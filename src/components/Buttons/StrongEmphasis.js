@@ -48,6 +48,8 @@ export default class StrongEmphasis extends Button {
 
   get syntax() {
     return {
+      token: this.token,
+      type: this.tokenType,
       mark: this.options.mark,
       markToken: "EmphasisMark",
       escape: true,

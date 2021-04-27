@@ -31,6 +31,8 @@ export default class InlineCode extends Button {
 
   get syntax() {
     return {
+      token: this.token,
+      type: this.tokenType,
       mark: "`",
       markToken: "CodeMark",
       escape: false,

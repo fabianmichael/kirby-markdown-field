@@ -9,7 +9,7 @@ export default class Extension {
 
   configure(options = {}) {
     if (this._init) {
-      throw new Exception("Extensions cannot be configured after they have been initalized.");
+      throw "Extensions cannot be configured after they have been initalized.";
     }
 
     this.options = {
@@ -30,6 +30,10 @@ export default class Extension {
     this.input = input;
   }
 
+  formatKeyName(name, before, after) {
+    return formatKeyName(name, this.input.$t, before, after);
+  }
+
   get name() {
     return null;
   }
@@ -48,7 +52,7 @@ export default class Extension {
     return [];
   }
 
-  formatKeyName(name, before, after) {
-    return formatKeyName(name, this.input.$t, before, after);
+  get syntax() {
+    return null;
   }
 }

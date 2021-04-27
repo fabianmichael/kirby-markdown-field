@@ -102,6 +102,13 @@ export default class URLs extends Extension {
     ];
   }
 
+  get syntax() {
+    return {
+      token: this.token,
+      type: this.tokenType,
+    }
+  }
+
   get token() {
     return "URL";
   }

@@ -23,7 +23,7 @@ export default class Footnote extends Button {
   }
 
   get command() {
-    return () => this.editor.dispatch(this.editor.state.changeByRange(range => ({
+    return () => this.editor.dispatch(this.editor.state.changeByRange((range) => ({
       changes: [{from: range.from, insert: "[^"}, {from: range.to, insert: "]"}],
       range: EditorSelection.range(range.from + 2, range.to + 2)
     })));

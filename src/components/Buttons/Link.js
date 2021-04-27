@@ -39,7 +39,7 @@ export default class Link extends Button {
 
         if (this.input.kirbytext) {
           const text = value.text ? ` text: ${value.text}` : "";
-          const blank = value.blank ? ` target: _blank` : "";
+          const blank = value.blank ? " target: _blank" : "";
           this.editor.insert(`(link: ${url}${text}${blank})`);
         } else {
           if (value.text) {

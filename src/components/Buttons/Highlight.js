@@ -31,6 +31,8 @@ export default class Highlight extends Button {
 
   get syntax() {
     return {
+      token: this.token,
+      type: this.tokenType,
       mark: "==",
       markToken: "HighlightMark",
       escape: true,

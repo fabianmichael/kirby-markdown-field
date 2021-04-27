@@ -156,7 +156,7 @@ function highlightStyle() {
 
 function scrollMargin() {
   return ViewPlugin.fromClass(class {
-    constructor(/* view */) {
+    constructor(view) { // eslint-disable-line no-unused-vars
       this.margin = {
         bottom: 60,
         top: 60,

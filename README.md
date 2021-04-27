@@ -133,7 +133,14 @@ the shortcuts for all formats.
 buttons: false
 ```
 
-The full list of available buttons:
+The full list of available buttons. As you can see, some buttons can also have
+configuration options. Take the `bold` button for example. Markdown allows different
+syntax for bold text, i.e. `__bold__` and `**bold**`. The editor’s syntax highlighter
+will always recognize both, but you can adjust, what the editor will use, when
+you click the toolbar button or hitting the respective keyboard shortcut.
+
+All button configuration is optional, you can always use `- ul` instead of `ul: -`,
+if you want to stick to the default settings.
 
 ```yaml
 buttons:
@@ -144,17 +151,18 @@ buttons:
     - h4
     - h5
     - h6
-  - bold
-  - italic
+  bold: ** # or `__`
+  italic: * # or `_`
   - strikethrough
   - code
-  - ul
+  ul: - # or `*`/`+`
   - ol
   link:
     blank: true # Show option for opening link in a new tab.
   - blockquote
-  - hr
+  hr: *** # or `---`/`___`
   - strikethrough
+  - highlight # textmarker (ot supported by Kirby’s default markdown parser.)
   - pagelink
   - file
   - footnote

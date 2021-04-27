@@ -10,6 +10,8 @@ export default class InlineFormats {
       if (result.includes(def.markToken)) return result;
       return [...result, def.markToken];
     }, []);
+
+    this.blockTypes = Object.keys(this.defs);
   }
 
   get(type) {
@@ -32,5 +34,14 @@ export default class InlineFormats {
 
   markTokenExists(token) {
     return this.markTokens.includes(token);
+  }
+
+  get types() {
+    return this.blockTypes;
+  }
+
+  render(type, n) {
+    const format = this.get(type);
+    return typeof format.render === "function" ? format.render(n) : format.render;
   }
 }

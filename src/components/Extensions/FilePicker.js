@@ -1,15 +1,8 @@
-import { syntaxTree } from "@codemirror/language";
-import { Range } from "@codemirror/rangeset";
-// import { Extension } from "@codemirror/state";
 import {
   Decoration,
-  DecorationSet,
-  EditorView,
   ViewPlugin,
-  ViewUpdate,
   WidgetType
 } from "@codemirror/view";
-
 import Extension from "../Extension.js";
 
 export default class FilePicker extends Extension {
@@ -133,10 +126,8 @@ export default class FilePicker extends Extension {
         decorations: (v) => v.decorations,
 
         eventHandlers: {
-          mousedown: ({ target }, view) => {
-            console.log("tt", target);
+          mousedown: ({ target }, view) => { // eslint-disable-line no-unused-vars
             if (target.classList && target.classList.contains("cm-file-button") || target.closest(".cm-file-button")) {
-              // return toggleTaskListCheckbox(view, view.posAtDOM(target));
               this.openSelectDialog();
             }
           }

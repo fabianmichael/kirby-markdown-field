@@ -1,4 +1,5 @@
-import InlineFormats from "./InlineFormats.js"
+import BlockFormats from "./BlockFormats.js";
+import InlineFormats from "./InlineFormats.js";
 
 export default class Extensions {
 
@@ -41,15 +42,18 @@ export default class Extensions {
       ], []);
   }
 
-  getInlineFormats() {
-    return new InlineFormats(
-      this.extensions
-        .filter((extension) => extension.tokenType === "inline")
-        .reduce((result, extension) => {
-          result[extension.token] = extension.syntax || true;
-          return result;
-        }, {})
-    );
+  getFormats(type) {
+    const formats = this.extensions
+      .filter((extension) => extension.syntax)
+      .reduce((result, extension) => {
+        let syntax = extension.syntax;
+        syntax = Array.isArray(syntax) ? syntax : [syntax];
+        syntax = syntax.filter((def) => def.type === type);
+        result.push(...syntax);
+        return result;
+      }, []);
+
+    return type === "block" ? new BlockFormats(formats) : new InlineFormats(formats);
   }
 
   /**

@@ -8,7 +8,6 @@ import { toggleBlockFormat, toggleInlineFormat } from "./Utils/markup.js";
 import { getActiveTokens } from "./Utils/syntax.js";
 import debounce from "./Utils/debounce.js";
 import browser from "./Utils/browser.js";
-const isKnownDesktopBrowser = (browser.safari || browser.chrome || browser.gecko) && (!browser.android && !browser.ios);
 
 import URLs from "./Extensions/URLs.js";
 import DropCursor from "./Extensions/DropCursor.js";
@@ -20,6 +19,9 @@ import LineStyles from "./Extensions/LineStyles.js";
 import PasteUrls from "./Extensions/PasteUrls.js";
 import TaskLists from "./Extensions/TaskLists.js";
 import Theme from "./Extensions/Theme.js";
+
+const isKnownDesktopBrowser = (browser.safari || browser.chrome || browser.gecko) && (!browser.android && !browser.ios);
+
 
 export default class Editor extends Emitter {
 
@@ -50,18 +52,12 @@ export default class Editor extends Emitter {
 
     this.events          = this.createEvents();
     this.extensions      = this.createExtensions();
-    this.inlineFormats   = this.extensions.getInlineFormats();
-    console.log("inline formats", this.inlineFormats);
+    this.inlineFormats   = this.extensions.getFormats("inline");
+    this.blockFormats    = this.extensions.getFormats("block")
 
     this.buttons         = this.extensions.getButtons();
     this.dialogs         = this.extensions.getDialogs();
     this.view            = this.createView(value);
-
-
-    // Enable spell-checking to enable browser extensions, such as Language Tool
-    if (this.options.spellcheck) {
-      this.view.contentDOM.setAttribute("spellcheck", "true");
-    }
   }
 
   keymap() {
@@ -135,11 +131,11 @@ export default class Editor extends Emitter {
 
   createView(value) {
     const debouncedUpdateActiveTokens = debounce(() => {
-      this.activeTokens = getActiveTokens(this.view, this.inlineFormats);
+      this.activeTokens = getActiveTokens(this.view, this.blockFormats, this.inlineFormats);
       this.emit("active", this.activeTokens);
     }, 50);
 
-    return new EditorView({
+    const view = new EditorView({
       state: this.createState(value),
       parent: this.options.element,
       editable: this.options.editable,
@@ -156,6 +152,14 @@ export default class Editor extends Emitter {
         debouncedUpdateActiveTokens();
       },
     });
+
+
+    // Enable spell-checking to enable browser extensions, such as Language Tool
+    if (this.options.spellcheck) {
+      view.contentDOM.setAttribute("spellcheck", "true");
+    }
+
+    return view;
   }
 
   destroy() {
@@ -223,11 +227,11 @@ export default class Editor extends Emitter {
   }
 
   toggleBlockFormat(type) {
-    return toggleBlockFormat(this.view, type);
+    return toggleBlockFormat(this.view, this.blockFormats, type);
   }
 
   toggleInlineFormat(type) {
-    return toggleInlineFormat(this.view, this.inlineFormats, type);
+    return toggleInlineFormat(this.view, this.blockFormats, this.inlineFormats, type);
   }
 
   toggleInvisibles(force = null) {
@@ -243,7 +247,7 @@ export default class Editor extends Emitter {
   }
 
   updateActiveTokens() {
-    this.activeTokens = getActiveTokens(this.view, this.inlineFormats);
+    this.activeTokens = getActiveTokens(this.view, this.blockFormats, this.inlineFormats);
   }
 
   get value() {

@@ -31,6 +31,8 @@ export default class Strikethrough extends Button {
 
   get syntax() {
     return {
+      token: this.token,
+      type: this.tokenType,
       mark: "~~",
       markToken: "StrikethroughMark",
       escape: true,

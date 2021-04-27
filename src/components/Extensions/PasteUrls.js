@@ -8,7 +8,7 @@ export default class TaskLists extends Extension {
   plugins() {
     const useKirbytext = this.input.kirbytext;
 
-    const pasteUrlsPlugin = ViewPlugin.define(() => ({}), {
+    const pasteUrlsPlugin = ViewPlugin.define((view) => ({}), { // eslint-disable-line no-unused-vars
       eventHandlers: {
         paste(e, view) {
           let pasted = e.clipboardData.getData("text");

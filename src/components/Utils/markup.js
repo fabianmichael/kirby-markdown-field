@@ -1,14 +1,7 @@
 import { ensureSyntaxTree } from "@codemirror/language";
 import { Direction } from "@codemirror/view";
 import { CharCategory } from "@codemirror/state";
-import { ltrim, rtrim } from "./strings.js";
-import {
-  BlockTypes,
-  BlockStyles,
-  BlockMarks,
-  getCurrentInlineTokens,
-  getActiveTokens
-} from "./syntax.js";
+import { getCurrentInlineTokens, getActiveTokens } from "./syntax.js";
 
 function isBoundaryChar(state, from, to) {
   const categorize = state.charCategorizer(from);
@@ -52,16 +45,14 @@ function getNextGroupRange(view) {
 }
 
 // Toggles the block format of all currently selected lines
-export function toggleBlockFormat(view, type) {
+export function toggleBlockFormat(view, blockFormats, type) {
   const state = view.state;
-  const { from, to } = view.state.selection.main;
+  const { from, to, anchor, head } = state.selection.main;
   const firstLine = state.doc.lineAt(from);
   const lastLine = state.doc.lineAt(to);
   const tree = ensureSyntaxTree(state, lastLine.to, 500);
 
   const lines = [];
-  let output = [];
-  let selectionOffset = 0;
 
   for (let l = firstLine.number, lMax = lastLine.number; l <= lMax; l++) {
     // gather information for about all selected lines
@@ -72,14 +63,12 @@ export function toggleBlockFormat(view, type) {
 
     tree.iterate({
       enter: (node, from, to) => {
-        if (BlockTypes[node.name]) {
+        if (blockFormats.exists(node.name)) {
           block = node.name;
-        } else if (BlockMarks.includes(node.name)) {
+        } else if (blockFormats.markTokenExists(node.name)) {
           mark = { ...node, from, to };
           if (block === "OrderedList") {
-            listNumber = parseInt(
-              line.text.slice(from - line.from, to - line.from, 10)
-            );
+            listNumber = parseInt(line.text.slice(from - line.from, to - line.from), 10);
           }
         }
 
@@ -100,71 +89,68 @@ export function toggleBlockFormat(view, type) {
     });
   }
 
-  // Checks if all selected lines already have target block type;
-  const isTargetBlockType = lines.reduce(
-    (result, { block }) => !(!result || block !== type),
-    true
-  );
+  // Checks if all selected lines already have target block type. Skip empty lines
+  const isTargetBlockType = lines.reduce((result, { block, line }) => (result && (block === type || !line.length)), true);
+  let selFrom   = from;
+  let selLength = to - from;
+  let output;
 
   if (isTargetBlockType) {
     // all lines are target block type, remove marks
-
-    output = lines.map(({ line, block, mark }) => {
-      if (block === "HorizontalRule") {
-        // Remove whole line content for rules
-        return "";
-      } else if (mark) {
-        // TODO: Broken, if cursor at end of document (out-of-bounds error)
-        // TODO: Cursor position not stable => re-calculation of cursor position wrong.
-        const text = line.text.substring(mark.to - line.from);
-        selectionOffset -= line.text.length - text.length;
-        return ltrim(text);
+    output = lines.map(({ line, block, mark }, index) => { // eslint-disable-line no-unused-vars
+      if (!mark) {
+        // no mark to remove, do nothing. Could be an empty line
+        // or continued blcok
+        return line.text;
       }
 
-      // no mark to remove, do nothing. Should never occur, but let’s
-      // be safe to avoid errors.
-      return line.text;
+      const match = line.text.match(blockFormats.mark(block));
+      const markLength = match ? match[0].length : 0;
+
+      if (index === 0) {
+        // Only first line: calculate selection start offset
+        selFrom += (from >= line.from + markLength)
+          ? -markLength // selection from after mark
+          : line.from - from; // selection from in/before mark
+
+        if (from < line.from + markLength) {
+          selLength -= markLength - (from - line.from);
+        }
+      } else {
+        // all other lines: update only selection length
+        selLength += (to >= line.from + markLength)
+          ? -markLength // selection from in/before mark
+          : line.from - to; // selection from after mark
+      }
+
+      return line.text.substring(markLength);
     });
-  } else if (type === "HorizontalRule") {
-    // Replace whole selection with rule cursor should end up at the end of the
-    // new inserted characters.
-
-    let textBefore = rtrim(state.doc.slice(0, from).toString());
-    let textAfter = ltrim(state.doc.slice(to).toString());
-
-    textBefore = textBefore + (textBefore.length > 0 ? "\n\n" : "") + "***";
-    textAfter = "\n\n" + textAfter;
-
-    view.dispatch({
-      changes: {
-        from: 0,
-        to: state.doc.length,
-        insert: textBefore + textAfter
-      },
-      selection: { anchor: textBefore.length },
-      scrollIntoView: true
-    });
-
-    return;
   } else {
     // different lines types => add/replace lines marks
+    let n = 1;
 
-    let listNumber = 1;
-
-    output = lines.map(({ line, mark }) => {
-      const prefix =
-        type === "OrderedList" ? listNumber++ + ". " : BlockTypes[type] + " ";
-      let text;
-
-      if (mark) {
-        // replace old mark
-        text = prefix + ltrim(line.text.substring(mark.to - line.from));
-      } else {
-        text = prefix + line.text;
+    output = lines.map(({ line, block, listNumber }, index) => {
+      if (index === 0 && listNumber !== null) {
+        n = listNumber; // use first list number, in case the list is being extended
       }
 
-      selectionOffset += text.length - line.text.length;
-      return text;
+      const match = blockFormats.mark(block) ? line.text.match(blockFormats.mark(block)) : null;
+      const oldMarkLength = match ? match[0].length : 0;
+      const newMark = blockFormats.render(type, n++);
+
+      if (index === 0) {
+        selFrom += (from > line.from + oldMarkLength)
+          ? newMark.length - oldMarkLength
+          : 0;
+
+        if (from <= line.from + oldMarkLength) {
+          selLength += newMark.length - oldMarkLength;
+        }
+      } else {
+        selLength += newMark.length - oldMarkLength
+      }
+
+      return newMark + line.text.substring(oldMarkLength);
     });
   }
 
@@ -172,27 +158,26 @@ export function toggleBlockFormat(view, type) {
     changes: {
       from: firstLine.from,
       to: lastLine.to,
-      insert: output.join(state.lineBreak)
+      insert: output.join(state.lineBreak),
     },
     selection: {
-      anchor: state.selection.main.anchor + selectionOffset,
-      head: state.selection.main.head + selectionOffset
-    },
-    scrollIntoView: true
+      anchor: anchor > head ? (selFrom + selLength) : selFrom,
+      head: head >= anchor ? (selFrom + selLength) : selFrom,
+    }
   });
 }
 
 // Toggles the formatting of a single word, where the cursor has either to be
 // right before, in the middle of after a word and not on the outer edge of the
 // mark characters. This could probably be merged with the toggleInlineFormat()
-// function, but I’m just glad that it works pretty great. So yeay, leave it here
+// function, but I’m just glad that it works pretty great. So yeah, leave it here
 // for now …
-function toggleWordFormat(view, inlineFormats, type) {
+function toggleWordFormat(view, blockFormats, inlineFormats, type) {
   const state       = view.state;
   const selection   = state.selection.main;
   const pos         = selection.head;
   const mark        = inlineFormats.get(type).mark;
-  const tokens      = getCurrentInlineTokens(view, inlineFormats);
+  const tokens      = getCurrentInlineTokens(view, blockFormats, inlineFormats);
   const tokenNames  = tokens.reduce((r, { node: n }) => [...r, n.name], []);
   const activeIndex = tokenNames.indexOf(type);
 
@@ -258,12 +243,12 @@ function toggleWordFormat(view, inlineFormats, type) {
 
       for (let name of tokenNames) {
         // remove all formats first
-        toggleWordFormat(view, name);
+        toggleWordFormat(view, blockFormats, inlineFormats, name);
       }
 
       for (let name of tokenNames.reverse().slice(1)) {
-        // re-apply all formats, except for the last on in opposite order
-        toggleWordFormat(view, name);
+        // re-apply all formats, except for the last one in opposite order
+        toggleWordFormat(view, blockFormats, inlineFormats, name);
       }
     }
 
@@ -314,8 +299,8 @@ function toggleWordFormat(view, inlineFormats, type) {
 // formatting information. This is a simplified version of what ProseMirror
 // uses to convert richtext to Markdown and thus uses a simplified version
 // of ProseMirror’s document model.
-// See https://github.com/ProseMirror/prosemirror-markdown
-function renderLine(nodes, inlineFormats) {
+// Based on https://github.com/ProseMirror/prosemirror-markdown
+function renderLine(nodes, blockFormats, inlineFormats) {
   let result = "";
   let active = [];
   let trailing = "";
@@ -403,29 +388,35 @@ function renderLine(nodes, inlineFormats) {
   return result;
 }
 
-function toggleLineFormat(view, inlineFormats, n, type, action) {
+function toggleLineFormat(view, blockFormats, inlineFormats, lineNumber, type, action) {
   const state     = view.state;
-  const line      = state.doc.line(n);
+  const line      = state.doc.line(lineNumber);
   const selection = state.selection.main;
   const tokens    = [];
 
-  // get all relevant inline formats of current line
+  // Get all relevant inline format tokens of current line. The whole line is
+  // re-rendedered later to ensure, that nested formats are properly updated.
+
   ensureSyntaxTree(state, line.to, 500).iterate({
-    enter: ({ name }, start, end) => {
+    enter: ({ name }, nodeFrom, nodeTo) => {
       if (!inlineFormats.exists(name) && !inlineFormats.markTokenExists(name)) {
+        // skip irrelevant nodes (e.g. links)
         return;
       }
       tokens.push({
         name,
-        from: start,
-        to: end,
+        from: nodeFrom,
+        to: nodeTo,
       });
     },
     from: line.from,
     to: line.to,
   });
 
-  // convert to chars array
+  // convert to chars array, because that makes it much easier to apply or
+  // remove formats. This is especially the case, when inline-formatted text
+  // is only partially selected.
+
   let chars = [];
   let pos = line.from;
 
@@ -445,27 +436,27 @@ function toggleLineFormat(view, inlineFormats, n, type, action) {
 
     if (pos > selection.from && pos <= selection.to) {
       const hasMark = marks.includes(type);
-      if (action ==="add") {
+      if (action === "add") {
         if (!hasMark) {
           marks.push(type);
         }
       } else {
         if (hasMark) {
-          marks = marks.filter(v => v !== type);
+          marks = marks.filter((v) => v !== type);
         }
       }
     }
 
     chars.push({
       char,
-      marks: marks,
+      marks,
       isSyntax,
     })
   }
 
   // Filter out all syntax chars (e.g. the asterisks in `**strong**`),
   // because they will be re-rendered and are not needed any longer.
-  // let selectionOffset = 0;
+
   chars = chars.filter(({ /*char,*/ isSyntax }) => {
     if (isSyntax) {
       // selectionOffset -= char.length;
@@ -477,9 +468,8 @@ function toggleLineFormat(view, inlineFormats, n, type, action) {
 
   // get block prefix length (e.g. `## ` [length = 3])
   let blockMarkPrefixLength = 0;
-  for (let key of Object.keys(BlockStyles)) {
-    const style = BlockStyles[key];
-    const match = style.mark && line.text.match(style.mark);
+  for (let key of blockFormats.types) {
+    let match = blockFormats.hasMark(key) && line.text.match(blockFormats.mark(key));
     if (match) {
       blockMarkPrefixLength = match[0].length;
       break;
@@ -492,25 +482,6 @@ function toggleLineFormat(view, inlineFormats, n, type, action) {
       // get any formatting.
       return { char, marks: [] };
     }
-
-    // const isWhitespace = /\s/.test(char);
-    // let prev = i > 0 ? chars[i - 1] : null;
-    // let next = i < chars.length - 1 ? chars[i + 1] : null;
-
-    // if (isWhitespace) {
-    //   /
-    //   for (let f of marks) {
-    //     if (!prev|| !prev.marks.includes(f)) {
-    //       // previous char did not include this format
-    //       delete marks[marks.indexOf(f)];
-    //     }
-
-    //     if (!next || !next.marks.includes(f)) {
-    //       // next char did not include this format
-    //       delete marks[marks.indexOf(f)];
-    //     }
-    //   }
-    // }
 
     return { char, marks };
   });
@@ -543,43 +514,61 @@ function toggleLineFormat(view, inlineFormats, n, type, action) {
     }
   }
 
-  return renderLine(nodes, inlineFormats);
+  return renderLine(nodes, blockFormats, inlineFormats);
 }
 
-function toggleSelectionFormat(view, inlineFormats, type) {
+function toggleSelectionInlineFormat(view, blockFormats, inlineFormats, type) {
+  const action           = getActiveTokens(view, blockFormats, inlineFormats, true).includes(type) ? "remove" : "add";
+
   const state            = view.state;
   const selection        = state.selection.main;
   const firstLine        = state.doc.lineAt(selection.from);
   const lastLine         = state.doc.lineAt(selection.to);
-  const action           = getActiveTokens(view, true).includes(type) ? "remove" : "add";
   const lines            = [];
   let { anchor, head }   = selection;
+
   let lengthBefore       = 0;
 
   for (let n = firstLine.number; n <= lastLine.number; n++) {
     // Inline formats cannot span multiple lines in Markdown, so apply
-    // toggle to every line.
+    // toggle to every line separately.
     lengthBefore += state.doc.line(n).text.length;
-    lines.push(toggleLineFormat(view, inlineFormats, n, type, action));
+    lines.push(toggleLineFormat(view, blockFormats, inlineFormats, n, type, action));
   }
+
+  // As we don’t have robust selection tracking throughout all changes, the way
+  // used to update the selection after all changes is rather simple. We just
+  // measure the change in length of all affected lines and re-calculate the
+  // selection based on that. This is error-prone in many edge-cases, but is
+  // just good-enough(tm) in most cases.
 
   let insert = lines.join(view.state.lineBreak);
-
   let lengthChange = insert.length - lengthBefore;
-  console.log("length change", insert.length, lengthBefore, lengthChange, { head, anchor});
-  if (head > anchor) {
-    head += lengthChange;
-  } else {
-    anchor += lengthChange;
-  }
 
-  console.log("result", lines, head, anchor);
   view.dispatch({
     changes: {
       insert,
       from: firstLine.from,
       to: lastLine.to
     },
+  });
+
+  // After changes have been applied, update the selection. Like stated above,
+  // the way of re-calculating it does not return a perfect result in some cases,
+  // so we sanitize it to stay within the document bounds, otherwise the editor
+  // could crash if supplied a selection that exceeds document boundaries.
+
+  if (head > anchor) {
+    head += lengthChange;
+    head = Math.min(view.state.doc.length, head);
+    anchor = Math.max(anchor, 0);
+  } else {
+    anchor += lengthChange;
+    anchor = Math.min(view.state.doc.length, anchor);
+    head = Math.max(head, 0);
+  }
+
+  view.dispatch({
     selection: {
       anchor,
       head
@@ -588,15 +577,13 @@ function toggleSelectionFormat(view, inlineFormats, type) {
 }
 
 
-export function toggleInlineFormat(view, inlineFormats, type) {
-  const { from, to } = view.state.selection.main;
-
-  if (from === to) {
+export function toggleInlineFormat(view, blockFormats, inlineFormats, type) {
+  if (view.state.selection.main.empty) {
     // Selection is empty, just deal with a single word,
     // based on cursor context
-    return toggleWordFormat(view, inlineFormats, type);
+    return toggleWordFormat(view, blockFormats, inlineFormats, type);
   } else {
     // Deal with selection and get a giant headache
-    return toggleSelectionFormat(view, inlineFormats, type);
+    return toggleSelectionInlineFormat(view, blockFormats, inlineFormats, type);
   }
 }
