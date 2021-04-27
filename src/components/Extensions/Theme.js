@@ -26,7 +26,7 @@ function theme() {
         whiteSpace: "pre-wrap",
         overflowWrap: "break-word", // prevents long, unbreakable word from creating a horizontal scrollbar
         wordBreak: "break-word",
-        minHeight: "calc(2 * var(--cm-content-padding-y) + 1em * var(--cm-line-height))", // prevents the editor from collapsing under certain cirtumstances
+        minHeight: "calc(2 * var(--cm-content-padding-y) + var(--cm-min-lines, 1) * 1em * var(--cm-line-height))", // prevents the editor from collapsing under certain cirtumstances
         "-webkit-user-modify": "read-write-plaintext-only", // disables `B I U` buttons on iOS
         width: "100%", // required to wrap all lines, that would be too long for the viewport.
         caretColor: "auto", // override CM’s default black caret color, whoch looks a bit strange on iOS

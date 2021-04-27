@@ -63,7 +63,7 @@ export default {
     },
     size: {
       type: String,
-      default: "",
+      default: null,
     },
     spellcheck: {
       type: Boolean,

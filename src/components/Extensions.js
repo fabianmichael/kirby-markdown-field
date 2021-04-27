@@ -2,7 +2,6 @@ import BlockFormats from "./BlockFormats.js";
 import InlineFormats from "./InlineFormats.js";
 
 export default class Extensions {
-
   constructor(extensions = [], editor, input) {
     extensions.forEach((extension) => {
       extension.bindEditor(editor);

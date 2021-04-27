@@ -7,7 +7,7 @@
 
 // export default function autocomplete() {
 //   function from(list) {
-//     return cx => { /* cx = completitionContext */
+//     return (cx) => { /* cx = completitionContext */
 //       let word = cx.matchBefore(/\(\w*$/)
 //       console.log("word", word, cx);
 //       if (!word && !cx.explicit) {
@@ -16,7 +16,7 @@
 //       }
 //       return {
 //         from: word ? word.from : cx.pos,
-//         options: list.split(" ").map(word => ({
+//         options: list.split(" ").map((word) => ({
 //           label: `(${word}: …)`,
 //           _insert: `(${word}: )`,
 //           apply: (view, completition, from, to) => {

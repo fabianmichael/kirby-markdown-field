@@ -107,3 +107,74 @@ export default {
   },
 };
 </script>
+
+<style>
+
+
+.k-markdown-toolbar {
+  height: auto;
+  min-height: 38px;
+}
+
+.k-markdown-toolbar .k-toolbar-divider {
+  border: none;
+}
+
+/* disabled state of toolbar buttons */
+.k-markdown-toolbar .k-markdown-button.is-disabled {
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+/* Editor has focus */
+.k-markdown-input-wrap:focus-within .k-markdown-toolbar {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  color: var(--color-text);
+  left: 0;
+  position: sticky;
+  right: 0;
+  top: 0;
+  z-index: 4;
+}
+
+.k-markdown-input-wrap:focus-within .k-markdown-toolbar .k-markdown-button.is-active {
+  color: #3872be;
+}
+
+.k-markdown-input-wrap:focus-within .k-toolbar .k-markdown-button.is-active:hover {
+  background: rgba(66, 113, 174, 0.075);
+}
+
+.k-markdown-toolbar-buttons {
+  flex-wrap: wrap;
+}
+
+.k-markdown-toolbar-buttons > * {
+  flex-shrink: 0;
+}
+
+/* Align invisibles button to the right of the toolbar */
+.k-markdown-toolbar-button-right {
+  border-left: 1px solid var(--color-background);
+  margin-left: auto;
+}
+
+/** Active state for dropdown items */
+.k-markdown-toolbar .k-button.k-dropdown-item[aria-current="true"] {
+  color: #8fbfff;
+}
+
+.k-markdown-toolbar .k-button-text {
+  align-items: baseline;
+  display: flex;
+  justify-content: space-between;
+}
+
+.k-markdown-toolbar .k-button-text kbd {
+  font-variant-numeric: tabular-nums;
+  margin-left: 2.5rem;
+  opacity: 0.6;
+}
+
+</style>

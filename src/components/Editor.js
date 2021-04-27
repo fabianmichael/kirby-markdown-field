@@ -20,6 +20,8 @@ import PasteUrls from "./Extensions/PasteUrls.js";
 import TaskLists from "./Extensions/TaskLists.js";
 import Theme from "./Extensions/Theme.js";
 
+// import autocomplete from "./Extensions/Autocomplete.js";
+
 const isKnownDesktopBrowser = (browser.safari || browser.chrome || browser.gecko) && (!browser.android && !browser.ios);
 
 
@@ -119,7 +121,8 @@ export default class Editor extends Emitter {
       isKnownDesktopBrowser && drawSelection(),
       this.options.placeholder && placeholder(this.options.placeholder),
       this.extensions.getPluginsByType("theme"),
-    ].filter((v) => !!v);
+      // autocomplete()
+    ].filter((v) => v); // filter empty values
 
     return EditorState.create({
       doc: value,
