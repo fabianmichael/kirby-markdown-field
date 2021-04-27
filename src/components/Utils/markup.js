@@ -140,7 +140,7 @@ export function toggleBlockFormat(view, blockFormats, type) {
       const newMark = blockFormats.render(type, n++);
 
       if (index === 0) {
-        selFrom += (from > line.from + oldMarkLength || line.length === 0)
+        selFrom += (from > line.from + oldMarkLength || line.length === 0)
           ? newMark.length - oldMarkLength
           : 0;
 

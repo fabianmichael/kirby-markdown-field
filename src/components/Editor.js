@@ -2,13 +2,12 @@ import { Compartment, EditorState } from "@codemirror/state";
 import { EditorView, drawSelection, placeholder, keymap } from "@codemirror/view";
 import { history, historyKeymap } from "@codemirror/history";
 import { standardKeymap } from "@codemirror/commands";
+import { debounce } from "underscore";
 
 import Emitter from "./Emitter.js";
 import { toggleBlockFormat, toggleInlineFormat } from "./Utils/markup.js";
 import { getActiveTokens } from "./Utils/syntax.js";
-import debounce from "./Utils/debounce.js";
 import browser from "./Utils/browser.js";
-
 import URLs from "./Extensions/URLs.js";
 import DropCursor from "./Extensions/DropCursor.js";
 import Extensions from "./Extensions.js";
