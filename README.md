@@ -161,7 +161,7 @@ buttons:
   - blockquote
   hr: *** # or `---`/`___`
   - strikethrough
-  - highlight # textmarker (ot supported by Kirby’s default markdown parser.)
+  - highlight # textmarker (not supported by Kirby’s default markdown parser.)
   - pagelink
   - file
   - footnote
