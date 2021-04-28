@@ -33,6 +33,7 @@
     "@codemirror/highlight": "^0.18.0",
     "@codemirror/history": "^0.18.0",
     "@codemirror/lang-markdown": "^0.18.0",
+    "@codemirror/language": "^0.18.1",
     "@codemirror/rangeset": "^0.18.0",
     "@codemirror/search": "^0.18.0",
     "@codemirror/state": "^0.18.0",

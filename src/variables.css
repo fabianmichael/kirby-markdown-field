@@ -10,7 +10,7 @@
   --cm-selection-background: hsla(195, 80%, 40%, 0.16);
   --cm-color-special-char: #df5f5f;
   --cm-color-cursor: #5588ca;
-  --cm-colors-highlight: rgba(255, 230, 0, 0.4); /* #fdc500; */
+  --cm-color-highlight-background: rgba(255, 230, 0, 0.4); /* #fdc500; */
   --cm-min-lines: 2;
 }
 

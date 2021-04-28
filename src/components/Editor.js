@@ -18,6 +18,7 @@ import LineStyles from "./Extensions/LineStyles.js";
 import PasteUrls from "./Extensions/PasteUrls.js";
 import TaskLists from "./Extensions/TaskLists.js";
 import Theme from "./Extensions/Theme.js";
+// import ImagePreview from "./Extensions/ImagePreview.js";
 
 // import autocomplete from "./Extensions/Autocomplete.js";
 
@@ -85,13 +86,14 @@ export default class Editor extends Emitter {
     return new Extensions([
       new KirbytextLanguage(),
       new LineStyles(),
-      new URLs(),
-      // new FilePicker(),
       new Invisibles(),
+      new URLs(),
       new PasteUrls(),
       new TaskLists(),
       new DropCursor(),
       new Theme(),
+      // new FilePicker(),
+      // new ImagePreview(),
       ...this.options.extensions,
     ], this, this.options.input);
   }
@@ -134,6 +136,7 @@ export default class Editor extends Emitter {
   createView(value) {
     const debouncedUpdateActiveTokens = debounce(() => {
       this.activeTokens = getActiveTokens(this.view, this.blockFormats, this.inlineFormats);
+      console.log("accc", this.activeTokens);
       this.emit("active", this.activeTokens);
     }, 50);
 

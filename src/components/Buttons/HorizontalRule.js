@@ -78,6 +78,6 @@ export default class HorizontalRule extends Button {
   }
 
   get isDisabled() {
-    return () => this.editor.isActiveToken("kirbytag", "Link");
+    return () => this.editor.isActiveToken("Kirbytag", "Link");
   }
 }

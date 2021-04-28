@@ -47,7 +47,7 @@ function getNextGroupRange(view) {
 // Toggles the block format of all currently selected lines
 export function toggleBlockFormat(view, blockFormats, type) {
   const state = view.state;
-  let { from, to, anchor, head } = state.selection.main;
+  let { from, to, anchor, head, empty: isSelectionEmpty } = state.selection.main;
   const firstLine = state.doc.lineAt(from);
   const lastLine = state.doc.lineAt(to);
   const tree = ensureSyntaxTree(state, lastLine.to, 500);
@@ -139,7 +139,10 @@ export function toggleBlockFormat(view, blockFormats, type) {
       const oldMarkLength = match ? match[0].length : 0;
       const newMark = blockFormats.render(type, n++);
 
-      if (index === 0) {
+      if (isSelectionEmpty) {
+        selFrom += newMark.length - oldMarkLength;
+        selLength = 0;
+      } else if (index === 0) {
         selFrom += (from > line.from + oldMarkLength || line.length === 0)
           ? newMark.length - oldMarkLength
           : 0;
@@ -403,7 +406,7 @@ function renderLine(nodes, blockFormats, inlineFormats) {
   return result;
 }
 
-function toggleLineFormat(view, blockFormats, inlineFormats, lineNumber, type, action) {
+function toggleInlineFormatForLine(view, blockFormats, inlineFormats, lineNumber, type, action) {
   const state     = view.state;
   const line      = state.doc.line(lineNumber);
   const selection = state.selection.main;
@@ -548,7 +551,7 @@ function toggleSelectionInlineFormat(view, blockFormats, inlineFormats, type) {
     // Inline formats cannot span multiple lines in Markdown, so apply
     // toggle to every line separately.
     lengthBefore += state.doc.line(n).text.length;
-    lines.push(toggleLineFormat(view, blockFormats, inlineFormats, n, type, action));
+    lines.push(toggleInlineFormatForLine(view, blockFormats, inlineFormats, n, type, action));
   }
 
   // As we don’t have robust selection tracking throughout all changes, the way

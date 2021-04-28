@@ -1,14 +1,68 @@
 import { styleTags, Tag, tags as defaultTags } from "@codemirror/highlight"
 import { markdown, markdownKeymap, markdownLanguage } from "@codemirror/lang-markdown";
+import { syntaxTree } from "@codemirror/language";
 import { RangeSetBuilder } from "@codemirror/rangeset";
-import { ViewPlugin, Decoration } from "@codemirror/view";
+import { Decoration, ViewPlugin } from "@codemirror/view";
+// import { RangeSetBuilder } from "@codemirror/rangeset";
+// import { ViewPlugin, Decoration } from "@codemirror/view";
 import Extension from "../Extension.js";
 
 /** Support for highlighted text */
 
 export const tags = {
   highlight: Tag.define(),
+  kirbytag: Tag.define(),
+  hardBreak: Tag.define(),
 };
+
+// Parser extension for recognizing Kirbytags
+function Kirbytag(knownTags) {
+  return {
+    defineNodes: ["Kirbytag"],
+    parseInline: [{
+      name: "Kirbytag",
+      parse(cx, next, pos) {
+        if (next != 40 /* '(' */) {
+          return -1;
+        }
+
+        let after = cx.slice(pos, cx.end);
+        const tagNamesPattern = knownTags.join("|");
+        let regex = new RegExp(`(\\((?:${tagNamesPattern}):)|(\\()|(\\))`, "gi");
+
+        let level = 0;
+        let match;
+        let inTag = false;
+
+        while ((match = regex.exec(after))) {
+          if (match[1] && !inTag) {
+            inTag = true;
+            level += 1;
+          } else if (match[2] && inTag) {
+            level += 1;
+          } else if (match[3] && inTag) {
+            level -= 1;
+
+            if (level === 0) {
+              return cx.addElement(cx.elt("Kirbytag", pos, pos + match.index + match[0].length));
+            }
+          }
+        }
+
+        // No tag found
+        return -1;
+      },
+      before: "Emphasis"
+    }],
+    props: [
+      styleTags({
+        "Kirbytag": tags.kirbytag,
+      })
+    ]
+  }
+}
+
+// Support for the `==highlight==` => `<mark>highlight</mark>` syntax
 
 const HighlightDelim = { resolve: "Highlight", mark: "HighlightMark" };
 
@@ -26,128 +80,47 @@ const Highlight = {
   }],
   props: [
     styleTags({
-      HighlightMark: defaultTags.processingInstruction,
+      "HighlightMark": defaultTags.processingInstruction,
       "Highlight/...": tags.highlight,
     })
   ]
 }
 
-// https://github.com/lezer-parser/markdown/blob/master/src/markdown.ts
-// function isDefinitionListDefinition(line) {
-//   if (line.next != 58 /* ':' */ || line.indent >= line.baseIndent + 4) return -1
-//   let pos = line.pos + 1
-//   while (pos < line.text.length && line.text.charCodeAt(pos) == line.next) pos++
-//   let end = pos
-//   while (pos < line.text.length && space(line.text.charCodeAt(pos))) pos++
-//   return pos == line.text.length ? end : -1
-// }
+// Extension for the Markdown parser, which is only present, so Hardbreaks can
+// be picked up by other extensions for styling etc.
+const HardBreak = {
+  props: [
+    styleTags({
+      "HardBreak": tags.hardBreak,
+    })
+  ]
+}
 
-// class DefinitionListParser {
-//   nextLine(cx, line, leaf) {
-//     let underline = line.depth < cx.stack.length ? -1 : isDefinitionListDefinition(line)
-//     let next = line.next
-//     if (underline < 0) return false
-//     let underlineMark = elt(Type.HeaderMark, cx.lineStart + line.pos, cx.lineStart + underline)
-//     cx.nextLine()
-//     cx.addLeafElement(leaf, elt(next == 61 ? Type.SetextHeading1 : Type.SetextHeading2, leaf.start, cx.prevLineEnd(), [
-//       ...cx.parser.parseInline(leaf.content, leaf.start),
-//       underlineMark
-//     ]))
-//     return true
-//   }
+// Decoration of Kirbytags has to happen at view level, because otherwise they
+// would be chunked into small pieces, when other decorations, such as the
+// invisibles extension are active.
+function highlightKirbytags(view) {
+  const b = new RangeSetBuilder();
 
-//   finish() {
-//     return false
-//   }
-// }
-
-
-// const DefinitionList = {
-//   // defineNodes: ["Highlight", "HighlightMark"],
-//   parseBlock: [{
-//     name: "DefinitionList",
-//     parse(cx, next, pos) {
-//       if (next != 61 /* '=' */ || cx.char(pos + 1) != 61) {
-//         return -1;
-//       }
-//       return cx.addDelimiter(HighlightDelim, pos, pos + 2, true, true);
-//     },
-//     after: "Emphasis"
-//   }],
-//   props: [
-//     styleTags({
-//       HighlightMark: defaultTags.processingInstruction,
-//       "Highlight/...": tags.highlight,
-//     })
-//   ]
-// }
-
-/* Kirbytags */
-
-function kirbytags(knownTags) {
-
-  const tagNamesPattern = knownTags.join("|");
-
-  return ViewPlugin.fromClass(
-    class KirbytagsHighlighter {
-      constructor(view) {
-        this.decorations = this.mkDeco(view);
-      }
-
-      update(update) {
-        if (update.viewportChanged || update.docChanged)
-          this.decorations = this.mkDeco(update.view);
-      }
-
-      mkDeco(view) {
-        let b = new RangeSetBuilder();
-        let regex = new RegExp(`(\\((?:${tagNamesPattern}):)|(\\()|(\\))`, "gi");
-
-        for (let { from, to } of view.visibleRanges) {
-          let range = view.state.sliceDoc(from, to);
-
-          let inTag = false;
-          let level = 0;
-          let match;
-          let tagStartIndex;
-          // let tagName = null;
-
-          while ((match = regex.exec(range))) {
-            if (match[1] && !inTag) {
-              inTag = true;
-              tagStartIndex = match.index;
-              // tagName = match[1].substring(1, match[1].length - 1);
-              level += 1;
-            } else if (match[2] && inTag) {
-              level += 1;
-            } else if (match[3] && inTag) {
-              level -= 1;
-
-              if (level === 0) {
-                b.add(
-                  from + tagStartIndex,
-                  from + match.index + match[0].length,
-                  Decoration.mark({
-                    class: "cm-kirbytag",
-                  })
-                );
-
-                inTag = false;
-                tagStartIndex = null;
-                // tagName = null;
-                level = 0;
-              }
-            }
-          }
+  for (let {from, to} of view.visibleRanges) {
+    syntaxTree(view.state).iterate({
+      enter: ({ name }, from, to) => {
+        if (name !== "Kirbytag") {
+          return;
         }
 
-        return b.finish();
-      }
-    },
-    {
-      decorations: (v) => v.decorations,
-    }
-  );
+        b.add(
+          from,
+          to,
+          Decoration.mark({ class: "cm-kirbytag" })
+        );
+      },
+      from,
+      to,
+    })
+  }
+
+  return b.finish();
 }
 
 /* Export plugins */
@@ -158,21 +131,38 @@ export default class MarkdownLanguage extends Extension {
   }
 
   plugins() {
+    const highlightKirbytagsPlugin = ViewPlugin.fromClass(class {
+      constructor(view) {
+        this.decorations = highlightKirbytags(view);
+      }
+
+      update(update) {
+        if (update.docChanged || update.viewportChanged) {
+          this.decorations = highlightKirbytags(update.view);
+        }
+      }
+    }, {
+      decorations: (v) => v.decorations,
+    });
+
     return [
       markdown({
         base: markdownLanguage,
-        extensions: [Highlight],
+        extensions: [
+          this.input.kirbytext ? Kirbytag(this.input.knownKirbytags) : null,
+          Highlight,
+          HardBreak
+        ],
       }),
-      this.input.kirbytext ? kirbytags(this.input.knownKirbytags) : null,
+      this.input.kirbytext ? highlightKirbytagsPlugin : null,
     ];
   }
 
-  // Base formats, can be extended or overridden by their respective buttons
+  // Base formats, which can be extended or overridden by their
+  // respective toolbar buttons
   get syntax() {
     return [
-
       // Block formats
-
       {
         token: "FencedCode",
         type: "block",
@@ -267,7 +257,6 @@ export default class MarkdownLanguage extends Extension {
       },
 
       // Inline formats
-
       {
         token: "Emphasis",
         type: "inline",
@@ -315,6 +304,10 @@ export default class MarkdownLanguage extends Extension {
       },
       {
         token: "URL",
+        type: "inline",
+      },
+      {
+        token: "Kirbytag",
         type: "inline",
       },
     ];

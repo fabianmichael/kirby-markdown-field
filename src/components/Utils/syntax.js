@@ -16,6 +16,21 @@ export function getBlockNameAt(view, blockFormats, pos) {
   return "Paragraph";
 }
 
+export function getKirbytagAt(view, pos) {
+  const tree = syntaxTree(view.state);
+  const trees = [tree.resolve(pos, 0)];
+
+  for (let n of trees) {
+    do {
+      if (n.name === "Kirbytag") {
+        return n;
+      }
+    } while ((n = n.parent));
+  }
+
+  return false;
+}
+
 export function nodeIsKirbytag(node) {
   if (node.classList) {
     if (node.classList.contains("cm-kirbytag")) {
@@ -42,12 +57,13 @@ export function getActiveTokens(view, blockFormats, inlineFormats, ensureTree = 
   if (from !== to) {
     // Selection
 
-    let line         = doc.lineAt(from);
-    let n            = line.number;
-    let nFirst       = line.number;
-    let blockTokens  = [];
-    let inlineTokens = [];
-    let inlineDone   = false;
+    let line          = doc.lineAt(from);
+    let n             = line.number;
+    let nFirst        = line.number;
+    let blockTokens   = [];
+    let inlineTokens  = [];
+    let inlineDone    = false;
+    let inlineTouched = [];
 
     do {
       let { from: lFrom, to: lTo, text } = line;
@@ -141,7 +157,7 @@ export function getActiveTokens(view, blockFormats, inlineFormats, ensureTree = 
 
     } while (++n <= doc.lines && (line = doc.line(n)) && line.from < to);
 
-    tokens = [...blockTokens, ...inlineTokens];
+    tokens = [...blockTokens, ...inlineTokens, ...inlineTouched];
 
   } else {
     // No selection
@@ -169,17 +185,18 @@ export function getActiveTokens(view, blockFormats, inlineFormats, ensureTree = 
     });
   }
 
-  // Check if selection start or end (or cursor) is inside Kirbytag
-  let isKirbytag = nodeIsKirbytag(view.domAtPos(from).node);
+  // Check if selection start or end (or cursor) is inside Kirbytag,
+  // because that is used elsewhere to disable inline format buttons.
+  if (!tokens.includes("Kirbytag")) {
+    let isKirbytag = !!getKirbytagAt(view, from);
 
-  if (from !== to) {
-    if (!isKirbytag) {
-      isKirbytag = nodeIsKirbytag(view.domAtPos(to).node);
+    if (!state.selection.main.empty && !isKirbytag) {
+      isKirbytag = getKirbytagAt(view, to);
     }
-  }
 
-  if (isKirbytag) {
-    tokens.push("kirbytag");
+    if (isKirbytag) {
+      tokens.push("Kirbytag");
+    }
   }
 
   return tokens;

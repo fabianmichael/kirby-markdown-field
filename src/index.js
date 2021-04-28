@@ -1,4 +1,5 @@
 import "./variables.css";
+import "./globals.css";
 
 import MarkdownBlock from "./components/MarkdownBlock.vue";
 import MarkdownField from "./components/MarkdownField.vue";

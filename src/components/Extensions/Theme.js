@@ -1,6 +1,6 @@
 import { EditorView, PluginField, ViewPlugin } from "@codemirror/view";
 import { HighlightStyle, tags as t } from "@codemirror/highlight";
-import { tags as markdownTags } from "./KirbytextLanguage";
+import { tags as kirbytextTags } from "./KirbytextLanguage";
 import Extension from "../Extension.js";
 
 function theme() {
@@ -81,8 +81,8 @@ function highlightStyle() {
       color: "currentColor",
     },
     {
-      tag: markdownTags.highlight,
-      backgroundColor: "var(--cm-colors-highlight)",
+      tag: kirbytextTags.highlight,
+      backgroundColor: "var(--cm-color-highlight-background)",
       color: "var(--color-text) !important",
       padding: ".1em 0",
       margin: "-.1em 0",
@@ -150,7 +150,7 @@ function highlightStyle() {
     {
       tag: [t.labelName, t.link],
       fontWeight: "400",
-    }
+    },
   ]);
 }
 
