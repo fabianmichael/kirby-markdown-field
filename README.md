@@ -5,7 +5,7 @@
 **Known issues of the alpha:**
 
 - CodeMirror 6 is still in beta. Its API might still be subject to minor changes, so this plugin will not reach a stable version until CodeMirror 6 does.
-- Format toggling sometimes changes the selection in unexpected ways
+- File/page selector queries are not supported yet.
 
 Enhanced, extensible Markdown field for Kirby CMS. Version 2!
 
@@ -50,8 +50,10 @@ Enhanced, extensible Markdown field for Kirby CMS. Version 2!
   - [4. Extension API](#4-extension-api)
   - [5. Development](#5-development)
   - [7. Migrating from Version 1](#7-migrating-from-version-1)
-  - [7. License](#7-license)
-  - [8. Credits](#8-credits)
+  - [8. Known Issues](#8-known-issues)
+  - [9. What’s not supported (and never will be)](#9-whats-not-supported-and-never-will-be)
+  - [10. License](#10-license)
+  - [11. Credits](#11-credits)
 
 ****
 
@@ -126,7 +128,7 @@ buttons:
 ```
 
 If you don't need it, you can hide the toolbar. This will also disable
-the keyboard shortcuts for all formats. 
+the keyboard shortcuts for all formats.
 
 ```yaml
 buttons: false
@@ -290,18 +292,23 @@ npm run build
 - The global field options have been removed. Use field presets instead. (see <https://getkirby.com/docs/guide/blueprints/extending-blueprints#reusing-and-extending-single-fields>).
 - The `direction` option has been removed. CodeMirror 6 automatically determines the current text direction of the panel.
 
-## 8. What’s not supported (and never will be)
+## 8. Known Issues
+
+- **Kirbytags:** In some edge-cases with nested parenthesis or nested Kirbytags, the highlighting can differ from how Kirby parses. This shoudld not be an issue for most daily use-cases.
+- **Inline Format toggling:** The selection will sometimes in unexpected ways, when dealing with very complex re-formatting. Solving this would need a more sophisticated selection/caret-tracking during all transformations. IMHO, it still works better than in most other Markdown editors and does not lead to data-loss, so ¯\_(ツ)_/¯.
+
+## 9. What’s not supported (and never will be)
 
 They way how Markdown is used nowadays has changed since its inception, especially since GFM ("GitHub-Flavored Markdown") became popular and added some elements to the language.
 
 - **Setext-style headings:** If you don’t know what these are, just forget about theme. There is basic highlighting, but they are neither recognized as headings nor respected when changing formats. Use ATX-style headings instead (e.g. `## Heading Level 2`).
 - **Indended code blocks:** Use fenced code blocks instead.
 
-## 9. License
+## 10. License
 
 MIT
 
-## 10. Credits
+## 11. Credits
 
 **Text editor:**
 

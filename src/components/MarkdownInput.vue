@@ -5,7 +5,7 @@
     :data-font-family="font"
     :data-font-size="fontSize"
     :data-layout="layout"
-    :data-over="over"
+    :data-dragover="!!isDragOver"
     :data-size="size"
     :data-invisibles="invisibles"
   >
@@ -22,6 +22,7 @@
       ref="input"
       class="k-markdown-input"
       @dragenter="onDragEnter"
+      @dragover="onDragOver"
       @dragleave="onDragLeave"
       @drop="onDrop"
       @keydown.meta.enter="onSubmit"
@@ -346,6 +347,8 @@ export default {
      * Drag and Drop and Uploads
      */
     onDrop($event) {
+      this.isDragOver = false;
+
       // dropping files
       if (this.uploads && this.$helper.isUploadEvent($event)) {
         return this.$refs.fileUpload.drop($event.dataTransfer.files, {
@@ -357,7 +360,7 @@ export default {
       // dropping text
       const drag = this.$store.state.drag;
       if (drag && drag.type === "text") {
-        this.editor.insert(drag.data);
+        this.editor.insert(drag.data, true);
         this.focus();
       }
     },
@@ -365,6 +368,10 @@ export default {
     onDragLeave() {
       this.$refs.input.blur();
       this.isDragOver = false;
+    },
+
+    onDragOver() {
+      this.isDragOver = true;
     },
 
     onDragEnter($event) {
@@ -484,6 +491,14 @@ export default {
   flex-grow: 0;
 }
 
+.k-markdown-input .cm-cursor {
+  transition: transform .15s;
+}
+
+.k-markdown-input-wrap[data-dragover="true"] .cm-cursor {
+  transform: scale(1.1, 1.5);
+}
+
 /**
  * 1. Hack for overriding the color of header marks, because these
  *    would appear gray otherwise, such as other `processingInstruction`
@@ -505,13 +520,9 @@ export default {
   border-radius: 0.1875em;
   box-decoration-break: clone;
   font-weight: 400;
-  margin: -0.0625em;
+  margin: -0.125em;
   padding: 0.0625em;
 }
-
-/* .k-markdown-input .cm-kirbytag > * {
-  font-weight: 400;
-} */
 
 /**
  * 1. Override highlighting colors inside Kirbytags to ensure,

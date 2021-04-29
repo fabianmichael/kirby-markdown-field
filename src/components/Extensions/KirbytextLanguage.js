@@ -35,12 +35,18 @@ function Kirbytag(knownTags) {
         let inTag = false;
 
         while ((match = regex.exec(after))) {
-          if (match[1] && !inTag) {
+          if (!inTag && !match[1]) {
+            // no match and not in tag
+            return -1;
+          } if (!inTag && match[1]) {
+            // kirbytag start, e.g. `(image:`
             inTag = true;
             level += 1;
-          } else if (match[2] && inTag) {
+          } else if (inTag && (match[1] || match[2])) {
+            // in tag and open bracket `(` or start of nested tag
             level += 1;
-          } else if (match[3] && inTag) {
+          } else if (inTag && match[3]) {
+            // in Tag and close bracket `)`
             level -= 1;
 
             if (level === 0) {
