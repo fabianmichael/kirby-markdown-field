@@ -7,6 +7,7 @@
     :data-layout="layout"
     :data-over="over"
     :data-size="size"
+    :data-invisibles="invisibles"
   >
 
     <k-markdown-toolbar
@@ -508,9 +509,9 @@ export default {
   padding: 0.0625em;
 }
 
-.k-markdown-input .cm-kirbytag > * {
+/* .k-markdown-input .cm-kirbytag > * {
   font-weight: 400;
-}
+} */
 
 /**
  * 1. Override highlighting colors inside Kirbytags to ensure,
@@ -557,17 +558,17 @@ export default {
 }
 
 /**
- * Space
+ * 1- or more Spaces
  * 1. Ensure, that extra span around each space character does not
  *    have any effect on word-wrapping.
  **/
 .k-markdown-input .cm-invisible-char[data-code="32"] {
   background: radial-gradient(
       circle at center,
-      var(--cm-color-special-char) 50%,
-      transparent 50%
+      var(--cm-color-special-char) .1em,
+      transparent .1em
     )
-    50% calc(50% + 0.0625em) / 0.25em 0.25em no-repeat;
+    left calc(50% + 0.0625em) / 1ch 1ch repeat-x;
   word-break: break-all; /* 1 */
 }
 
@@ -612,7 +613,7 @@ export default {
     left center no-repeat;
 }
 
-/* Hardbreak (2 consecutive spaces at end of line */
+/* Hardbreak (2 consecutive spaces or more at end of line */
 .k-markdown-input .cm-hardbreak {
   position: relative;
 }

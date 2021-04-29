@@ -12,11 +12,12 @@ import Extension from "../Extension.js";
 export const tags = {
   highlight: Tag.define(),
   kirbytag: Tag.define(),
-  hardBreak: Tag.define(),
 };
 
 // Parser extension for recognizing Kirbytags
 function Kirbytag(knownTags) {
+  const tagNamesPattern = knownTags.join("|");
+
   return {
     defineNodes: ["Kirbytag"],
     parseInline: [{
@@ -27,7 +28,6 @@ function Kirbytag(knownTags) {
         }
 
         let after = cx.slice(pos, cx.end);
-        const tagNamesPattern = knownTags.join("|");
         let regex = new RegExp(`(\\((?:${tagNamesPattern}):)|(\\()|(\\))`, "gi");
 
         let level = 0;
@@ -86,16 +86,6 @@ const Highlight = {
   ]
 }
 
-// Extension for the Markdown parser, which is only present, so Hardbreaks can
-// be picked up by other extensions for styling etc.
-const HardBreak = {
-  props: [
-    styleTags({
-      "HardBreak": tags.hardBreak,
-    })
-  ]
-}
-
 // Decoration of Kirbytags has to happen at view level, because otherwise they
 // would be chunked into small pieces, when other decorations, such as the
 // invisibles extension are active.
@@ -150,8 +140,7 @@ export default class MarkdownLanguage extends Extension {
         base: markdownLanguage,
         extensions: [
           this.input.kirbytext ? Kirbytag(this.input.knownKirbytags) : null,
-          Highlight,
-          HardBreak
+          Highlight
         ],
       }),
       this.input.kirbytext ? highlightKirbytagsPlugin : null,

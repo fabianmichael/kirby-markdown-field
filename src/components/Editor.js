@@ -136,7 +136,6 @@ export default class Editor extends Emitter {
   createView(value) {
     const debouncedUpdateActiveTokens = debounce(() => {
       this.activeTokens = getActiveTokens(this.view, this.blockFormats, this.inlineFormats);
-      console.log("accc", this.activeTokens);
       this.emit("active", this.activeTokens);
     }, 50);
 

@@ -417,15 +417,15 @@ function toggleInlineFormatForLine(view, blockFormats, inlineFormats, lineNumber
 
   ensureSyntaxTree(state, line.to, 500).iterate({
     enter: ({ name }, nodeFrom, nodeTo) => {
-      if (!inlineFormats.exists(name) && !inlineFormats.markTokenExists(name)) {
-        // skip irrelevant nodes (e.g. links)
-        return;
+      if (inlineFormats.hasMark(name) || inlineFormats.markTokenExists(name)) {
+        // Only add relevant nodes (i.e. those with syntax), but skip those
+        // that will never be changed by toggling an inline format (e.g. Kirbytags, links)
+        tokens.push({
+          name,
+          from: nodeFrom,
+          to: nodeTo,
+        });
       }
-      tokens.push({
-        name,
-        from: nodeFrom,
-        to: nodeTo,
-      });
     },
     from: line.from,
     to: line.to,

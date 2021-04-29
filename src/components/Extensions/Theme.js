@@ -128,12 +128,6 @@ function highlightStyle() {
       tag: t.url,
       color: "var(--cm-color-meta)",
     },
-    // {
-    //   tag: t.url,
-    //   color: "var(--cm-color-meta)",
-    //   textDecoration: ".05em solid underline",
-    //   textUnderlineOffset: ".14em",
-    // },
     {
       // HTML Entity
       tag: t.character,
