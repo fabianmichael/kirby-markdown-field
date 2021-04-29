@@ -1,25 +1,27 @@
 # Kirby – Markdown field
 
-⚠️ **WARNING:** This plugin is still in alpha state. Some things might not work as expected, yet. ⚠️
+⚠️ **Notice:** This plugin is still in late alpha/early beta state. Some things might not work as expected, yet. However, if you’re adventurous: it might crash, but thanks to Kirby’s state management, data loss is pretty unlikely. Just Hit `⌘S`/`Ctrl+s` often enough to save your work. ⚠️
 
 **Known issues of the alpha:**
 
-- CodeMirror 6 is still in beta. Its API might still be subject to minor changes, so this plugin will not reach a stable version until CodeMirror 6 does.
+- CodeMirror 6 is still in beta. Its API might still be subject to minor changes, so this plugin will not officially reach a stable version until CodeMirror 6 does.
 - File/page selector queries are not supported yet.
 
 Enhanced, extensible Markdown field for Kirby CMS. Version 2!
 
 **Features:**
 
-- Syntax highlighting for Markdown and Kirbytext
+- Sophisticated, but subtle highlighting for Markdown and Kirbytext
 - Context-based format toggling (almost WYSIWYG-like)
 - Smart indentation for wrapping headlines and list items
+- Keyboard shortcuts for most actions
 - Custom toolbar buttons
 - Custom syntax highlights
 - Option to show whitespace characters
 - Clickable URLs
-- Configurable syntax (e.g. choose `_italic` or `*italic`)
-- Support for touch-based devices (thanks to CodeMirror 6)
+- Configurable Markdown syntax (e.g. choose `_italic` or `*italic`)
+- Replaces Kirby’s default [Markdown block](https://getkirby.com/docs/reference/panel/blocks/markdown) with one, that also supports syntax-highlighting.
+- Support for touch-based devices and great performance (thanks to CodeMirror 6)
 
 💡 **TL;DR:** The Markdown field, you all have been waiting for!
 
@@ -61,9 +63,9 @@ Enhanced, extensible Markdown field for Kirby CMS. Version 2!
 
 ⛔️ Only download and cloning of this branch is supported, until version 2 has been released.
 
-Download and copy this repository to `/site/plugins/markdown-field`
+~~Download and copy this repository to `/site/plugins/markdown-field`~~
 
-Alternatively, you can install it with composer: `composer require k-community/markdown-field`
+~~Alternatively, you can install it with composer: `composer require k-community/markdown-field`~~
 
 <br/>
 
@@ -77,21 +79,17 @@ editor:
   type: markdown
 ```
 
-<br/>
-
 ## 3. Options
-
-⛔️ Needs update, query not implemented yet.
 
 ### 3.1. Available options
 
 You have access to the very same options as [the textarea field](https://getkirby.com/docs/reference/panel/fields/textarea), and a few more:
 
-| Option | Type | Required | Default | Description |
-|:-------|:-----|:---------|:--------|:------------|
-| font | string | `false` | `monospace` | Sets the font family (`sans-serif` or `monospace`) |
-| query | Object | false | [see below](#34-query) | Sets a custom query for the page selector dialog |
-| size | String | false | `small` | Sets the empty height of the Markdown field |
+| Option | Type   | Required | Default                | Description                                        |
+|:-------|:-------|:---------|:-----------------------|:---------------------------------------------------|
+| font   | string | `false`  | `monospace`            | Sets the font family (`sans-serif` or `monospace`) |
+| query  | Object | `false`  | [see below](#34-query) | Sets a custom query for the page selector dialog   |
+| size   | String | `false`  | `small`                | Sets the empty height of the Markdown field        |
 
 ### 3.2. Font settings
 
