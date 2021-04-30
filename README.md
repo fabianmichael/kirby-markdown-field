@@ -1,6 +1,6 @@
 # Kirby – Markdown field
 
-⚠️ **Notice:** This plugin is still in late alpha/early beta state. Some things might not work as expected, yet. However, if you’re adventurous: it might crash, but thanks to Kirby’s state management, data loss is pretty unlikely. Just Hit `⌘S`/`Ctrl+s` often enough to save your work. ⚠️
+⚠️ **Notice:** This plugin is still in late alpha/early beta state. Some things might not work as expected, yet. However, if you’re adventurous: it might crash, but thanks to Kirby’s state management, data loss is pretty unlikely. Just hit `⌘S`/`Ctrl+s` frequently to save your work and you should be save. ⚠️
 
 **Known issues of the alpha:**
 
