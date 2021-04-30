@@ -292,14 +292,14 @@ npm run build
 
 ## 8. Known Issues
 
-- **Kirbytags:** In some edge-cases with nested parenthesis or nested Kirbytags, the highlighting can differ from how Kirby parses. This shoudld not be an issue for most daily use-cases.
+- **Kirbytags:** In some edge-cases with nested parenthesis or nested Kirbytags, the highlighting can differ from how Kirby parses the markup. This should’nt not be an issue for most daily use-cases. You can also not have multiple consecutive line breaks within Kirbytags, or the highlighter will fail. This is because of the way of how Markdown makes a clear separation between block and inline elements.
 - **Inline Format toggling:** The selection will sometimes in unexpected ways, when dealing with very complex re-formatting. Solving this would need a more sophisticated selection/caret-tracking during all transformations. IMHO, it still works better than in most other Markdown editors and does not lead to data-loss, so ¯\_(ツ)_/¯.
 
 ## 9. What’s not supported (and never will be)
 
 They way how Markdown is used nowadays has changed since its inception, especially since GFM ("GitHub-Flavored Markdown") became popular and added some elements to the language.
 
-- **Setext-style headings:** If you don’t know what these are, just forget about theme. There is basic highlighting, but they are neither recognized as headings nor respected when changing formats. Use ATX-style headings instead (e.g. `## Heading Level 2`).
+- **Setext-style headings:** If you don’t know what these are, just forget about them. There is basic highlighting, but they are neither recognized as headings by the toolbar, nor respected when changing formats. Use ATX-style headings instead (e.g. `## Heading Level 2`).
 - **Indended code blocks:** Use fenced code blocks instead.
 
 ## 10. License
