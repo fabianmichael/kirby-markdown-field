@@ -23,7 +23,6 @@ function theme() {
 
       ".cm-content": {
         padding: "var(--cm-content-padding-y) 0",
-        whiteSpace: "pre-wrap",
         overflowWrap: "break-word", // prevents long, unbreakable word from creating a horizontal scrollbar
         wordBreak: "break-word",
         minHeight: "calc(2 * var(--cm-content-padding-y) + var(--cm-min-lines, 1) * 1em * var(--cm-line-height))", // prevents the editor from collapsing under certain cirtumstances
@@ -171,7 +170,8 @@ export default class Theme extends Extension {
     return [
       highlightStyle(),
       theme(),
-      scrollMargin()
+      scrollMargin(),
+      EditorView.lineWrapping,
     ];
   }
 
