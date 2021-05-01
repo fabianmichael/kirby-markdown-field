@@ -142,7 +142,7 @@ function highlightStyle() {
       // borderRadius: ".125em",
     },
     {
-      tag: [t.labelName, t.link],
+      tag: [t.labelName],
       fontWeight: "400",
     },
   ]);
