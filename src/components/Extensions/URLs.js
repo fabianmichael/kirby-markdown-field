@@ -3,6 +3,7 @@ import { syntaxTree } from "@codemirror/language";
 import { RangeSetBuilder } from "@codemirror/rangeset";
 import Extension from "../Extension.js";
 import browser from "../Utils/browser.js";
+import { isURL } from "../Utils/strings.js";
 
 
 /**
@@ -38,28 +39,76 @@ document.addEventListener("visibilitychange", () => (document.hidden ? toggleMod
  * Use a custom highlighter, for being able to click URL elements and
  * for better styling control.
  */
-function highlightURLs(view) {
+function highlightURLs(extension, view) {
   const b = new RangeSetBuilder();
 
   for (let {from, to} of view.visibleRanges) {
     syntaxTree(view.state).iterate({
       enter: ({ name }, from, to) => {
-        if (name !== "URL") {
-          return;
+        if (name === "URL") {
+          // Markdown URL token
+          const [, prefix, url, suffix] = view.state.doc.sliceString(from, to).match(/^(<?)(.*?)(>?)$/);
+
+          b.add(
+            from + prefix.length,
+            to - suffix.length,
+            Decoration.mark({
+              class: "cm-url",
+              attributes: {
+                "data-url": url,
+              },
+            })
+          );
+        } else if (name === "Kirbytag") {
+          // URL within Kirbytag
+
+          const match = view.state.doc.sliceString(from, to).match(/^\((image|file|link|email)(:\s*)([^\s)]+)/);
+
+          if (!match) {
+            return;
+          }
+
+          const [, tag, tagSuffix, url] = match;
+          let attributes = null;
+
+          if (["file", "image"].includes(tag)) {
+
+            if (isURL(url)) {
+              // external image/file
+              attributes = { "data-url": url }
+            } else if (!url.includes("/")) {
+              // on same page
+              const api = extension.input.$store.getters["content/model"]().api;
+              attributes = { "data-panel-url": `${api}/files/${url}` };
+            } else {
+              // other page
+              let lastIndex = url.lastIndexOf("/");
+              attributes = { "data-panel-url": `/pages/${url.substr(0, lastIndex)}/files/${url.substr(lastIndex + 1)}` };
+            }
+
+          } else if (["link", "video", "gist"].includes(tag)) {
+
+            if (isURL(url) || url.startsWith("/")) {
+              attributes = { "data-url": url };
+            } else if (tag === "link") {
+              attributes = { "data-panel-url": `/pages/${url.replace("/", "+")}` };
+            }
+
+          } else if (tag === "email") {
+            attributes = { "data-url": `mailto:${url}`, "data-sametab": true };
+          }
+
+          if (attributes) {
+            b.add(
+              from + 1 + tag.length + tagSuffix.length,
+              from + match[0].length,
+              Decoration.mark({
+                class: "cm-url cm-kirbytag-url",
+                attributes,
+              })
+            );
+          }
         }
-
-        const [, prefix, url, suffix] = view.state.doc.sliceString(from, to).match(/^(<?)(.*?)(>?)$/);
-
-        b.add(
-          from + prefix.length,
-          to - suffix.length,
-          Decoration.mark({
-            class: "cm-url",
-            attributes: {
-              "data-url": url,
-            },
-          })
-        );
       },
       from,
       to,
@@ -71,14 +120,16 @@ function highlightURLs(view) {
 
 export default class URLs extends Extension {
   plugins() {
+    const extension = this;
+
     const clickableLinksPlugin = ViewPlugin.fromClass(class {
       constructor(view) {
-        this.decorations = highlightURLs(view);
+        this.decorations = highlightURLs(extension, view);
       }
 
       update(update) {
         if (update.docChanged || update.viewportChanged) {
-          this.decorations = highlightURLs(update.view);
+          this.decorations = highlightURLs(extension, update.view);
         }
       }
     }, {
@@ -89,7 +140,18 @@ export default class URLs extends Extension {
           if (e.metaKey) {
             const link = e.target.classList.contains("cm-url") ? e.target : e.target.closest(".cm-url");
 
-            if (link) {
+            if (!link) {
+              return;
+            }
+
+            if (link.dataset.panelUrl) {
+              extension.input.$go(link.dataset.panelUrl);
+              return;
+            }
+
+            if (link.dataset.sametab) {
+              window.location.href = link.dataset.url;
+            } else {
               window.open(link.dataset.url, "_blank", "noopener,noreferrer");
             }
           }

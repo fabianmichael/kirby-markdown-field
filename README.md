@@ -5,7 +5,7 @@
 **Known issues of the alpha:**
 
 - CodeMirror 6 is still in beta. Its API might still be subject to minor changes, so this plugin will not officially reach a stable version until CodeMirror 6 does.
-- File/page selector queries are not supported yet.
+- File/page selector queries need some testing.
 
 Enhanced, extensible Markdown field for Kirby CMS. Version 2!
 
@@ -211,8 +211,6 @@ buttons:
 
 ### 3.5. Query
 
-⛔️ Not implemented yet, should follow textarea field.
-
 You can limit the options shown in the Pagelink dialog, by setting a `pagelink` query (if unset, you'll be able to browse the entire website tree)
 
 ```yaml
@@ -293,6 +291,7 @@ npm run build
 ## 8. Known Issues
 
 - **Kirbytags:** In some edge-cases with nested parenthesis or nested Kirbytags, the highlighting can differ from how Kirby parses the markup. This should’nt not be an issue for most daily use-cases. You can also not have multiple consecutive line breaks within Kirbytags, or the highlighter will fail. This is because of the way of how Markdown makes a clear separation between block and inline elements.
+- **Kirbytags in HTMl blocks** are not highlighted, because CodeMirror uses its own HTML Parser for that, which deactivates all Markdown highlighting within these.
 - **Inline Format toggling:** The selection will sometimes in unexpected ways, when dealing with very complex re-formatting. Solving this would need a more sophisticated selection/caret-tracking during all transformations. IMHO, it still works better than in most other Markdown editors and does not lead to data-loss, so ¯\_(ツ)_/¯.
 
 ## 9. What’s not supported (and never will be)

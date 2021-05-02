@@ -11,6 +11,10 @@
   --cm-color-special-char: #df5f5f;
   --cm-color-cursor: #5588ca;
   --cm-color-highlight-background: rgba(255, 230, 0, 0.4); /* #fdc500; */
+  --cm-kirbytag-background: rgba(66, 113, 174, 0.15);
+  --cm-kirbytag-border: rgba(66, 113, 174, 0.3);
+  --cm-kirbytag-link-bg: rgba(66, 113, 174, 0.1);
+
   --cm-min-lines: 2;
 }
 

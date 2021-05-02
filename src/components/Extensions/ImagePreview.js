@@ -1,7 +1,7 @@
 import { syntaxTree } from "@codemirror/language"
-import { Range, RangeSet } from "@codemirror/rangeset"
-import { EditorState, StateField } from "@codemirror/state"
-import { Decoration, DecorationSet, EditorView, WidgetType } from "@codemirror/view"
+import { RangeSet } from "@codemirror/rangeset"
+import { StateField } from "@codemirror/state"
+import { Decoration, EditorView, WidgetType } from "@codemirror/view"
 
 import Extension from "../Extension.js";
 
