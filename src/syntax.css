@@ -249,7 +249,7 @@
   text-underline-offset: 0.14em;
 }
 
-.k-markdown-input .cm-url {
+.k-markdown-input .cm-kirbytag-url {
   color: currentColor;
   text-decoration-color: var(--cm-kirbytag-border);
 }
@@ -257,9 +257,4 @@
 :root[data-markdown-modkey="true"] .k-markdown-input .cm-url,
 :root[data-markdown-modkey="true"] .k-markdown-input .cm-url * {
   cursor: pointer;
-}
-
-:root[data-markdown-modkey="true"]  .k-markdown-input .cm-kirbytag-url {
-  background: var(--cm-kirbytag-link-bg);
-  border-radius: 0.25em;
 }
