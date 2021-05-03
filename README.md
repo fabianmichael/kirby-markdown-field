@@ -202,7 +202,7 @@ buttons:
 
 | Format                        | Mac/iOS        | Linux/Windows  |
 |:------------------------------|:---------------|:---------------|
-| Show Whitespace               | `⌥⌃I`          | `Alt+Shift+i   |
+| Show Whitespace               | `⌥⌃I`          | `Alt+Shift+i`  |
 | Open clicked URL in new tab   | `⌘+Click`      | `Ctrl+Click`   |
 
 ### URLs
