@@ -13,7 +13,7 @@ Enhanced, extensible Markdown field for Kirby CMS. Version 2!
 
 - Sophisticated, but subtle highlighting for Markdown and Kirbytext
 - Context-based format toggling (almost WYSIWYG-like)
-- Smart indentation for wrapping headlines and list items
+- Smart indentation for wrapping headlines, list items and blockquotes
 - Keyboard shortcuts for most actions
 - Custom toolbar buttons
 - Custom syntax highlights
