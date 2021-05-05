@@ -34,6 +34,11 @@ export default class TaskLists extends Extension {
 
           e.preventDefault();
 
+          if (useKirbytext && pasted.startsWith(window.panel.site)) {
+            // Remove trailing URL for internal URLs
+            pasted = pasted.substr(window.panel.site.length).replace(/^\//, "");
+          }
+
           let [, prefix, linkText, suffix] = view.state.sliceDoc(from, to).match(/^(\s*)(.*?)(\s*)$/);
           let link = useKirbytext
             ? `(link: ${pasted} text: ${linkText})`
