@@ -127,3 +127,9 @@ export default class ImagePreview extends Extension {
     return "language";
   }
 }
+
+
+// window.panel.app.$store.subscribeAction((action, state) => {
+//   console.log(action.type)
+//   console.log(action.payload)
+// })
