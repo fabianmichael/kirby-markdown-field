@@ -11,15 +11,15 @@ import browser from "./Utils/browser.js";
 import URLs from "./Extensions/URLs.js";
 import DropCursor from "./Extensions/DropCursor.js";
 import Extensions from "./Extensions.js";
-// import FilePicker from "./Extensions/FilePicker.js";
 import Invisibles from "./Extensions/Invisibles.js";
 import KirbytextLanguage from "./Extensions/KirbytextLanguage.js";
 import LineStyles from "./Extensions/LineStyles.js";
 import PasteUrls from "./Extensions/PasteUrls.js";
 import TaskLists from "./Extensions/TaskLists.js";
 import Theme from "./Extensions/Theme.js";
-// import ImagePreview from "./Extensions/ImagePreview.js";
 
+// import FilePicker from "./Extensions/FilePicker.js";
+// import ImagePreview from "./Extensions/ImagePreview.js";
 // import autocomplete from "./Extensions/Autocomplete.js";
 
 const isKnownDesktopBrowser = (browser.safari || browser.chrome || browser.gecko) && (!browser.android && !browser.ios);
@@ -102,8 +102,8 @@ export default class Editor extends Emitter {
     const extensions = [
       history(),
       this.keymap(),
-      ...this.extensions.getPluginsByType("highlight"),
       ...this.extensions.getPluginsByType("language"),
+      ...this.extensions.getPluginsByType("highlight"),
       ...this.extensions.getPluginsByType("button"),
       this.invisibles.of([]),
       /**

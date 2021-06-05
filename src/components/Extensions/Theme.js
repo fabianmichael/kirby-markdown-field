@@ -83,8 +83,8 @@ function highlightStyle() {
       tag: kirbytextTags.highlight,
       backgroundColor: "var(--cm-color-highlight-background)",
       color: "var(--color-text) !important",
-      padding: ".1em 0",
-      margin: "-.1em 0",
+      // padding: ".1em 0",
+      // margin: "-.1em 0",
     },
     {
       tag: t.strong,

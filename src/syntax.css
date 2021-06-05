@@ -92,12 +92,13 @@
 /* Kirbytags */
 .k-markdown-input .cm-kirbytag {
   background: var(--cm-kirbytag-background);
-  border: 0.0625em solid var(--cm-kirbytag-border);
-  border-radius: 0.1875em;
+  /* border: 0.0625em solid var(--cm-kirbytag-border); */
+  /* border-radius: 0.1875em; */
   box-decoration-break: clone;
+  color: var(--color-text);
   font-weight: 400;
-  margin: -0.125em;
-  padding: 0.0625em;
+  /* margin: -0.125em; */
+  /* padding: 0.0625em; */
 }
 
 /**
