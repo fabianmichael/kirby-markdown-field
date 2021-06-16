@@ -144,6 +144,17 @@ function highlightStyle() {
       tag: [t.labelName],
       fontWeight: "400",
     },
+    {
+      tag: [kirbytextTags.kirbytag],
+      background: "var(--cm-kirbytag-background)",
+      border: "0.0625em solid var(--cm-kirbytag-border)",
+      borderRadius: "0.1875em",
+      // boxDecorationBreak: "clone",
+      color: "var(--color-text)",
+      fontWeight: "400",
+      margin: "-0.125em",
+      padding: "0.0625em",
+    }
   ]);
 }
 

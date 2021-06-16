@@ -1,13 +1,8 @@
 import { styleTags, Tag, tags as defaultTags } from "@codemirror/highlight"
 import { markdown, markdownKeymap, markdownLanguage } from "@codemirror/lang-markdown";
-import { syntaxTree } from "@codemirror/language";
-import { RangeSetBuilder } from "@codemirror/rangeset";
-import { Decoration, ViewPlugin } from "@codemirror/view";
-// import { RangeSetBuilder } from "@codemirror/rangeset";
-// import { ViewPlugin, Decoration } from "@codemirror/view";
 import Extension from "../Extension.js";
 
-/** Support for highlighted text */
+// Custom style tags
 
 export const tags = {
   highlight: Tag.define(),
@@ -15,6 +10,7 @@ export const tags = {
 };
 
 // Parser extension for recognizing Kirbytags
+
 function Kirbytag(knownTags) {
   const tagNamesPattern = knownTags.join("|");
 
@@ -92,33 +88,6 @@ const Highlight = {
   ]
 }
 
-// Decoration of Kirbytags has to happen at view level, because otherwise they
-// would be chunked into small pieces, when other decorations, such as the
-// invisibles extension are active.
-function highlightKirbytags(view) {
-  const b = new RangeSetBuilder();
-
-  for (let {from, to} of view.visibleRanges) {
-    syntaxTree(view.state).iterate({
-      enter: ({ name }, from, to) => {
-        if (name !== "Kirbytag") {
-          return;
-        }
-
-        b.add(
-          from,
-          to,
-          Decoration.mark({ class: "cm-kirbytag" })
-        );
-      },
-      from,
-      to,
-    })
-  }
-
-  return b.finish();
-}
-
 /* Export plugins */
 
 export default class MarkdownLanguage extends Extension {
@@ -127,20 +96,6 @@ export default class MarkdownLanguage extends Extension {
   }
 
   plugins() {
-    const highlightKirbytagsPlugin = ViewPlugin.fromClass(class {
-      constructor(view) {
-        this.decorations = highlightKirbytags(view);
-      }
-
-      update(update) {
-        if (update.docChanged || update.viewportChanged) {
-          this.decorations = highlightKirbytags(update.view);
-        }
-      }
-    }, {
-      decorations: (v) => v.decorations,
-    });
-
     return [
       markdown({
         base: markdownLanguage,
@@ -149,7 +104,6 @@ export default class MarkdownLanguage extends Extension {
           Highlight
         ],
       }),
-      this.input.kirbytext ? highlightKirbytagsPlugin : null,
     ];
   }
 

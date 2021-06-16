@@ -4,7 +4,8 @@
 
 /* All lines */
 .k-markdown-input .cm-line {
-  --cm-line-indent: calc(var(--cm-indent, 0ch) + var(--cm-mark, 0ch));
+  --cm-line-indent: calc(var(--cm-indent, 0) + var(--cm-mark, 0));
+
   margin-left: var(--cm-line-indent);
   padding: 0 var(--cm-line-padding-x);
   text-indent: calc(-1 * var(--cm-indent) - var(--cm-mark));
@@ -25,17 +26,17 @@
 }
 
 .k-markdown-input .cm-blockquote::before {
-  content: "";
   background: var(--cm-color-light-gray);
+  content: "";
   height: 100%;
-  right: calc(100% + var(--cm-mark, 0ch) - 1.5ch);
-  width: 0.25em;
   position: absolute;
+  right: calc(100% + var(--cm-mark, 0) - 1.5ch);
   top: 0;
+  width: .25em;
 }
 
 .k-markdown-input .cm-blockquote:not([style*="--cm-mark:"])::before {
-  right: calc(100% + var(--cm-indent, 0ch) - 1.5ch);
+  right: calc(100% + var(--cm-indent, 0) - 1.5ch);
 }
 
 /* Horizontal Rule */
@@ -46,11 +47,7 @@
 
 .k-markdown-input .cm-hr::before,
 .k-markdown-input .cm-hr::after {
-  background: linear-gradient(
-      var(--cm-color-light-gray),
-      var(--cm-color-light-gray)
-    )
-    50% calc(var(--cm-line-height) * 1em / 2) / 100% 0.0625rem no-repeat;
+  background: linear-gradient(var(--cm-color-light-gray), var(--cm-color-light-gray)) 50% calc(var(--cm-line-height) * 1em / 2) / 100% .0625rem no-repeat;
   content: "";
   flex: 1 0 2ch;
 }
@@ -89,36 +86,16 @@
  * ## Inline styles
  */
 
-/* Kirbytags */
-.k-markdown-input .cm-kirbytag {
-  background: var(--cm-kirbytag-background);
-  /* border: 0.0625em solid var(--cm-kirbytag-border); */
-  /* border-radius: 0.1875em; */
-  box-decoration-break: clone;
-  color: var(--color-text);
-  font-weight: 400;
-  /* margin: -0.125em; */
-  /* padding: 0.0625em; */
-}
-
-/**
- * 1. Override highlighting colors inside Kirbytags to ensure,
- *    that there’s enough contrast between text and the tag background.
- */
-.k-markdown-input .cm-kirbytag * {
-  color: currentColor; /* 1 */
-}
-
 /* Custom highlights plugin */
 
 .k-markdown-input [class*=" cm-token-"],
 .k-markdown-input [class^="cm-token-"] {
-  background: var(--token-background, rgba(0, 0, 0, 0.05));
-  border: 0.0625em solid var(--token-border, rgba(0, 0, 0, 0.1));
-  border-radius: 0.125em;
+  background: var(--token-background, rgba(0, 0, 0, .05));
+  border: .0625em solid var(--token-border, rgba(0, 0, 0, .1));
+  border-radius: .125em;
   color: var(--color-text, #000);
-  margin: -0.125em -0.0625em;
-  padding: 0.0625em 0;
+  margin: -.125em -.0625em;
+  padding: .0625em 0;
 }
 
 .k-markdown-input [class*=" cm-token-"] > *,
@@ -128,13 +105,13 @@
 
 /* https://github.com/getkirby/getkirby.com/blob/master/src/scss/variables.scss */
 .k-markdown-input .cm-token-red {
-  --token-background: rgba(255, 0, 0, 0.12);
-  --token-border: rgba(255, 0, 0, 0.25);
+  --token-background: rgba(255, 0, 0, .12);
+  --token-border: rgba(255, 0, 0, .25);
 }
 
 .k-markdown-input .cm-token-purple {
-  --token-background: hsla(285, 44%, 50%, 0.17);
-  --token-border: hsla(285, 44%, 50%, 0.4);
+  --token-background: hsla(285, 44%, 50%, .17);
+  --token-border: hsla(285, 44%, 50%, .4);
 }
 
 /**
@@ -151,41 +128,36 @@
  *    have any effect on word-wrapping.
  **/
 .k-markdown-input .cm-invisible-char[data-code="32"] {
-  background: radial-gradient(
+  background:
+    radial-gradient(
       circle at center,
       var(--cm-color-special-char) .1em,
       transparent .1em
     )
-    left calc(50% + 0.0625em) / 1ch 1ch repeat-x;
+    left calc(50% + .0625em) / 1ch 1ch repeat-x;
   word-break: break-all; /* 1 */
 }
 
 /* No-Break Space */
 .k-markdown-input .cm-invisible-char[data-code="160"] {
-  background: linear-gradient(
-        var(--cm-color-special-char),
-        var(--cm-color-special-char)
-      )
-      0.0625em 100% / 0.0625em 0.125em no-repeat,
-    linear-gradient(var(--cm-color-special-char), var(--cm-color-special-char))
-      0.0625em 100% / calc(100% - 0.125em) 0.0625em no-repeat,
-    linear-gradient(var(--cm-color-special-char), var(--cm-color-special-char))
-      calc(100% - 0.0625em) 100% / 0.0625em 0.125em no-repeat;
+  background:
+    linear-gradient(var(--cm-color-special-char), var(--cm-color-special-char)) .0625em 100% / .0625em .125em no-repeat,
+    linear-gradient(var(--cm-color-special-char), var(--cm-color-special-char)) .0625em 100% / calc(100% - .125em) .0625em no-repeat,
+    linear-gradient(var(--cm-color-special-char), var(--cm-color-special-char)) calc(100% - .0625em) 100% / .0625em .125em no-repeat;
   color: transparent;
 }
 
 /* Soft Hyphen */
 .k-markdown-input .cm-invisible-char[data-code="173"] {
-  border-left: 0.0625em solid var(--cm-color-special-char);
-  left: 0.03125em;
-  margin-left: -0.0625em;
+  border-left: .0625em solid var(--cm-color-special-char);
+  left: .03125em;
+  margin-left: -.0625em;
   position: relative;
 }
 
 /* Zero-Width Space */
 .k-markdown-input .cm-invisible-char[data-code="8203"] {
-  background: url("data:image/svg+xml,%3Csvg width='3' height='23' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 2.915v17.17a1.5 1.5 0 11-1 0V2.915a1.5 1.5 0 111 0zM1.5 2a.5.5 0 100-1 .5.5 0 000 1zm0 20a.5.5 0 100-1 .5.5 0 000 1z' fill='%23df5f5f' fill-rule='nonzero'/%3E%3C/svg%3E%0A")
-    no-repeat;
+  background: url("data:image/svg+xml,%3Csvg width='3' height='23' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 2.915v17.17a1.5 1.5 0 11-1 0V2.915a1.5 1.5 0 111 0zM1.5 2a.5.5 0 100-1 .5.5 0 000 1zm0 20a.5.5 0 100-1 .5.5 0 000 1z' fill='%23df5f5f' fill-rule='nonzero'/%3E%3C/svg%3E%0A") no-repeat;
   margin-bottom: -4px;
   margin-left: -1.5px;
   margin-right: -1.5px;
@@ -197,8 +169,7 @@
 
 /* Tab character */
 .k-markdown-input .cm-invisible-char[data-code="9"] {
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath fill='%23df5f5f' d='M9.85355339,3.14644661 C9.94403559,3.23692881 10,3.36192881 10,3.5 C10,3.63807119 9.94403559,3.76307119 9.85355339,3.85355339 L7.85355339,5.85355339 C7.65829124,6.04881554 7.34170876,6.04881554 7.14644661,5.85355339 C6.95118446,5.65829124 6.95118446,5.34170876 7.14644661,5.14644661 L8.29289322,4 L1.5,4 C1.22385763,4 1,3.77614237 1,3.5 C1,3.22385763 1.22385763,3 1.5,3 L8.29289322,3 L7.14644661,1.85355339 C6.95118446,1.65829124 6.95118446,1.34170876 7.14644661,1.14644661 C7.34170876,0.951184464 7.65829124,0.951184464 7.85355339,1.14644661 L9.85355339,3.14644661 Z'/%3E%3C/svg%3E%0A")
-    left center no-repeat;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath fill='%23df5f5f' d='M9.85355339,3.14644661 C9.94403559,3.23692881 10,3.36192881 10,3.5 C10,3.63807119 9.94403559,3.76307119 9.85355339,3.85355339 L7.85355339,5.85355339 C7.65829124,6.04881554 7.34170876,6.04881554 7.14644661,5.85355339 C6.95118446,5.65829124 6.95118446,5.34170876 7.14644661,5.14644661 L8.29289322,4 L1.5,4 C1.22385763,4 1,3.77614237 1,3.5 C1,3.22385763 1.22385763,3 1.5,3 L8.29289322,3 L7.14644661,1.85355339 C6.95118446,1.65829124 6.95118446,1.34170876 7.14644661,1.14644661 C7.34170876,0.951184464 7.65829124,0.951184464 7.85355339,1.14644661 L9.85355339,3.14644661 Z'/%3E%3C/svg%3E%0A") left center no-repeat;
 }
 
 /* Hardbreak (2 consecutive spaces or more at end of line */
@@ -225,18 +196,18 @@
  */
 
 .k-markdown-input .cm-taskmarker {
-  position: relative;
   cursor: pointer;
+  position: relative;
 }
 
 .k-markdown-input .cm-taskmarker.is-unchecked:hover::before {
-  content: "x";
-  position: relative;
-  left: 1ch;
-  text-indent: 0;
-  margin-right: -1ch;
   color: var(--cm-color-meta);
-  opacity: 0.7;
+  content: "x";
+  left: 1ch;
+  margin-right: -1ch;
+  opacity: .7;
+  position: relative;
+  text-indent: 0;
 }
 
 .k-markdown-input .cm-taskmarker.is-unchecked:hover .cm-invisible-char {
@@ -246,8 +217,8 @@
 .k-markdown-input .cm-url {
   color: var(--cm-color-meta);
   text-decoration: underline;
-  text-decoration-thickness: 0.1em;
-  text-underline-offset: 0.14em;
+  text-decoration-thickness: .1em;
+  text-underline-offset: .14em;
 }
 
 .k-markdown-input .cm-kirbytag-url {
