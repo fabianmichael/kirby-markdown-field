@@ -144,6 +144,11 @@ export default class URLs extends Extension {
               return;
             }
 
+            if (/^[a-z]+:\/\/$/.test(link.dataset.url)) {
+              // Don’t do anything, when target URL was empty (e.g. "https://")
+              return;
+            }
+
             if (link.dataset.panelUrl) {
               extension.input.$go(link.dataset.panelUrl);
               return;
