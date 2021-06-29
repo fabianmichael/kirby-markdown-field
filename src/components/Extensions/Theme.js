@@ -120,7 +120,7 @@ function highlightStyle() {
     },
 
     {
-      tag: t.deleted,
+      tag: t.strikethrough,
       textDecoration: "line-through",
     },
     {
