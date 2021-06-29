@@ -14,7 +14,7 @@
     "build": "rollup -c"
   },
   "devDependencies": {
-    "@babel/core": "^7.14.3",
+    "@babel/core": "^7.14.6",
     "autoprefixer": "^9.8.6",
     "cssnano": "^4.1.10",
     "parcel-bundler": "^1.12.5",
@@ -29,17 +29,17 @@
     "vue-template-compiler": "^2.6.13"
   },
   "dependencies": {
-    "@codemirror/commands": "^0.18.0",
+    "@codemirror/commands": "^0.18.3",
     "@codemirror/comment": "^0.18.0",
     "@codemirror/highlight": "^0.18.0",
     "@codemirror/history": "^0.18.0",
-    "@codemirror/lang-markdown": "^0.18.3",
+    "@codemirror/lang-markdown": "^0.18.4",
     "@codemirror/language": "^0.18.2",
     "@codemirror/rangeset": "^0.18.3",
     "@codemirror/search": "^0.18.4",
     "@codemirror/state": "^0.18.0",
     "@codemirror/stream-parser": "^0.18.0",
-    "@codemirror/view": "^0.18.16",
+    "@codemirror/view": "^0.18.17",
     "@rollup/plugin-node-resolve": "^11.2.0",
     "underscore": "^1.13.1",
     "vue-hot-reload-api": "^2.3.4"

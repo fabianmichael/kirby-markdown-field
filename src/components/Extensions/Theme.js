@@ -18,7 +18,7 @@ function theme() {
         fontFamily: "var(--cm-font-family)",
         lineHeight: "var(--cm-line-height)",
         fontSize:   "var(--cm-font-size)",
-        overflow:   "visible", // Ensures, that no scrollbar will every become visible on the editor element.
+        overflow:   "visible", // Ensures, that no scrollbar will ever become visible on the editor element.
       },
 
       ".cm-content": {
@@ -181,7 +181,7 @@ export default class Theme extends Extension {
     return [
       highlightStyle(),
       theme(),
-      scrollMargin(),
+      // scrollMargin(),
       EditorView.lineWrapping,
     ];
   }
