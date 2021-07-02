@@ -10,6 +10,7 @@ import { getActiveTokens } from "./Utils/syntax.js";
 import browser from "./Utils/browser.js";
 import URLs from "./Extensions/URLs.js";
 import DropCursor from "./Extensions/DropCursor.js";
+import FirefoxBlurFix from "./Extensions/FirefoxBlurFix.js";
 import Extensions from "./Extensions.js";
 import Invisibles from "./Extensions/Invisibles.js";
 import KirbytextLanguage from "./Extensions/KirbytextLanguage.js";
@@ -92,6 +93,7 @@ export default class Editor extends Emitter {
       new TaskLists(),
       new DropCursor(),
       new Theme(),
+      new FirefoxBlurFix(),
       // new FilePicker(),
       // new ImagePreview(),
       ...this.options.extensions,
@@ -221,6 +223,7 @@ export default class Editor extends Emitter {
   }
 
   setValue(value) {
+    console.log("setting value");
     this.view.dispatch({
       changes: {
         from: 0,

@@ -181,7 +181,7 @@ export default class Theme extends Extension {
     return [
       highlightStyle(),
       theme(),
-      // scrollMargin(),
+      scrollMargin(),
       EditorView.lineWrapping,
     ];
   }

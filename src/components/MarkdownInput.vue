@@ -209,7 +209,6 @@ export default {
     focus() {
       this.editor.focus();
     },
-
     onSubmit($event) {
       return this.$emit("submit", $event);
     },
