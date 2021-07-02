@@ -47,7 +47,6 @@ export default class FirefoxBlurFix extends Extension {
       }, {
         eventHandlers: {
           blur(eventName, view) {
-            console.log("click", eventName)
             view.$$scrollParent.scrollTo(view.$$scrollParent.scrollLeft, view.$$scrollParentTop);
           },
           scroll(eventName, view) {
