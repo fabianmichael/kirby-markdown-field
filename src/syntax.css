@@ -223,7 +223,7 @@
 
 .k-markdown-input .cm-kirbytag-url {
   color: currentColor;
-  text-decoration-color: var(--cm-kirbytag-border);
+  text-decoration-color: var(--cm-kirbytag-underline);
 }
 
 :root[data-markdown-modkey="true"] .k-markdown-input .cm-url,

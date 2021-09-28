@@ -31,7 +31,7 @@ function lineDeco(view, blockFormats) {
               class: style.class,
               style: `--cm-indent: ${prefix.length}ch; --cm-mark: ${mark.length + suffix.length}ch;`,
             } }));
-          } else if (style.multiLine && lastLine) {
+          } else if (matches && style.multiLine && lastLine) {
             // continued block format without marker
             matches = lastLine.matches;
             const [, prefix, mark, suffix] = matches;
