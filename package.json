@@ -14,7 +14,8 @@
     "build": "kirbyup src/index.js"
   },
   "devDependencies": {
-    "kirbyup": "^0.17.3"
+    "autoprefixer": "^10.3.7",
+    "kirbyup": "^0.18.0"
   },
   "dependencies": {
     "@codemirror/commands": "^0.19.5",
@@ -27,8 +28,7 @@
     "@codemirror/search": "^0.19.2",
     "@codemirror/state": "^0.19.2",
     "@codemirror/stream-parser": "^0.19.2",
-    "@codemirror/view": "^0.19.8",
-    "@rollup/plugin-node-resolve": "^11.2.0",
+    "@codemirror/view": "^0.19.9",
     "underscore": "^1.13.1"
   }
 }
