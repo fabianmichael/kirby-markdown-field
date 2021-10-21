@@ -126,7 +126,7 @@ export default {
   },
   computed: {
     currentLanguage() {
-      return this.$store.state.languages.current;
+      return this.$language;
     },
   },
   watch: {
