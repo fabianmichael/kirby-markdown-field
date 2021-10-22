@@ -20,7 +20,7 @@ export default class HorizontalRule extends Button {
       let textBefore = rtrim(state.doc.slice(0, selection.from).toString());
       let textAfter = ltrim(state.doc.slice(selection.to).toString());
 
-      textBefore = textBefore + (textBefore.length > 0 ? "\n\n" : "") + this.syntax.render();
+      textBefore = textBefore + (textBefore.length > 0 ? "\n\n" : "") + this.syntax.render;
       textAfter = "\n\n" + textAfter;
 
       view.dispatch({
