@@ -16,8 +16,6 @@
     :spellcheck="spellcheck"
     :uploads="uploads"
     class="k-block-type-markdown-input"
-    hide-toolbar="true"
-    force-layout="narrow"
     @input="update({ text: $event })"
   />
 </template>
@@ -74,8 +72,12 @@ export default {
 </script>
 
 <style>
+.k-block-container-type-markdown {
+  padding: 0;
+}
 .k-block-type-markdown-input {
-  background: var(--color-background);
-  border-radius: .25rem;
+  background: none;
+  border-radius: 0;
+  padding: 0;
 }
 </style>
