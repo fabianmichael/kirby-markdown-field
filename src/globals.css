@@ -1,9 +1,0 @@
-/**
- * Temporary fix for an issue breaking fixed positioning within
- * the panel view.
- * See: https://github.com/getkirby/kirby/issues/1095
- */
-.k-panel-view {
-  transform: none !important;
-  will-change: top;
-}

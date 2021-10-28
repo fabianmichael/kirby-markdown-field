@@ -1,5 +1,4 @@
 import "./variables.css";
-import "./globals.css";
 import "./syntax.css";
 
 import MarkdownBlock from "./components/MarkdownBlock.vue";
