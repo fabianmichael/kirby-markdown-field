@@ -1,23 +1,23 @@
 {
-    "name": "k-community/markdown-field",
-    "description": "Enhanced markdown editor for Kirby 3",
-    "type": "kirby-plugin",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Sylvain Julé",
-            "email": "contact@sylvain-jule.fr"
-        },
-        {
-            "name": "Fabian Michael",
-            "email": "hallo@fabianmichael.de"
-        }
-    ],
-    "require": {
-        "getkirby/composer-installer": "^1.1"
+  "name": "k-community/markdown-field",
+  "description": "Enhanced markdown editor for Kirby 3",
+  "type": "kirby-plugin",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Sylvain Julé",
+      "email": "contact@sylvain-jule.fr"
     },
-    "extra": {
-        "installer-name": "markdown-field"
-    },
-    "minimum-stability": "beta"
+    {
+      "name": "Fabian Michael",
+      "email": "hallo@fabianmichael.de"
+    }
+  ],
+  "require": {
+    "getkirby/composer-installer": "^1.2"
+  },
+  "extra": {
+    "installer-name": "markdown-field"
+  },
+  "minimum-stability": "beta"
 }
