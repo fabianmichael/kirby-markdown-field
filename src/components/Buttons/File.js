@@ -26,7 +26,7 @@ export default class File extends Button {
     } else {
       return {
         ...button,
-        command: () => this.openSelectDialog,
+        command: this.openSelectDialog,
       };
     }
   }
