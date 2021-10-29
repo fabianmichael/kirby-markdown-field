@@ -1,11 +1,11 @@
 .k-markdown-input-wrap {
-  --cm-content-padding-y: 0.75rem;
-  --cm-line-padding-x: 1.5rem;
-  --cm-font-size: var(--font-size-medium);
-  --cm-font-family: var(--font-family-mono);
+  --cm-content-padding-y: var(--spacing-3);
+  --cm-line-padding-x: var(--spacing-6);
+  --cm-font-size: var(--text-base);
+  --cm-font-family: var(--font-mono);
   --cm-line-height: 1.7;
   --cm-code-background: rgba(0, 0, 0, 0.05);
-  --cm-color-meta: #999;
+  --cm-color-meta: var(--color-gray-500);
   --cm-color-light-gray: rgba(0, 0, 0, 0.1);
   --cm-selection-background: hsla(195, 80%, 40%, 0.16);
   --cm-color-special-char: #df5f5f;
@@ -19,11 +19,11 @@
 /* Font settings */
 
 .k-markdown-input-wrap[data-font-family="sans-serif"] {
-  --cm-font-family: var(--font-family-sans);
+  --cm-font-family: var(--font-sans);
 }
 
 .k-markdown-input-wrap[data-font-size="small"] {
-  --cm-font-size: var(--font-size-small);
+  --cm-font-size: var(--text-sm);
   --cm-line-height: 1.5;
 }
 

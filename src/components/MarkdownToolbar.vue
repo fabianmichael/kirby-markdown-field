@@ -110,7 +110,6 @@ export default {
 
 <style>
 
-
 .k-markdown-toolbar {
   height: auto;
   min-height: 38px;
