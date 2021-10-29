@@ -126,10 +126,6 @@ export default {
   },
   computed: {
     currentLanguage() {
-      if(this.$store.state.languages) {
-        // backwards compatibility for Kirby < 3.6
-        return this.$store.state.languages.current;
-      }
       return this.$language;
     },
   },

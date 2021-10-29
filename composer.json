@@ -14,6 +14,8 @@
     }
   ],
   "require": {
+    "php": ">=7.4.0 <8.1.0",
+    "getkirby/cms": ">=3.6.0-rc.2 <3.7.0",
     "getkirby/composer-installer": "^1.2"
   },
   "extra": {
