@@ -2,6 +2,8 @@
 
 Enhanced markdown editor for Kirby 3, community built.
 
+ℹ️ A much improved version of the plugin (2.0) is currently being developed in the [`next`](https://github.com/fabianmichael/kirby-markdown-field/tree/next) branch. It can already be considered very stable and will replace version 1 very soon. Please note, that version 2 of the plugin will require Kirby 3.6 or later.
+
 ![screenshot](https://user-images.githubusercontent.com/14079751/50606008-7cb31200-0ec4-11e9-9685-a48a8ba398a4.jpg)
 
 <br/>
