@@ -6,7 +6,7 @@ import Extension from "../Extension.js";
 function theme() {
   return EditorView.theme(
     {
-      "&.cm-focused": {
+      "&.cm-editor.cm-focused": {
         outline: "none",
       },
 
