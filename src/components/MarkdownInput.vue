@@ -295,9 +295,7 @@ export default {
     createHighlights() {
       if (this.highlights === false) return [];
       let highlights = this.customHighlights.filter(definition => this.highlights === true || Array.isArray(this.highlights) && this.highlights.includes(definition.name));
-      const hhh = highlights.map(definition => new Highlight(definition));
-      console.log("hiu", hhh);
-      return hhh;
+      return highlights.map(definition => new Highlight(definition));
     },
     /**
      * Extension dialogs

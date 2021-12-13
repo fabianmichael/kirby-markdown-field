@@ -37,7 +37,7 @@ class ImageWidget extends WidgetType {
     const parent = this.extension.input.$store.getters["content/id"]();
 
     this.extension.input.$api.files.get(parent, this.url, { select: ["thumbs", "url"] }).then((file) => {
-      console.log("file info", file);
+      // console.log("file info", file);
       // image.src = result.url
       if (file.thumbs) {
         image.src = file.thumbs.tiny;
@@ -85,7 +85,7 @@ const decorate = (extension, state) => {
       if (type.name === "Kirbytag") {
         const result = state.doc.sliceString(from, to).match(imageRegex);
         const url = result ? result[1] : null;
-        console.log("Kirbytag", result);
+        // console.log("Kirbytag", result);
 
         if (url) {
           widgets.push(imageDecoration({ extension, url }).range(state.doc.lineAt(from).from))

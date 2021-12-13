@@ -223,7 +223,6 @@ export default class Editor extends Emitter {
   }
 
   setValue(value) {
-    console.log("setting value");
     this.view.dispatch({
       changes: {
         from: 0,
