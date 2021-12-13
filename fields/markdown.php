@@ -27,17 +27,17 @@ $options = A::merge($options, [
             $divider = 0;
 
             foreach ($buttons as $type => $button) {
-              if (is_int($type) === true && is_string($button) === true) {
-                if ($button === 'divider') {
-                  $button = "divider__" . $divider++;
+                if (is_int($type) === true && is_string($button) === true) {
+                    if ($button === 'divider') {
+                        $button = "divider__" . $divider++;
+                    }
+
+                    $def[$button] = new stdClass();
                 }
 
-                $def[$button] = new stdClass();
-              }
-
-              if (is_string($type) === true) {
-                $def[$type] = $button;
-              }
+                if (is_string($type) === true) {
+                    $def[$type] = $button;
+                }
             }
 
             return $def;
@@ -47,7 +47,7 @@ $options = A::merge($options, [
          * Sets the font family (sans or monospace)
          */
         'font' => function (string $font = null) {
-          return in_array($font, ['sans', 'sans-serif']) === true ? 'sans-serif' : 'monospace';
+            return in_array($font, ['sans', 'sans-serif']) === true ? 'sans-serif' : 'monospace';
         },
 
         /**
