@@ -1,6 +1,6 @@
 # Kirby – Markdown field
 
-⚠️ **Notice:** This plugin is still in late alpha/early beta state. Some things might not work as expected, yet. However, if you’re adventurous: it might crash, but thanks to Kirby’s state management, data loss is pretty unlikely. Just hit `⌘S`/`Ctrl+s` frequently to save your work and you should be save. ⚠️
+⚠️ **Notice:** This plugin is still in beta state. Some things might not work as expected, yet. However, if you’re adventurous: it might crash, but thanks to Kirby’s state management, data loss is pretty unlikely. Just hit `⌘S`/`Ctrl+s` frequently to save your work and you should be fine. ⚠️
 
 **Known issues of the alpha:**
 
@@ -61,7 +61,7 @@ Enhanced, extensible Markdown field for Kirby CMS. Version 2!
 
 ## 1. Installation
 
-This version of the plugin requires PHPO 7.4.0 and Kirby 3.6.0-rc.2 or higher.
+This version of the plugin requires PHPO 7.4.0 and Kirby 3.6.0 or higher.
 
 ⛔️ Only download and cloning of this branch is supported, until version 2 has been released.
 

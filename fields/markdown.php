@@ -80,16 +80,25 @@ $options = A::merge($options, [
         },
         'customHighlights' => function () {
             $highlights = [];
-            $resolve = function ($highlight) {
-                return is_callable($highlight) ? $highlight() : $highlight;
-            };
 
             foreach (kirby()->plugins() as $plugin) {
-                $highlights = array_merge($highlights, array_map($resolve, $plugin->toArray()['extends']['community.markdown-field.customHighlights'] ?? []));
+                $highlights = array_merge(
+                    $highlights,
+                    array_map(
+                        fn($highlight) => is_callable($highlight) ? $highlight() : $highlight,
+                        $plugin->extends()['community.markdown-field.customHighlights'] ?? []
+                    )
+                );
             }
 
             foreach (option('community.markdown-field.customHighlights', []) as $defs) {
-                $highlights = array_merge($highlights, array_map($resolve, $defs));
+                $highlights = array_merge(
+                    $highlights,
+                    array_map(
+                        fn($highlight) => is_callable($highlight) ? $highlight() : $highlight,
+                        $defs
+                    )
+                );
             }
 
             return $highlights;
