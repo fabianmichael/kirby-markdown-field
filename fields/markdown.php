@@ -27,17 +27,17 @@ $options = A::merge($options, [
             $divider = 0;
 
             foreach ($buttons as $type => $button) {
-              if (is_int($type) === true && is_string($button) === true) {
-                if ($button === 'divider') {
-                  $button = "divider__" . $divider++;
+                if (is_int($type) === true && is_string($button) === true) {
+                    if ($button === 'divider') {
+                        $button = "divider__" . $divider++;
+                    }
+
+                    $def[$button] = new stdClass();
                 }
 
-                $def[$button] = new stdClass();
-              }
-
-              if (is_string($type) === true) {
-                $def[$type] = $button;
-              }
+                if (is_string($type) === true) {
+                    $def[$type] = $button;
+                }
             }
 
             return $def;
@@ -47,7 +47,7 @@ $options = A::merge($options, [
          * Sets the font family (sans or monospace)
          */
         'font' => function (string $font = null) {
-          return in_array($font, ['sans', 'sans-serif']) === true ? 'sans-serif' : 'monospace';
+            return in_array($font, ['sans', 'sans-serif']) === true ? 'sans-serif' : 'monospace';
         },
 
         /**
@@ -80,16 +80,25 @@ $options = A::merge($options, [
         },
         'customHighlights' => function () {
             $highlights = [];
-            $resolve = function ($highlight) {
-                return is_callable($highlight) ? $highlight() : $highlight;
-            };
 
             foreach (kirby()->plugins() as $plugin) {
-                $highlights = array_merge($highlights, array_map($resolve, $plugin->toArray()['extends']['community.markdown-field.customHighlights'] ?? []));
+                $highlights = array_merge(
+                    $highlights,
+                    array_map(
+                        fn($highlight) => is_callable($highlight) ? $highlight() : $highlight,
+                        $plugin->extends()['community.markdown-field.customHighlights'] ?? []
+                    )
+                );
             }
 
             foreach (option('community.markdown-field.customHighlights', []) as $defs) {
-                $highlights = array_merge($highlights, array_map($resolve, $defs));
+                $highlights = array_merge(
+                    $highlights,
+                    array_map(
+                        fn($highlight) => is_callable($highlight) ? $highlight() : $highlight,
+                        $defs
+                    )
+                );
             }
 
             return $highlights;

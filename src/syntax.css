@@ -20,6 +20,13 @@
   padding-right: calc(var(--cm-line-padding-x) / 2);
 }
 
+/* Override styling of nested code inside code block applied by CodeMirror */
+.k-markdown-input .cm-codeblock > * {
+  background-color: transparent;
+  margin: 0;
+  padding: 0;
+}
+
 /* Blockquote */
 .k-markdown-input .cm-blockquote {
   position: relative;
