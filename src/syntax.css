@@ -135,14 +135,35 @@
  *    have any effect on word-wrapping.
  **/
 .k-markdown-input .cm-invisible-char[data-code="32"] {
-  background:
+  background-image: url("data:image/svg+xml,%3Csvg width='9' height='9' viewBox='0 0 9 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='4.5' cy='4.5' r='1.25' fill='%23DF5F5F'/%3E%3C/svg%3E");
+  background-size: 1ch 1ch;
+  background-position: left center;
+  background-repeat: repeat-x;
+
+  /* background:
     radial-gradient(
       circle at center,
       var(--cm-color-special-char) .1em,
       transparent .1em
     )
-    left calc(50% + .0625em) / 1ch 1ch repeat-x;
+    left calc(50% + .0625em) / 1ch 1ch repeat-x; */
   word-break: break-all; /* 1 */
+}
+/*
+.k-markdown-input .cm-invisible-char[data-code="32"]::after {
+  content: "\200C";
+} */
+
+/**
+ * 1. Sans-serif mode needs a bit more attention, because the spaces
+ *    are much narrower, than in monospace mode. Otherwise, the "dot"
+ *    would not render correctly.
+ */
+.k-markdown-input-wrap[data-font-family="sans-serif"] .cm-invisible-char[data-code="32"] {
+  margin-left: -.25ch; /* 1 */
+  margin-right: -.25ch; /* 1 */
+  padding-left: .25ch; /* 1 */
+  padding-right: .25ch; /* 1 */
 }
 
 /* No-Break Space */
