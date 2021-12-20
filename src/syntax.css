@@ -210,7 +210,7 @@
  */
 .k-markdown-input .cm-hardbreak::before {
   color: var(--cm-color-special-char);
-  content: "\21A9"; /* LEFTWARDS ARROW WITH HOOK */
+  content: "\21A9\FE0E"; /* LEFTWARDS ARROW WITH HOOK */
   display: inline-block;
   margin-right: -2ch;
   pointer-events: none;
