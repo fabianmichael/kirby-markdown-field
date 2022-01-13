@@ -312,7 +312,7 @@ MIT
 
 @fabianmichael, @sylvainjule, @medienbaecker, @mtsknn, @nsteiner, @rasteiner, @thomasfahrland, @johannschopplich
 
-**Inspirations**
+**Inspired by:**
 
 - [ProseMirror](https://prosemirror.net/) by [Marijn Haverbeke](https://marijnhaverbeke.nl/)
 - [Visual Markdown Editor for Kirby 2](https://github.com/JonasDoebertin/kirby-visual-markdown) by [Jonas Döbertin](https://github.com/JonasDoebertin)
