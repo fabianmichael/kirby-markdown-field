@@ -4,7 +4,7 @@ import { Transaction } from "@codemirror/state";
 import Extension from "../Extension.js";
 import { isURL } from "../Utils/strings.js";
 
-export default class TaskLists extends Extension {
+export default class PasteUrls extends Extension {
   plugins() {
     const useKirbytext = this.input.kirbytext;
 
