@@ -58,11 +58,9 @@ Enhanced, extensible Markdown field for Kirby CMS. Now available in version 2!
 
 This version of the plugin requires PHPO 7.4.0 and Kirby 3.6.0 or higher.
 
-⛔️ Only download and cloning of this branch is supported, until version 2 has been released.
+Download and copy this repository to `/site/plugins/markdown-field`
 
-~~Download and copy this repository to `/site/plugins/markdown-field`~~
-
-~~Alternatively, you can install it with composer: `composer require k-community/markdown-field`~~
+Alternatively, you can install it with composer: `composer require k-community/markdown-field`
 
 <br/>
 
