@@ -1,13 +1,8 @@
 # Kirby – Markdown field
 
-⚠️ **Notice:** This plugin is still in beta state. Some things might not work as expected, yet. However, if you’re adventurous: it might crash, but thanks to Kirby’s state management, data loss is pretty unlikely. Just hit `⌘S`/`Ctrl+s` frequently to save your work and you should be fine. ⚠️
+**ℹ️ Notice:** CodeMirror 6 is still in beta. Its API might still be subject to minor changes, so this plugin will not officially reach a stable version until CodeMirror 6 does.
 
-**Known issues of the alpha:**
-
-- CodeMirror 6 is still in beta. Its API might still be subject to minor changes, so this plugin will not officially reach a stable version until CodeMirror 6 does.
-- File/page selector queries need some testing.
-
-Enhanced, extensible Markdown field for Kirby CMS. Version 2!
+Enhanced, extensible Markdown field for Kirby CMS. Now available in version 2!
 
 **Features:**
 
@@ -25,7 +20,7 @@ Enhanced, extensible Markdown field for Kirby CMS. Version 2!
 
 💡 **TL;DR:** The Markdown field, you all have been waiting for!
 
-![screenshot](https://user-images.githubusercontent.com/14079751/50606008-7cb31200-0ec4-11e9-9685-a48a8ba398a4.jpg)
+![screenshot](https://user-images.githubusercontent.com/395617/149367262-ec9c4969-c79a-4052-b899-2b374aad2b72.png)
 
 ## Overview
 
