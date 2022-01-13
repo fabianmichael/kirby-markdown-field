@@ -49,13 +49,7 @@ export default class File extends Button {
         return;
       }
 
-      const file      = selected[0];
-      const selection = this.editor.getSelection();
-      const tagName   = file.type === "image" ? "image" : "file";
-      const text      = selection.length > 0 && tagName === "file" ? ` text: ${selection}` : "";
-      const tag       = `(${tagName}: ${file.filename}${text})`;
-
-      this.editor.insert(tag);
+      this.editor.insert(selected.map((file) => file.dragText).join("\n\n"));
     }
   }
 

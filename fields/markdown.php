@@ -1,15 +1,9 @@
 <?php
 
-use Kirby\Toolkit\A;
 use Kirby\Cms\PagePicker;
 
-$options = require kirby()->root('kirby') . '/config/fields/textarea.php';
-
-
-/* Merge new properties
---------------------------------*/
-
-$options = A::merge($options, [
+return [
+    'extends' => 'textarea',
     'props' => [
         /**
          * Sets the toolbar buttons.
@@ -156,7 +150,4 @@ $options = A::merge($options, [
             ]
         ];
     },
-]);
-
-// return the updated options
-return $options;
+];
