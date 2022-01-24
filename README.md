@@ -24,7 +24,7 @@ Enhanced, extensible Markdown field for Kirby CMS. Now available in version 2!
 
 ## Overview
 
-> This plugin is completely free and published under the MIT license. However, if you are using it in a commercial project and want to help me keep up with maintenance, please consider [making a donation of your choice](https://paypal.me/sylvainjl) or purchasing your license(s) through [my affiliate link](https://a.paddle.com/v2/click/1129/36369?link=1170).
+> This plugin is completely free and published under the MIT license. However, if you are using it in a commercial project and want to help me keep up with maintenance, please consider to **[❤️ sponsor me](https://github.com/sponsors/fabianmichael)** for securing the continued development of the plugin.
 
 ## Table of Contents
 
@@ -298,7 +298,7 @@ They way how Markdown is used nowadays has changed since its inception, especial
 
 ## 10. License
 
-MIT
+MIT (but you are highly encouraged to **[❤️ sponsor me](https://github.com/sponsors/fabianmichael)**, if this piece of software helps you to pay your bills).
 
 ## 11. Credits
 
