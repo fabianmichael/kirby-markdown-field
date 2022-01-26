@@ -134,7 +134,7 @@ function highlightStyle() {
     },
     {
       // Inline Code,
-      tag: t.monospace,
+      tag: kirbytextTags.inlineCode,
       backgroundColor: "var(--cm-code-background)",
       padding: ".1em 0",
       margin: "-.1em 0",

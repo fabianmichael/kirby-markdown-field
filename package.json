@@ -26,8 +26,8 @@
     "@codemirror/rangeset": "^0.19.6",
     "@codemirror/search": "^0.19.5",
     "@codemirror/state": "^0.19.6",
-    "@codemirror/stream-parser": "^0.19.3",
-    "@codemirror/view": "^0.19.39",
+    "@codemirror/stream-parser": "^0.19.4",
+    "@codemirror/view": "^0.19.40",
     "underscore": "^1.13.2"
   }
 }

@@ -7,6 +7,7 @@ import Extension from "../Extension.js";
 export const tags = {
   highlight: Tag.define(),
   kirbytag: Tag.define(),
+  inlineCode: Tag.define(),
 };
 
 // Parser extension for recognizing Kirbytags
@@ -88,6 +89,17 @@ const Highlight = {
   ]
 }
 
+// Fix `inline code`, because by default it won’t surround the backticks
+// which would make it impossible to set background for these.
+
+const InlineCode = {
+  props: [
+    styleTags({
+      "InlineCode/...": tags.inlineCode,
+    })
+  ]
+};
+
 /* Export plugins */
 
 export default class MarkdownLanguage extends Extension {
@@ -101,7 +113,8 @@ export default class MarkdownLanguage extends Extension {
         base: markdownLanguage,
         extensions: [
           this.input.kirbytext ? Kirbytag(this.input.knownKirbytags) : null,
-          Highlight
+          Highlight,
+          InlineCode,
         ],
       }),
     ];
