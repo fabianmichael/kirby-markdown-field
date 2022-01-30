@@ -85,14 +85,8 @@ return [
                 );
             }
 
-            foreach (option('community.markdown-field.customHighlights', []) as $defs) {
-                $highlights = array_merge(
-                    $highlights,
-                    array_map(
-                        fn($highlight) => is_callable($highlight) ? $highlight() : $highlight,
-                        $defs
-                    )
-                );
+            foreach (option('community.markdown-field.customHighlights', []) as $highlight) {
+                $highlights[] = is_callable($highlight) ? $highlight() : $highlight;
             }
 
             return $highlights;
