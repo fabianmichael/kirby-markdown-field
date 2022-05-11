@@ -30,7 +30,7 @@
       if (Array.isArray(options)) {
         // transform options array into commands that can be
         // understood by the editor plugin
-        dropdown = options.map(({ text: label, value }) => ({
+        const dropdown = options.map(({ text: label, value }) => ({
           label,
           command: () => this.editor.insert(value)
         }))
@@ -46,7 +46,7 @@
       return {
         icon: "bolt",
         label: "Snippets",
-        dropdown
+        dropdown: this.options.dropdown,
       }
     },
 
