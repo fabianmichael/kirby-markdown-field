@@ -124,6 +124,7 @@ export default class Editor extends Emitter {
       isKnownDesktopBrowser && drawSelection(),
       this.options.placeholder && placeholder(this.options.placeholder),
       this.extensions.getPluginsByType("theme"),
+      this.extensions.getPluginsByType("extension")
       // autocomplete()
     ].filter((v) => v); // filter empty values
 

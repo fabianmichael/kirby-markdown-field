@@ -56,7 +56,7 @@ Enhanced, extensible Markdown field for Kirby CMS. Now available in version 2!
 
 ## 1. Installation
 
-This version of the plugin requires PHP 7.4.0 and Kirby 3.6.0 or higher. The recommended way of installing is by using Composer:
+This version of the plugin requires PHP 8.0 and Kirby 3.6.0 or higher. The recommended way of installing is by using Composer:
 
 ```
 $ composer require k-community/markdown-field
@@ -251,6 +251,7 @@ The API has changed from version 1, old plugins are not compatible any more and 
 There are two types of extensions, which allow you to extend the editor to adjust it better to your specific needs:
 
 - **Custom buttons:** You can define your own buttons, which can be added to the editor toolbar. Buttons can define keyboard shortcuts, displays dropdowns and even show a popup.
+- **Custom extensions:** You can define your own editor extensions. An example can be found in the `extension-examples/indent-with-tab` folder.
 - **Custom highlights:** You can define regex-based custom highlights, which allow you to highlight any text, such as markup for custom syntax (e.g. global text snippets or Wiki-style links)
 
 ## 5. Development
