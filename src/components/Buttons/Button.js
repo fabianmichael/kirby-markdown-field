@@ -42,13 +42,4 @@ export default class Button extends Extension {
 
     return () => this.editor.isActiveToken("Kirbytag", "FencedCode", "Link", "URL");
   }
-
-  /**
-   * Creates a custom button from an object
-   */
-  static factory(definition) {
-    const button = new Button();
-    completeAssign(button, definition);
-    return button;
-  }
 }

@@ -1,4 +1,5 @@
 import { formatKeyName } from "./Utils/keymap.js";
+import completeAssign from "./Utils/complete-assign.js";
 
 export default class Extension {
 
@@ -54,5 +55,14 @@ export default class Extension {
 
   get syntax() {
     return null;
+  }
+
+  /**
+   * Creates a custom extension from an object
+   */
+  static factory(definition) {
+    const extension = new Extension();
+    completeAssign(extension, definition);
+    return extension;
   }
 }

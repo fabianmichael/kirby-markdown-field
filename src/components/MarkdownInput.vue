@@ -77,6 +77,7 @@ import PageLink from "./Buttons/PageLink.js"
 import SpecialChars from "./Buttons/SpecialChars.js"
 import Strikethrough from "./Buttons/Strikethrough.js"
 import StrongEmphasis from "./Buttons/StrongEmphasis.js"
+import Extension from './Extension.js';
 
 
 let resizeObserver;
@@ -153,6 +154,7 @@ export default {
       extensions: [
         ...this.createHighlights(),
         ...this.createToolbarButtons(),
+        ...this.createCustomExtensions(),
       ],
       events: {
         active: (active) => {
@@ -223,6 +225,17 @@ export default {
       return window.markdownEditorButtons.reduce((accumulator, definition) => [
         ...accumulator,
         Button.factory(definition)
+      ], []);
+    },
+
+    createCustomExtensions() {
+      if (!window.markdownEditorExtensions) {
+        return [];
+      }
+
+      return window.markdownEditorExtensions.reduce((accumulator, definition) => [
+        ...accumulator,
+        Extension.factory(definition)
       ], []);
     },
 
