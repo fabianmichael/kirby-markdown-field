@@ -169,7 +169,11 @@ function scrollMargin() {
     //   // this.margin = {left: 100}
     // }
   }, {
-    provide: PluginField.scrollMargins.from((value) => value.margin)
+    provide: (plugin) => EditorView.scrollMargins.of((view) => {
+      let value =  view.plugin(plugin)
+      console.log("vv", value)
+      return value
+    })
   })
 }
 

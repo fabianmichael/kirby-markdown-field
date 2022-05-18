@@ -146,6 +146,7 @@ export default class Editor extends Emitter {
       state: this.createState(value),
       parent: this.options.element,
       editable: this.options.editable,
+      readOnly: !this.options.editable,
       dispatch: (...transaction) => {
         this.view.update(transaction);
 
