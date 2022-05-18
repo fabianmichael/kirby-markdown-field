@@ -32,7 +32,10 @@
         // understood by the editor plugin
         const dropdown = options.map(({ text: label, value }) => ({
           label,
-          command: () => this.editor.insert(value)
+          command: () => {
+            this.editor.focus()
+            this.editor.insert(value)
+          }
         }))
 
         this.options = {
