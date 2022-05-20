@@ -1,6 +1,6 @@
 import { ViewPlugin, Decoration } from "@codemirror/view";
 import { syntaxTree } from "@codemirror/language";
-import { RangeSetBuilder } from "@codemirror/rangeset";
+import { RangeSetBuilder } from "@codemirror/state";
 import Extension from "../Extension.js";
 import browser from "../Utils/browser.js";
 import { isURL } from "../Utils/strings.js";
@@ -44,7 +44,7 @@ function highlightURLs(extension, view) {
 
   for (let {from, to} of view.visibleRanges) {
     syntaxTree(view.state).iterate({
-      enter: ({ name }, from, to) => {
+      enter: ({ name, from, to }) => {
         if (name === "URL") {
           // Markdown URL token
           const [, prefix, url, suffix] = view.state.doc.sliceString(from, to).match(/^(<?)(.*?)(>?)$/);

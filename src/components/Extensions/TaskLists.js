@@ -1,5 +1,5 @@
 import { ViewPlugin, Decoration } from "@codemirror/view";
-import { RangeSetBuilder } from "@codemirror/rangeset";
+import { RangeSetBuilder } from "@codemirror/state";
 import { syntaxTree } from "@codemirror/language";
 import Extension from "../Extension.js";
 
@@ -9,7 +9,7 @@ function checkboxes(view) {
 
   for (let {from, to} of view.visibleRanges) {
     syntaxTree(view.state).iterate({
-      enter: ({ name }, from, to) => {
+      enter: ({ name, from, to }) => {
 
         if (name !== "TaskMarker") {
           return;
@@ -53,7 +53,7 @@ function toggleListItemsComplete(view) {
   let markers     = [];
 
   syntaxTree(view.state).iterate({
-    enter: ({ name }, from, to) => {
+    enter: ({ name, from, to }) => {
       if (name !== "TaskMarker") return;
       markers.push({
         from,

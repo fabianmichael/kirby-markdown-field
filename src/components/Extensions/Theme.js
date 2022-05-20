@@ -1,6 +1,7 @@
-import { EditorView, PluginField, ViewPlugin } from "@codemirror/view";
-import { HighlightStyle, tags as t } from "@codemirror/highlight";
-import { tags as kirbytextTags } from "./KirbytextLanguage";
+import { EditorView, ViewPlugin } from "@codemirror/view";
+import { HighlightStyle } from "@codemirror/language"
+import { tags as t } from "@lezer/highlight";
+import { tags as kirbytextTags } from "./KirbytextLanguage.js";
 import Extension from "../Extension.js";
 
 function theme() {
@@ -155,34 +156,34 @@ function highlightStyle() {
   ]);
 }
 
-function scrollMargin() {
-  return ViewPlugin.fromClass(class {
-    constructor(view) { // eslint-disable-line no-unused-vars
-      this.margin = {
-        bottom: 60,
-        top: 60,
-      }
-    }
+// function scrollMargin() {
+//   return ViewPlugin.fromClass(class {
+//     constructor(view) { // eslint-disable-line no-unused-vars
+//       this.margin = {
+//         bottom: 60,
+//         top: 60,
+//       }
+//     }
 
-    // update(update) {
-    //   // Your update logic here
-    //   // this.margin = {left: 100}
-    // }
-  }, {
-    provide: (plugin) => EditorView.scrollMargins.of((view) => {
-      let value =  view.plugin(plugin)
-      console.log("vv", value)
-      return value
-    })
-  })
-}
+//     // update(update) {
+//     //   // Your update logic here
+//     //   // this.margin = {left: 100}
+//     // }
+//   }, {
+//     provide: (plugin) => EditorView.scrollMargins.of((view) => {
+//       let value =  view.plugin(plugin)
+//       console.log("vv", value)
+//       return value
+//     })
+//   })
+// }
 
 export default class Theme extends Extension {
   plugins() {
     return [
       highlightStyle(),
-      theme(),
-      scrollMargin(),
+      // theme(),
+      // scrollMargin(),
       EditorView.lineWrapping,
     ];
   }

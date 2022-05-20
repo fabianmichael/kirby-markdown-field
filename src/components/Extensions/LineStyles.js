@@ -1,5 +1,5 @@
 import { Decoration } from "@codemirror/view";
-import { RangeSetBuilder } from "@codemirror/rangeset";
+import { RangeSetBuilder } from "@codemirror/state";
 import { ViewPlugin } from "@codemirror/view";
 import { getBlockNameAt } from "../Utils/syntax.js";
 import Extension from "../Extension.js";

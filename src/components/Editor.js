@@ -1,7 +1,6 @@
 import { Compartment, EditorState } from "@codemirror/state";
 import { EditorView, drawSelection, placeholder, keymap } from "@codemirror/view";
-import { history, historyKeymap } from "@codemirror/history";
-import { standardKeymap } from "@codemirror/commands";
+import { standardKeymap, historyKeymap } from "@codemirror/commands";
 import { debounce } from "underscore";
 
 import Emitter from "./Emitter.js";
@@ -67,9 +66,9 @@ export default class Editor extends Emitter {
     const customKeymap = this.extensions.getKeymap();
 
     return keymap.of([
-      ...standardKeymap,
-      ...historyKeymap,
-      ...customKeymap,
+      standardKeymap,
+      historyKeymap,
+      customKeymap,
     ]);
   }
 
@@ -93,7 +92,7 @@ export default class Editor extends Emitter {
       new TaskLists(),
       new DropCursor(),
       new Theme(),
-      new FirefoxBlurFix(),
+      // new FirefoxBlurFix(),
       // new FilePicker(),
       // new ImagePreview(),
       ...this.options.extensions,
@@ -102,12 +101,14 @@ export default class Editor extends Emitter {
 
   createState(value) {
     const extensions = [
-      history(),
+      // history(),
       this.keymap(),
-      ...this.extensions.getPluginsByType("language"),
-      ...this.extensions.getPluginsByType("highlight"),
-      ...this.extensions.getPluginsByType("button"),
+      // ...this.extensions.getPluginsByType("language"),
+      // ...this.extensions.getPluginsByType("highlight"),
+      // ...this.extensions.getPluginsByType("button"),
       this.invisibles.of([]),
+      // EditorView.editable.of(this.options.editable),
+      // EditorView.readOnly.of(!this.options.editable),
       /**
        * Firefox has a known Bug, that casuses the caret to disappear,
        * when text is dropped into an element with contenteditable="true".
@@ -124,7 +125,9 @@ export default class Editor extends Emitter {
       isKnownDesktopBrowser && drawSelection(),
       this.options.placeholder && placeholder(this.options.placeholder),
       this.extensions.getPluginsByType("theme"),
-      this.extensions.getPluginsByType("extension")
+      // this.extensions.getPluginsByType("extension")
+
+
       // autocomplete()
     ].filter((v) => v); // filter empty values
 
@@ -133,6 +136,7 @@ export default class Editor extends Emitter {
       selection: this.state ? this.state.selection : null,
       extensions,
       tabSize: 4,
+
     });
   }
 
@@ -145,8 +149,8 @@ export default class Editor extends Emitter {
     const view = new EditorView({
       state: this.createState(value),
       parent: this.options.element,
-      editable: this.options.editable,
-      readOnly: !this.options.editable,
+      // editable: EditorView.editable.of(this.options.editable),
+      // readOnly: EditorView.readOnly.of(!this.options.editable),
       dispatch: (...transaction) => {
         this.view.update(transaction);
 

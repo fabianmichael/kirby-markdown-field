@@ -17,16 +17,12 @@
   },
   "dependencies": {
     "@codemirror/commands": "^0.20.0",
-    "@codemirror/comment": "^0.19.1",
-    "@codemirror/highlight": "^0.19.8",
-    "@codemirror/history": "^0.19.2",
-    "@codemirror/lang-markdown": "^0.20.0",
-    "@codemirror/language": "^0.20.0",
-    "@codemirror/rangeset": "^0.19.9",
+    "@codemirror/lang-markdown": "^0.20.1",
+    "@codemirror/language": "^0.20.2",
     "@codemirror/search": "^0.20.1",
     "@codemirror/state": "^0.20.0",
-    "@codemirror/stream-parser": "^0.19.9",
-    "@codemirror/view": "^0.20.4",
+    "@codemirror/view": "^0.20.6",
+    "@lezer/highlight": "^0.16.0",
     "underscore": "^1.13.3"
   }
 }
