@@ -78,7 +78,7 @@ export function getActiveTokens(view, blockFormats, inlineFormats, ensureTree = 
       }
 
       tree.iterate({
-        enter: ({ name }, nodeFrom, nodeTo) => {
+        enter: ({ name , from: nodeFrom, to: nodeTo }) => {
           let match;
 
           if (blockFormats.exists(name)) {
@@ -163,7 +163,7 @@ export function getActiveTokens(view, blockFormats, inlineFormats, ensureTree = 
     // No selection
 
     tree.iterate({
-      enter: ({ name }, nodeFrom, nodeTo) => {
+      enter: ({ name, from: nodeFrom, to: nodeTo }) => {
         let inlineMatch;
 
         if (blockFormats.exists(name)) {
@@ -211,7 +211,7 @@ export function getCurrentInlineTokens(view, blockFormats, inlineFormats) {
   // Selection spans only a single linge, get current block token and all
   // inline tokens
   tree.iterate({
-    enter: (node, start, end) => {
+    enter: ({ node, from: start, to: end }) => {
       let inlineMatch;
 
       if (from !== to) {

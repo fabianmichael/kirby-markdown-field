@@ -1,4 +1,4 @@
-import { styleTags, Tag, tags as defaultTags } from "@codemirror/highlight"
+import { styleTags, Tag, tags as defaultTags } from "@lezer/highlight"
 import { markdown, markdownKeymap, markdownLanguage } from "@codemirror/lang-markdown";
 import Extension from "../Extension.js";
 

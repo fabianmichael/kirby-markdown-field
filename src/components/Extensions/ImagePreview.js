@@ -1,5 +1,5 @@
 import { syntaxTree } from "@codemirror/language"
-import { RangeSet } from "@codemirror/rangeset"
+import { RangeSet } from "@codemirror/state"
 import { StateField } from "@codemirror/state"
 import { Decoration, EditorView, WidgetType } from "@codemirror/view"
 
@@ -81,7 +81,7 @@ const decorate = (extension, state) => {
   const widgets = [];
 
   syntaxTree(state).iterate({
-    enter: (type, from, to) => {
+    enter: ({ type, from, to }) => {
       if (type.name === "Kirbytag") {
         const result = state.doc.sliceString(from, to).match(imageRegex);
         const url = result ? result[1] : null;

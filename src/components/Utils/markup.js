@@ -62,7 +62,7 @@ export function toggleBlockFormat(view, blockFormats, type) {
     let listNumber = null;
 
     tree.iterate({
-      enter: (node, from, to) => {
+      enter: ({ node, from, to }) => {
         if (blockFormats.exists(node.name)) {
           block = node.name;
         } else if (blockFormats.markTokenExists(node.name)) {
@@ -416,7 +416,7 @@ function toggleInlineFormatForLine(view, blockFormats, inlineFormats, lineNumber
   // re-rendedered later to ensure, that nested formats are properly updated.
 
   ensureSyntaxTree(state, line.to, 500).iterate({
-    enter: ({ name }, nodeFrom, nodeTo) => {
+    enter: ({ name, from: nodeFrom, to: nodeTo }) => {
       if (inlineFormats.hasMark(name) || inlineFormats.markTokenExists(name)) {
         // Only add relevant nodes (i.e. those with syntax), but skip those
         // that will never be changed by toggling an inline format (e.g. Kirbytags, links)
