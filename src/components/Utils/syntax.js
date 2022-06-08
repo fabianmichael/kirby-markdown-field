@@ -54,8 +54,6 @@ export function getActiveTokens(view, blockFormats, inlineFormats, ensureTree = 
   const tree               = ensureTree ? ensureSyntaxTree(state, to, 500) : syntaxTree(state);
   let tokens               = [];
 
-  console.log("tree", tree)
-
   if (from !== to) {
     // Selection
 

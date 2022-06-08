@@ -1,8 +1,8 @@
-import { EditorView, ViewPlugin } from "@codemirror/view";
-import { HighlightStyle } from "@codemirror/language"
-import { tags as t } from "@lezer/highlight";
-import { tags as kirbytextTags } from "./KirbytextLanguage.js";
-import Extension from "../Extension.js";
+import { EditorView, ViewPlugin } from "@codemirror/view"
+import { HighlightStyle, syntaxHighlighting } from "@codemirror/language"
+import { tags as t } from "@lezer/highlight"
+import { tags as kirbytextTags } from "./KirbytextLanguage.js"
+import Extension from "../Extension.js"
 
 function theme() {
   return EditorView.theme(
@@ -69,126 +69,127 @@ function theme() {
 }
 
 function highlightStyle() {
-  return HighlightStyle.define([
-    {
-      tag: t.contentSeparator,
-      color: "currentColor",
-      fontWeight: "700",
-    },
-    {
-      tag: [t.heading1, t.heading2, t.heading3, t.heading4, t.heading5, t.heading6],
-      fontWeight: "700",
-      color: "currentColor",
-    },
-    {
-      tag: kirbytextTags.highlight,
-      backgroundColor: "var(--cm-color-highlight-background)",
-      color: "var(--color-text) !important",
-      // padding: ".1em 0",
-      // margin: "-.1em 0",
-    },
-    {
-      tag: t.strong,
-      fontWeight: "700",
-      color: "currentColor",
-    },
-    {
-      tag: t.emphasis,
-      fontStyle: "italic",
-      color: "currentColor",
-    },
-    {
-      tag: [
-        t.name,
-        t.angleBracket,
-        t.operator,
-        t.meta,
-        t.comment,
-        t.processingInstruction,
-        t.string,
-        t.inserted,
-      ],
-      color: "var(--cm-color-meta)",
-    },
-    {
-      tag: t.atom,
-      color: "currentColor", // just there, so it can be picked-up by extensions
-    },
-    {
-      // table header
-      tag: t.heading,
-      fontWeight: "700",
-    },
+  return syntaxHighlighting(
+    HighlightStyle.define([
+      {
+        tag: t.contentSeparator,
+        color: "currentColor",
+        fontWeight: "700",
+      },
+      {
+        tag: [t.heading1, t.heading2, t.heading3, t.heading4, t.heading5, t.heading6],
+        fontWeight: "700",
+        color: "currentColor",
+      },
+      {
+        tag: kirbytextTags.highlight,
+        backgroundColor: "var(--cm-color-highlight-background)",
+        color: "var(--color-text) !important",
+        // padding: ".1em 0",
+        // margin: "-.1em 0",
+      },
+      {
+        tag: t.strong,
+        fontWeight: "700",
+        color: "currentColor",
+      },
+      {
+        tag: t.emphasis,
+        fontStyle: "italic",
+        color: "currentColor",
+      },
+      {
+        tag: [
+          t.name,
+          t.angleBracket,
+          t.operator,
+          t.meta,
+          t.comment,
+          t.processingInstruction,
+          t.string,
+          t.inserted,
+        ],
+        color: "var(--cm-color-meta)",
+      },
+      {
+        tag: t.atom,
+        color: "currentColor", // just there, so it can be picked-up by extensions
+      },
+      {
+        // table header
+        tag: t.heading,
+        fontWeight: "700",
+      },
 
-    {
-      tag: t.strikethrough,
-      textDecoration: "line-through",
-    },
-    {
-      tag: t.url,
-      color: "var(--cm-color-meta)",
-    },
-    {
-      // HTML Entity
-      tag: t.character,
-      color: "currentColor",
-    },
-    {
-      // Inline Code,
-      tag: kirbytextTags.inlineCode,
-      backgroundColor: "var(--cm-code-background)",
-      padding: ".1em 0",
-      margin: "-.1em 0",
-      // borderRadius: ".125em",
-    },
-    {
-      tag: [t.labelName],
-      fontWeight: "400",
-    },
-    {
-      tag: [kirbytextTags.kirbytag],
-      background: "var(--cm-kirbytag-background)",
-      color: "var(--color-text)",
-      fontWeight: "400",
-      margin: "-0.125em 0",
-      padding: "0.0625em 0",
-    }
-  ]);
+      {
+        tag: t.strikethrough,
+        textDecoration: "line-through",
+      },
+      {
+        tag: t.url,
+        color: "var(--cm-color-meta)",
+      },
+      {
+        // HTML Entity
+        tag: t.character,
+        color: "currentColor",
+      },
+      {
+        // Inline Code,
+        tag: kirbytextTags.inlineCode,
+        backgroundColor: "var(--cm-code-background)",
+        padding: ".1em 0",
+        margin: "-.1em 0",
+        // borderRadius: ".125em",
+      },
+      {
+        tag: [t.labelName],
+        fontWeight: "400",
+      },
+      {
+        tag: [kirbytextTags.kirbytag],
+        background: "var(--cm-kirbytag-background)",
+        color: "var(--color-text)",
+        fontWeight: "400",
+        margin: "-0.125em 0",
+        padding: "0.0625em 0",
+      }
+    ])
+  )
 }
 
-// function scrollMargin() {
-//   return ViewPlugin.fromClass(class {
-//     constructor(view) { // eslint-disable-line no-unused-vars
-//       this.margin = {
-//         bottom: 60,
-//         top: 60,
-//       }
-//     }
+function scrollMargin() {
+  return ViewPlugin.fromClass(class {
+    constructor(view) { // eslint-disable-line no-unused-vars
+      this.margin = {
+        bottom: 60,
+        top: 60,
+      }
+    }
 
-//     // update(update) {
-//     //   // Your update logic here
-//     //   // this.margin = {left: 100}
-//     // }
-//   }, {
-//     provide: (plugin) => EditorView.scrollMargins.of((view) => {
-//       let value =  view.plugin(plugin)
-//       console.log("vv", value)
-//       return value
-//     })
-//   })
-// }
+    // update(update) {
+    //   // Your update logic here
+    //   // this.margin = {left: 100}
+    // }
+  }, {
+    provide: (plugin) => EditorView.scrollMargins.of((view) => {
+      let value = view.plugin(plugin)
+      return value
+    })
+  })
+}
 
 export default class Theme extends Extension {
   plugins() {
     return [
+      theme(),
       highlightStyle(),
-      // theme(),
-      // scrollMargin(),
+      scrollMargin(),
       EditorView.lineWrapping,
-    ];
+    ]
   }
 
   get type() {
-    return "theme";
+    return "theme"
   }
 }

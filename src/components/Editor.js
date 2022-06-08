@@ -1,6 +1,6 @@
 import { Compartment, EditorState } from "@codemirror/state";
 import { EditorView, drawSelection, placeholder, keymap } from "@codemirror/view";
-import { standardKeymap, historyKeymap } from "@codemirror/commands";
+import { history, standardKeymap, historyKeymap } from "@codemirror/commands";
 import { debounce } from "underscore";
 
 import Emitter from "./Emitter.js";
@@ -23,7 +23,6 @@ import Theme from "./Extensions/Theme.js";
 // import autocomplete from "./Extensions/Autocomplete.js";
 
 const isKnownDesktopBrowser = (browser.safari || browser.chrome || browser.gecko) && (!browser.android && !browser.ios);
-
 
 export default class Editor extends Emitter {
 
@@ -63,12 +62,12 @@ export default class Editor extends Emitter {
   }
 
   keymap() {
-    const customKeymap = this.extensions.getKeymap();
-
     return keymap.of([
-      standardKeymap,
-      historyKeymap,
-      customKeymap,
+      ...standardKeymap,
+      ...historyKeymap,
+
+      // custom keymap
+      ...this.extensions.getKeymap(),
     ]);
   }
 
@@ -92,7 +91,7 @@ export default class Editor extends Emitter {
       new TaskLists(),
       new DropCursor(),
       new Theme(),
-      // new FirefoxBlurFix(),
+      new FirefoxBlurFix(),
       // new FilePicker(),
       // new ImagePreview(),
       ...this.options.extensions,
@@ -101,14 +100,13 @@ export default class Editor extends Emitter {
 
   createState(value) {
     const extensions = [
-      // history(),
+      history(),
       this.keymap(),
-      // ...this.extensions.getPluginsByType("language"),
-      // ...this.extensions.getPluginsByType("highlight"),
-      // ...this.extensions.getPluginsByType("button"),
+      ...this.extensions.getPluginsByType("language"),
+      ...this.extensions.getPluginsByType("highlight"),
+      ...this.extensions.getPluginsByType("button"),
       this.invisibles.of([]),
-      // EditorView.editable.of(this.options.editable),
-      // EditorView.readOnly.of(!this.options.editable),
+      EditorState.readOnly.of(!this.options.editable),
       /**
        * Firefox has a known Bug, that casuses the caret to disappear,
        * when text is dropped into an element with contenteditable="true".
@@ -125,8 +123,7 @@ export default class Editor extends Emitter {
       isKnownDesktopBrowser && drawSelection(),
       this.options.placeholder && placeholder(this.options.placeholder),
       this.extensions.getPluginsByType("theme"),
-      // this.extensions.getPluginsByType("extension")
-
+      this.extensions.getPluginsByType("extension")
 
       // autocomplete()
     ].filter((v) => v); // filter empty values
@@ -136,7 +133,6 @@ export default class Editor extends Emitter {
       selection: this.state ? this.state.selection : null,
       extensions,
       tabSize: 4,
-
     });
   }
 
@@ -149,9 +145,12 @@ export default class Editor extends Emitter {
     const view = new EditorView({
       state: this.createState(value),
       parent: this.options.element,
-      // editable: EditorView.editable.of(this.options.editable),
-      // readOnly: EditorView.readOnly.of(!this.options.editable),
+      editable: this.options.editable,
       dispatch: (...transaction) => {
+        if (!this.options.editable) {
+          return false
+        }
+
         this.view.update(transaction);
 
         if (this.preventUpdate) {
@@ -183,6 +182,10 @@ export default class Editor extends Emitter {
   }
 
   dispatch(transaction, emitUpdate = true) {
+    if (!this.options.editable) {
+      return
+    }
+
     if (emitUpdate === false) {
       this.emitUpdate = false;
     }

@@ -401,7 +401,7 @@ export default {
         this.focus();
         this.isDragOver = true;
       }
-    }
+    },
   }
 };
 </script>
