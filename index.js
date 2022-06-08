@@ -19,7 +19,7 @@ var __spreadValues = (a, b) => {
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 (function() {
   "use strict";
-  var variables = /* @__PURE__ */ (() => '.k-markdown-input-wrap {\n  --cm-content-padding-y: var(--spacing-3);\n  --cm-line-padding-x: var(--spacing-6);\n  --cm-font-size: var(--text-base);\n  --cm-font-family: var(--font-mono);\n  --cm-line-height: 1.7;\n  --cm-code-background: rgba(0, 0, 0, 0.05);\n  --cm-color-meta: var(--color-gray-500);\n  --cm-color-light-gray: rgba(0, 0, 0, 0.1);\n  --cm-selection-background: hsla(195, 80%, 40%, 0.16);\n  --cm-color-special-char: #df5f5f;\n  --cm-color-cursor: #5588ca;\n  --cm-color-highlight-background: rgba(255, 230, 0, 0.4); /* #fdc500; */\n  --cm-kirbytag-background: rgba(66, 113, 174, 0.1);\n  --cm-kirbytag-underline: rgba(66, 113, 174, 0.3);\n  --cm-min-lines: 2;\n}\n\n/* Font settings */\n\n.k-markdown-input-wrap[data-font-family="sans-serif"] {\n  --cm-font-family: var(--font-sans);\n}\n\n.k-markdown-input-wrap[data-font-size="small"] {\n  --cm-font-size: var(--text-sm);\n  --cm-line-height: 1.5;\n}\n\n/* Editor min-height */\n\n.k-markdown-input-wrap[data-size="one-line"] {\n  --cm-min-lines: 1;\n}\n\n.k-markdown-input-wrap[data-size="two-lines"] {\n  --cm-min-lines: 2;\n}\n\n.k-markdown-input-wrap[data-size="small"] {\n  --cm-min-lines: 4;\n}\n\n.k-markdown-input-wrap[data-size="medium"] {\n  --cm-min-lines: 8;\n}\n\n.k-markdown-input-wrap[data-size="large"] {\n  --cm-min-lines: 16;\n}\n\n.k-markdown-input-wrap[data-size="huge"] {\n  --cm-min-lines: 24;\n}\n')();
+  var variables = /* @__PURE__ */ (() => '.k-markdown-input-wrap {\n  --cm-content-padding-y: .25rem;\n  --cm-line-padding-x: var(--field-input-padding);\n  --cm-font-size: var(--text-base);\n  --cm-font-family: var(--font-mono);\n  --cm-line-height: 1.5;\n  --cm-code-background: rgba(0, 0, 0, 0.05);\n  --cm-color-meta: var(--color-gray-500);\n  --cm-color-light-gray: rgba(0, 0, 0, 0.1);\n  --cm-selection-background: hsla(195, 80%, 40%, 0.16);\n  --cm-color-special-char: #df5f5f;\n  --cm-color-cursor: #5588ca;\n  --cm-color-highlight-background: rgba(255, 230, 0, 0.4); /* #fdc500; */\n  --cm-kirbytag-background: rgba(66, 113, 174, 0.1);\n  --cm-kirbytag-underline: rgba(66, 113, 174, 0.3);\n  --cm-min-lines: 2;\n}\n\n/* Font settings */\n\n.k-markdown-input-wrap[data-font-family="sans-serif"] {\n  --cm-font-family: var(--font-sans);\n}\n\n.k-markdown-input-wrap[data-font-size="small"] {\n  --cm-font-size: var(--text-sm);\n  --cm-line-height: 1.5;\n}\n\n/* Editor min-height */\n\n.k-markdown-input-wrap[data-size="one-line"] {\n  --cm-min-lines: 1;\n}\n\n.k-markdown-input-wrap[data-size="two-lines"] {\n  --cm-min-lines: 2;\n}\n\n.k-markdown-input-wrap[data-size="small"] {\n  --cm-min-lines: 4;\n}\n\n.k-markdown-input-wrap[data-size="medium"] {\n  --cm-min-lines: 8;\n}\n\n.k-markdown-input-wrap[data-size="large"] {\n  --cm-min-lines: 16;\n}\n\n.k-markdown-input-wrap[data-size="huge"] {\n  --cm-min-lines: 24;\n}\n')();
   var syntax = /* @__PURE__ */ (() => `/**
  * ## Line Styles
  */
@@ -22275,8 +22275,8 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
       },
       ".cm-cursor": {
         position: "absolute",
-        borderLeft: ".1875rem solid currentColor",
-        marginLeft: "-.09375rem"
+        borderLeft: "2px solid currentColor",
+        marginLeft: "-1px"
       },
       "&.cm-focused .cm-cursor": {
         color: "var(--cm-color-cursor)"
@@ -23837,38 +23837,9 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /**
  * General field setup
  */
-.k-markdown-input-wrap[data-layout="narrow"] {
-  --cm-content-padding-y: 0.375rem !important;
-  --cm-line-padding-x: 0.375rem !important;
-}
-.k-markdown-input-wrap[data-layout="narrow"] .cm-line {
-  --cm-mark: 0 !important;
-  --cm-indent: 0 !important;
-}
 .k-markdown-input-wrap[data-font-family="sans-serif"] .cm-line {
   --cm-mark: 0 !important;
   --cm-indent: 0 !important;
@@ -23882,14 +23853,6 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 }
 
 `)();
-  let resizeObserver;
-  if (window.ResizeObserver) {
-    resizeObserver = new ResizeObserver((entries) => {
-      for (let { target, contentRect } of entries) {
-        target._component.layout = contentRect.width >= 450 ? "wide" : "narrow";
-      }
-    });
-  }
   const __vue2_script = {
     components: {
       "k-markdown-toolbar": Toolbar,
@@ -23905,8 +23868,7 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
         invisibles: false,
         toolbarButtons: [],
         active: [],
-        dialogs: [],
-        layout: "narrow"
+        dialogs: []
       };
     },
     props: __spreadProps(__spreadValues({}, MarkdownField.props), {
@@ -23979,19 +23941,8 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
           });
         });
       }
-      if (this.forceLayout) {
-        this.layout = this.forceLayout;
-      } else {
-        if (resizeObserver) {
-          this.$refs.input._component = this;
-          resizeObserver.observe(this.$refs.input);
-        }
-      }
     },
     beforeDestroy() {
-      if (!this.forceLayout && resizeObserver && this.$refs.input) {
-        resizeObserver.unobserve(this.$refs.input);
-      }
       this.editor.destroy();
     },
     methods: {

@@ -1,9 +1,9 @@
 .k-markdown-input-wrap {
-  --cm-content-padding-y: var(--spacing-3);
-  --cm-line-padding-x: var(--spacing-6);
+  --cm-content-padding-y: .25rem;
+  --cm-line-padding-x: var(--field-input-padding);
   --cm-font-size: var(--text-base);
   --cm-font-family: var(--font-mono);
-  --cm-line-height: 1.7;
+  --cm-line-height: 1.5;
   --cm-code-background: rgba(0, 0, 0, 0.05);
   --cm-color-meta: var(--color-gray-500);
   --cm-color-light-gray: rgba(0, 0, 0, 0.1);
@@ -770,38 +770,9 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /**
  * General field setup
  */
-.k-markdown-input-wrap[data-layout="narrow"] {
-  --cm-content-padding-y: 0.375rem !important;
-  --cm-line-padding-x: 0.375rem !important;
-}
-.k-markdown-input-wrap[data-layout="narrow"] .cm-line {
-  --cm-mark: 0 !important;
-  --cm-indent: 0 !important;
-}
 .k-markdown-input-wrap[data-font-family="sans-serif"] .cm-line {
   --cm-mark: 0 !important;
   --cm-indent: 0 !important;
