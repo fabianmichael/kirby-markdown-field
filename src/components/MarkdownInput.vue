@@ -80,15 +80,6 @@ import StrongEmphasis from "./Buttons/StrongEmphasis.js"
 import Extension from './Extension.js';
 
 
-let resizeObserver;
-
-if (window.ResizeObserver) {
-  resizeObserver = new ResizeObserver(entries => {
-    for (let { target, contentRect } of entries) {
-      target._component.layout = contentRect.width >= 450 ? "wide" : "narrow";
-    }
-  });
-}
 
 export default {
   components: {
@@ -106,7 +97,6 @@ export default {
       toolbarButtons: [],
       active: [],
       dialogs: [],
-      layout: "narrow",
     };
   },
   props: {
@@ -190,20 +180,9 @@ export default {
       });
     }
 
-    if (this.forceLayout) {
-      this.layout = this.forceLayout;
-    } else {
-      if (resizeObserver) {
-        this.$refs.input._component = this;
-        resizeObserver.observe(this.$refs.input);
-      }
-    }
   },
 
   beforeDestroy() {
-    if (!this.forceLayout && resizeObserver && this.$refs.input) {
-      resizeObserver.unobserve(this.$refs.input);
-    }
     this.editor.destroy();
   },
 
@@ -411,16 +390,6 @@ export default {
 /**
  * General field setup
  */
-
-.k-markdown-input-wrap[data-layout="narrow"] {
-  --cm-content-padding-y: 0.375rem !important;
-  --cm-line-padding-x: 0.375rem !important;
-}
-
-.k-markdown-input-wrap[data-layout="narrow"] .cm-line {
-  --cm-mark: 0 !important;
-  --cm-indent: 0 !important;
-}
 
 .k-markdown-input-wrap[data-font-family="sans-serif"] .cm-line {
   --cm-mark: 0 !important;

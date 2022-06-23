@@ -45,8 +45,8 @@ function theme() {
 
       ".cm-cursor": {
         position: "absolute",
-        borderLeft: ".1875rem solid currentColor",
-        marginLeft: "-.09375rem",
+        borderLeft: "2px solid currentColor",
+        marginLeft: "-1px",
       },
 
       "&.cm-focused .cm-cursor": {
