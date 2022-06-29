@@ -1,7 +1,5 @@
 # Kirby – Markdown field
 
-**ℹ️ Notice:** CodeMirror 6 is still in beta. Its API might still be subject to minor changes, so this plugin will not officially reach a stable version until CodeMirror 6 does.
-
 Enhanced, extensible Markdown field for Kirby CMS. Now available in version 2!
 
 **Features:**
