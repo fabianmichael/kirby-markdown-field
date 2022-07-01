@@ -2,7 +2,7 @@
   "name": "k-community/markdown-field",
   "description": "Enhanced markdown editor for Kirby 3",
   "type": "kirby-plugin",
-  "version": "2.0.0-rc3",
+  "version": "2.0.1",
   "license": "MIT",
   "authors": [
     {
