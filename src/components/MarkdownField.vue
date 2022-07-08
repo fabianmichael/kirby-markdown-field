@@ -5,6 +5,13 @@
     :counter="counterOptions"
     class="k-markdown-field"
   >
+    <template #label>
+      <label class="k-field-label" @click="focus">
+        {{ label }}
+        <abbr v-if="required" :title="$t('field.required')">*</abbr>
+      </label>
+    </template>
+
     <k-input
       ref="input"
       :id="_uid"
