@@ -135,7 +135,7 @@ export default {
   },
   mounted() {
     this.editor = new Editor(this.value, {
-      editable: !this.disabled,
+      readOnly: this.disabled,
       element: this.$refs.input,
       input: this,
       placeholder: this.placeholder,

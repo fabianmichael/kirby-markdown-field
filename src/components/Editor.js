@@ -30,12 +30,11 @@ export default class Editor extends Emitter {
     super();
 
     this.activeTokens  = [];
-    this.preventUpdate = false;
     this.metaKeyDown   = false;
     this.invisibles    = new Compartment();
 
     this.defaults = {
-      editable: true,
+      readOnly: false,
       element: null,
       events: {},
       extensions: [],
@@ -106,7 +105,7 @@ export default class Editor extends Emitter {
       ...this.extensions.getPluginsByType("highlight"),
       ...this.extensions.getPluginsByType("button"),
       this.invisibles.of([]),
-      EditorState.readOnly.of(!this.options.editable),
+      EditorState.readOnly.of(this.options.readOnly),
       /**
        * Firefox has a known Bug, that casuses the caret to disappear,
        * when text is dropped into an element with contenteditable="true".
@@ -145,18 +144,9 @@ export default class Editor extends Emitter {
     const view = new EditorView({
       state: this.createState(value),
       parent: this.options.element,
-      editable: this.options.editable,
+      readOnly: this.options.readOnly,
       dispatch: (...transaction) => {
-        if (!this.options.editable) {
-          return false
-        }
-
         this.view.update(transaction);
-
-        if (this.preventUpdate) {
-          this.preventUpdate = false;
-          return;
-        }
 
         const value = this.view.state.doc.toString();
         this.emit("update", value);
@@ -182,9 +172,6 @@ export default class Editor extends Emitter {
   }
 
   dispatch(transaction, emitUpdate = true) {
-    if (!this.options.editable) {
-      return
-    }
 
     if (emitUpdate === false) {
       this.emitUpdate = false;
@@ -194,7 +181,7 @@ export default class Editor extends Emitter {
   }
 
   focus() {
-    if (this.view.hasFocus || this.options.editable === false) {
+    if (this.view.hasFocus) {
       return;
     }
     this.view.focus();
