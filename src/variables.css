@@ -27,6 +27,17 @@
   --cm-line-height: 1.5;
 }
 
+/* Handle disabled state like core textarea */
+
+.k-input[data-type="markdown"][data-disabled="true"] {
+  border: var(--field-input-border) !important;
+  box-shadow: none !important;
+}
+
+.k-input[data-type="markdown"][data-disabled="true"] .cm-cursor {
+  display: none !important;
+}
+
 /* Editor min-height */
 
 .k-markdown-input-wrap[data-size="one-line"] {
