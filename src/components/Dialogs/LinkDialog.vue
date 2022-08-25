@@ -2,6 +2,7 @@
   <k-dialog
     ref="dialog"
     :button="$t('insert')"
+    size="medium"
     @cancel="$emit('cancel')"
     @submit="submit"
   >
