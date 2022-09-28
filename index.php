@@ -9,7 +9,7 @@ $kirbyVersion = Kirby::version();
 if (
     $kirbyVersion !== null &&
     (version_compare($kirbyVersion, '3.6.0-rc.2', '<') === true ||
-        version_compare($kirbyVersion, '3.8.0-alpha', '>=') === true)
+        version_compare($kirbyVersion, '3.9.0-alpha', '>=') === true)
 ) {
     throw new Exception(
         'The installed version of the Markdown field plugin ' .
