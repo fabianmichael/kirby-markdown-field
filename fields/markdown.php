@@ -80,12 +80,12 @@ return [
                     $highlights,
                     array_map(
                         fn($highlight) => is_callable($highlight) ? $highlight() : $highlight,
-                        $plugin->extends()['community.markdown-field.customHighlights'] ?? []
+                        $plugin->extends()['fabianmichael.markdown-field.customHighlights'] ?? []
                     )
                 );
             }
 
-            foreach (option('community.markdown-field.customHighlights', []) as $highlight) {
+            foreach (option('fabianmichael.markdown-field.customHighlights', []) as $highlight) {
                 $highlights[] = is_callable($highlight) ? $highlight() : $highlight;
             }
 

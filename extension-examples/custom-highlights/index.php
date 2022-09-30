@@ -1,7 +1,7 @@
 <?php
 
 Kirby::plugin('my/custom-highlights', [
-  'community.markdown-field.customHighlights' => [
+  'fabianmichael.markdown-field.customHighlights' => [
     /**
      * Simple highlight, using regex.
      */

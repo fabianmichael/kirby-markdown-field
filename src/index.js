@@ -5,7 +5,7 @@ import MarkdownBlock from "./components/MarkdownBlock.vue";
 import MarkdownField from "./components/MarkdownField.vue";
 import MarkdownInput from "./components/MarkdownInput.vue";
 
-window.panel.plugin("community/markdown-field", {
+window.panel.plugin("fabianmichael/markdown-field", {
   components: {
     "k-markdown-input": MarkdownInput,
   },
