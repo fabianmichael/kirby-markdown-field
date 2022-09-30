@@ -17,7 +17,7 @@ if (
     );
 }
 
-Kirby::plugin('k-community/markdown-field', [
+Kirby::plugin('fabianmichael/markdown-field', [
     'blueprints' => [
         'blocks/markdown' => __DIR__ . '/blueprints/blocks/markdown.yml',
     ],
