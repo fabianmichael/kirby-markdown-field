@@ -6,6 +6,7 @@ import { isURL } from "../Utils/strings.js";
 
 export default class PasteUrls extends Extension {
   plugins() {
+    const editor = this.editor;
     const useKirbytext = this.input.kirbytext;
 
     const pasteUrlsPlugin = ViewPlugin.define((view) => ({}), { // eslint-disable-line no-unused-vars
@@ -29,6 +30,10 @@ export default class PasteUrls extends Extension {
 
           if (firstLine !== lastLine) {
             // Don’t apply to multiline selections
+            return;
+          }
+          else if(editor.isActiveToken("Kirbytag")) {
+            // Don’t apply to Kirbytags
             return;
           }
 
