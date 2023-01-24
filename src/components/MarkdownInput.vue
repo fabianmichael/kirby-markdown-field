@@ -329,7 +329,7 @@ export default {
 
     uploadFile() {
       this.$refs.fileUpload.open({
-        url: "/api/" + this.endpoints.field + "/upload",
+        url: this.$urls.api + '/' + this.endpoints.field + '/upload',
         multiple: false,
       });
     },
