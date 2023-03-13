@@ -14,7 +14,7 @@ Enhanced, extensible Markdown field for Kirby CMS. Now available in version 2!
 - Clickable URLs
 - Configurable Markdown syntax (e.g. choose from `_italic_` or `*italic*`)
 - Replaces Kirby’s default [Markdown block](https://getkirby.com/docs/reference/panel/blocks/markdown) with one, that also supports syntax-highlighting.
-- Support for touch-based devices and great performance (thanks to CodeMirror 6)
+- Support for touch-based devices and great performance (thanks to [CodeMirror 6](https://codemirror.net/))
 
 💡 **TL;DR:** The Markdown field, you all have been waiting for!
 
