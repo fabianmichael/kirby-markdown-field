@@ -113,10 +113,6 @@ export default {
   min-height: 38px;
 }
 
-.k-markdown-toolbar .k-toolbar-divider {
-  border: none;
-}
-
 /* disabled state of toolbar buttons */
 .k-markdown-toolbar .k-markdown-button.is-disabled {
   opacity: 0.25;
@@ -141,14 +137,6 @@ export default {
 
 .k-markdown-input-wrap:focus-within .k-toolbar .k-markdown-button.is-active:hover {
   background: rgba(66, 113, 174, 0.075);
-}
-
-.k-markdown-toolbar-buttons {
-  flex-wrap: wrap;
-}
-
-.k-markdown-toolbar-buttons > * {
-  flex-shrink: 0;
 }
 
 /* Align invisibles button to the right of the toolbar */
