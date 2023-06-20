@@ -128,10 +128,9 @@ return [
                 }
             ],
             [
-                'pattern' => 'pages',
+                'pattern' => ['pages', '(:any)/pages'],
                 'method' => 'GET',
-                'action' => function () {
-                    $extension = get('extension', 'pagelink');
+                'action' => function ($extension = 'pagelink') {
                     $field = $this->field();
                     $model = $field->model();
                     $info = $field->info()[$extension] ?? false;
