@@ -55,6 +55,10 @@ return [
             return $query;
         },
 
+        'info' => function ($info = null) {
+            return $info;
+        },
+
         'highlights' => function ($highlights = true) {
             return $highlights;
         },
@@ -127,14 +131,17 @@ return [
                 'pattern' => 'pages',
                 'method' => 'GET',
                 'action' => function () {
+                    $extension = get('extension', 'pagelink');
                     $field = $this->field();
                     $model = $field->model();
-                    $query = $field->query()['pagelink'] ?? false;
+                    $info = $field->info()[$extension] ?? false;
+                    $query = $field->query()[$extension] ?? false;
 
                     $params = [
                         'page'     => $this->requestQuery('page'),
                         'parent'   => $this->requestQuery('parent'),
                         'model'    => $model,
+                        'info'     => $info,
                         'query'    => $query,
                         'search'   => $this->requestQuery('search'),
                     ];
