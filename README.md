@@ -81,7 +81,8 @@ You have access to the very same options as [the textarea field](https://getkirb
 | Option | Type   | Required | Default                | Description                                        |
 |:-------|:-------|:---------|:-----------------------|:---------------------------------------------------|
 | font   | string | `false`  | `monospace`            | Sets the font family (`sans-serif` or `monospace`) |
-| query  | Object | `false`  | [see below](#34-query) | Sets a custom query for the page selector dialog   |
+| query  | Object | `false`  | [see below](#35-query) | Sets a custom query for the page selector dialog   |
+| info   | Object | `false`  | [see below](#36-query) | Sets a custom info for the page selector dialog    |
 | size   | String | `false`  | `small`                | Sets the empty height of the Markdown field        |
 
 ### 3.2. Font settings
@@ -211,7 +212,17 @@ query:
   pagelink: kirby.page('my-page').children
 ```
 
-### 3.6. Size
+### 3.6. Info
+
+You can add info text for the options shown in the Pagelink dialog, by setting `pagelink` info.
+
+```yaml
+info:
+  pagelink: "{{ page.tags }}"
+```
+
+
+### 3.7. Size
 
 You can define the height of the field when empty. Default is `two-lines`, which mimics the textarea's default empty height.
 
