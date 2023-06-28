@@ -16,11 +16,15 @@
   ],
   "require": {
     "php": ">=8.0.0",
-    "getkirby/cms": ">=3.6.0",
     "getkirby/composer-installer": "^1.2"
   },
   "extra": {
     "installer-name": "markdown-field"
   },
-  "minimum-stability": "RC"
+  "minimum-stability": "RC",
+  "config": {
+    "allow-plugins": {
+      "getkirby/composer-installer": true
+    }
+  }
 }
