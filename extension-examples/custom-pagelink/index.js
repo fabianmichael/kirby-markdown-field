@@ -12,13 +12,14 @@
      *
      * text:
      *   type: markdown
-     *   query:
-     *     albums: site.find('albums')
-     *   info:
-     *     albums: "{{ page.title.uppercase }}"
+     *   buttons:
+     *     albums:
+     *       pages:
+     *         query: site.find('albums')
+     *         info: "{{ page.title.uppercase }}"
      */
 
-      /**
+    /**
      * The button definition. This button just opens the dialog, when clicked.
      */
     get button() {

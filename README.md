@@ -40,9 +40,10 @@ Enhanced, extensible Markdown field for Kirby CMS. Now available in version 2!
       - [Inline Formats](#inline-formats)
       - [Other](#other)
     - [URLs](#urls)
-    - [3.5. Query](#35-query)
+    - [3.5. Pages](#35-pages)
     - [3.6. Size](#36-size)
   - [4. Extension API](#4-extension-api)
+    - [4.1 Custom options for pages, files, and uploads](#41-custom-options-for-pages-files-and-uploads)
   - [5. Development](#5-development)
   - [7. Migrating from Version 1](#7-migrating-from-version-1)
   - [8. Known Issues](#8-known-issues)
@@ -81,8 +82,7 @@ You have access to the very same options as [the textarea field](https://getkirb
 | Option | Type   | Required | Default                | Description                                        |
 |:-------|:-------|:---------|:-----------------------|:---------------------------------------------------|
 | font   | string | `false`  | `monospace`            | Sets the font family (`sans-serif` or `monospace`) |
-| query  | Object | `false`  | [see below](#35-query) | Sets a custom query for the page selector dialog   |
-| info   | Object | `false`  | [see below](#36-query) | Sets a custom info for the page selector dialog    |
+| pages  | Object | `false`  | [see below](#35-pages) | Sets a custom query for the page selector dialog   |
 | size   | String | `false`  | `small`                | Sets the empty height of the Markdown field        |
 
 ### 3.2. Font settings
@@ -203,26 +203,24 @@ buttons:
 
 - When you select some text and paste a URL, it will automatically create a link tag and use the current selection as link text.
 
-### 3.5. Query
+### 3.5. Pages
 
-You can limit the options shown in the Pagelink dialog, by setting a `pagelink` query (if unset, you'll be able to browse the entire website tree)
-
-```yaml
-query:
-  pagelink: kirby.page('my-page').children
-```
-
-### 3.6. Info
-
-You can add info text for the options shown in the Pagelink dialog, by setting `pagelink` info.
+You can limit the options shown in the Pagelink dialog, by setting the `pages` option with a query (if unset, you'll be able to browse the entire website tree)
 
 ```yaml
-info:
-  pagelink: "{{ page.tags }}"
+pages: kirby.page('my-page').children
 ```
 
+You can also set the `pages` option to an object with other properties from [the pages field](https://getkirby.com/docs/reference/panel/fields/pages) such as info and text
 
-### 3.7. Size
+```yaml
+pages:
+  query: kirby.page('my-page').children
+  info: "{{ page.tags }}"
+  text: "{{ page.title.upper }}"
+```
+
+### 3.6. Size
 
 You can define the height of the field when empty. Default is `two-lines`, which mimics the textarea's default empty height.
 
@@ -262,6 +260,34 @@ There are two types of extensions, which allow you to extend the editor to adjus
 - **Custom buttons:** You can define your own buttons, which can be added to the editor toolbar. Buttons can define keyboard shortcuts, displays dropdowns and even show a popup.
 - **Custom extensions:** You can define your own editor extensions. An example can be found in the `extension-examples/indent-with-tab` folder.
 - **Custom highlights:** You can define regex-based custom highlights, which allow you to highlight any text, such as markup for custom syntax (e.g. global text snippets or Wiki-style links)
+
+### 4.1 Custom options for pages, files, and uploads
+
+Your extension can use a special endpoint to extend the base options for pages, files, and uploads with parameters set in the button configuration. See an example in the `extension-examples/custom-pagelink` folder.
+
+
+```js
+// special routes to read options from the button configuration
+this.input.endpoints.field + "/myextension/pages"
+this.input.endpoints.field + "/myextension/uploads"
+this.input.endpoints.field + "/myextension/files"
+```
+
+The end user can configure options for your extension as part of the button configuration:
+
+```yaml
+text:
+  type: markdown
+  files:
+    […]
+  pages:
+    […]
+  buttons:
+    myextension:
+      pages:
+        query: site.index
+        info: "{{ page.tags }}"
+```
 
 ## 5. Development
 
