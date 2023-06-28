@@ -49,7 +49,16 @@ export default class File extends Button {
         return;
       }
 
-      this.editor.insert(selected.map((file) => file.dragText).join("\n\n"));
+      const selection = this.editor.getSelection();
+
+      if (selected.length === 1 && selection.length > 0) {
+        // only if one file was selected, use selected text to as
+        // label for the link.
+        const file = selected[0];
+        this.editor.insert(`(file: ${file.filename} text: ${selection})`);
+      } else {
+        this.editor.insert(selected.map((file) => file.dragText).join("\n\n"));
+      }
     }
   }
 
