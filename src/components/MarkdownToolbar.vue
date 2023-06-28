@@ -1,56 +1,58 @@
 <template>
-  <nav class="k-toolbar k-markdown-toolbar">
-    <template v-for="({ button, name, isActive, isDisabled }, buttonIndex) in layout">
+  <nav class="k-markdown-toolbar">
+    <div class="k-markdown-toolbar-wrapper">
+      <template v-for="({ button, name, isActive, isDisabled }, buttonIndex) in layout">
 
-      <!-- divider -->
-      <template v-if="button.divider">
-        <hr
-          :key="buttonIndex"
-          aria-orientation="vertical"
-          class="k-toolbar-divider"
-        />
-      </template>
+        <!-- divider -->
+        <template v-if="button.divider">
+          <hr
+            :key="buttonIndex"
+            aria-orientation="vertical"
+            class="k-markdown-toolbar-divider"
+          />
+        </template>
 
-      <!-- dropdown -->
-      <template v-else-if="button.dropdown">
-        <k-dropdown :key="buttonIndex">
+        <!-- dropdown -->
+        <template v-else-if="button.dropdown">
+          <k-dropdown :key="buttonIndex">
+            <k-button
+              :key="buttonIndex"
+              :icon="button.icon"
+              :tooltip="button.label"
+              tabindex="-1"
+              :class="(isDisabled() ? 'is-disabled ' : '') + 'k-markdown-toolbar-button'"
+              @click="$refs[buttonIndex + '-dropdown'][0].toggle()"
+            />
+            <k-dropdown-content
+              :ref="buttonIndex + '-dropdown'"
+              @open="setOpen($refs[buttonIndex + '-dropdown'][0])"
+              @close="setOpen(null)"
+            >
+              <k-dropdown-item
+                v-for="(dropdownItem, dropdownItemIndex) in button.dropdown"
+                :key="dropdownItemIndex"
+                :icon="dropdownItem.icon"
+                :current="active.includes(dropdownItem.token)"
+                @click="dropdownItem.command"
+              ><span v-html="dropdownItem.label"/></k-dropdown-item>
+            </k-dropdown-content>
+          </k-dropdown>
+        </template>
+
+        <!-- single button -->
+        <template v-else>
           <k-button
             :key="buttonIndex"
             :icon="button.icon"
             :tooltip="button.label"
+            :class="(isDisabled() ? 'is-disabled ' : '') + (isActive() || (name === 'invisibles' && invisibles) ? 'is-active ' : '') + 'k-markdown-toolbar-button' + (button.align === 'right' ? ' k-markdown-toolbar-button-right' : '')"
             tabindex="-1"
-            :class="(isDisabled() ? 'is-disabled ' : '') + 'k-toolbar-button k-markdown-button'"
-            @click="$refs[buttonIndex + '-dropdown'][0].toggle()"
+            @click="button.command"
           />
-          <k-dropdown-content
-            :ref="buttonIndex + '-dropdown'"
-            @open="setOpen($refs[buttonIndex + '-dropdown'][0])"
-            @close="setOpen(null)"
-          >
-            <k-dropdown-item
-              v-for="(dropdownItem, dropdownItemIndex) in button.dropdown"
-              :key="dropdownItemIndex"
-              :icon="dropdownItem.icon"
-              :current="active.includes(dropdownItem.token)"
-              @click="dropdownItem.command"
-            ><span v-html="dropdownItem.label"/></k-dropdown-item>
-          </k-dropdown-content>
-        </k-dropdown>
-      </template>
+        </template>
 
-      <!-- single button -->
-      <template v-else>
-        <k-button
-          :key="buttonIndex"
-          :icon="button.icon"
-          :tooltip="button.label"
-          :class="(isDisabled() ? 'is-disabled ' : '') + (isActive() || (name === 'invisibles' && invisibles) ? 'is-active ' : '') + 'k-toolbar-button k-markdown-button' + (button.align === 'right' ? ' k-markdown-toolbar-button-right' : '')"
-          tabindex="-1"
-          @click="button.command"
-        />
       </template>
-
-    </template>
+    </div>
   </nav>
 </template>
 
@@ -110,16 +112,40 @@ export default {
 
 .k-markdown-toolbar {
   height: auto;
-  min-height: 38px;
+  background: var(--color-white);
+	border-start-start-radius: var(--rounded);
+	border-start-end-radius: var(--rounded);
+	border-bottom: 1px solid var(--color-background);
+	min-height: 38px;
+}
+
+.k-markdown-toolbar-wrapper {
+	max-width: 100%;
+  display: flex;
+}
+
+.k-markdown-toolbar-button {
+  width: 36px;
+  height: 36px;
+}
+
+.k-markdown-toolbar-divider {
+  width: 1px;
+  border-width: 0;
+  background: var(--color-background);
 }
 
 /* disabled state of toolbar buttons */
-.k-markdown-toolbar .k-markdown-button.is-disabled {
+.k-markdown-toolbar .k-markdown-toolbar-button.is-disabled {
   opacity: 0.25;
   pointer-events: none;
 }
 
 /* Editor has focus */
+.k-markdown-toolbar {
+  color: #aaa
+}
+
 .k-markdown-input-wrap:focus-within .k-markdown-toolbar {
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
@@ -131,11 +157,15 @@ export default {
   z-index: 4;
 }
 
-.k-markdown-input-wrap:focus-within .k-markdown-toolbar .k-markdown-button.is-active {
+.k-markdown-input-wrap:focus-within .k-markdown-toolbar .k-markdown-toolbar-button:hover {
+  background: rgba(239,239,239,.5);
+}
+
+.k-markdown-input-wrap:focus-within .k-markdown-toolbar .k-markdown-toolbar-button.is-active {
   color: #3872be;
 }
 
-.k-markdown-input-wrap:focus-within .k-toolbar .k-markdown-button.is-active:hover {
+.k-markdown-input-wrap:focus-within .k-markdown-toolbar .k-markdown-toolbar-button.is-active:hover {
   background: rgba(66, 113, 174, 0.075);
 }
 

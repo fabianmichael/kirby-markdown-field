@@ -26,7 +26,7 @@ Enhanced, extensible Markdown field for Kirby CMS. Now available in version 2!
 
 ## Table of Contents
 
-- [Kirby – Markdown field](#kirby--markdown-field)
+- [Markdown Field for Kirby](#markdown-field-for-kirby)
   - [Overview](#overview)
   - [Table of Contents](#table-of-contents)
   - [1. Installation](#1-installation)
@@ -131,6 +131,11 @@ syntaxes for bold text, i.e. `__bold__` and `**bold**`. The editor’s syntax hi
 will always recognize both, but you can adjust, what the editor will use, when
 you click the toolbar button or hitting the respective keyboard shortcut.
 
+For the `link` and `pagelink` buttons, you can specify whether these thould insert
+`markdown` or `kirbytext` markup. By default, this will be determed by the
+[`kirbytext`](https://getkirby.com/docs/reference/system/options/kirbytext) option by
+default but can be overriden on a per-button basis.
+
 All button configuration is optional, you can always use `- ul` instead of `ul: -`,
 if you want to stick to the default settings.
 
@@ -144,6 +149,8 @@ buttons:
     - h5
     - h6
   bold: ** # or `__`
+  link: null # or `markdown` or `kirbytext`
+  pagelink: null # or `markdown` or `kirbytext`
   italic: * # or `_`
   - strikethrough
   - code

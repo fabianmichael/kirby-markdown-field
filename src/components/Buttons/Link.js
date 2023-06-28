@@ -9,12 +9,6 @@ export default class Link extends Button {
     };
   }
 
-  get defaults() {
-    return {
-      blank: true
-    }
-  }
-
   get command() {
     return (value) => {
       if (this.isDisabled()) {
@@ -24,7 +18,7 @@ export default class Link extends Button {
       if (value.type === "email") {
         const email = value.email !== null ? value.email : "";
 
-        if (this.input.kirbytext) {
+        if (this.useKirbytext) {
           const text = value.text ? ` text: ${value.text}` : "";
           this.editor.insert(`(email: ${email}${text})`);
         } else {
@@ -37,7 +31,7 @@ export default class Link extends Button {
       } else {
         const url = value.url !== null ? value.url : "";
 
-        if (this.input.kirbytext) {
+        if (this.useKirbytext) {
           const text = value.text ? ` text: ${value.text}` : "";
           const blank = value.blank ? " target: _blank" : "";
           this.editor.insert(`(link: ${url}${text}${blank})`);
@@ -50,6 +44,29 @@ export default class Link extends Button {
         }
       }
     }
+  }
+
+  configure(options) {
+    if (typeof options === "string") {
+      options = { style: options };
+    }
+
+    Button.prototype.configure.call(this, options);
+
+    if (!["markdown", "kirbytext", null].includes(this.options.style)) {
+      throw "Link style must be either `markdown`, `kirbytext` or `null`.";
+    }
+  }
+
+  get defaults() {
+    return {
+      blank: true,
+      style: null,
+    };
+  }
+
+  get useKirbytext() {
+    return ([null, 'kirbytext'].includes(this.options.style) && this.input.kirbytext);
   }
 
   get dialog() {
