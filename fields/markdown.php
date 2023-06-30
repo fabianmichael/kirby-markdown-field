@@ -51,8 +51,29 @@ return [
             return $size;
         },
 
+        /**
+         * Sets the custom query for the page selector dialog.
+         */
+        'pages' => function ($pages = []) {
+            if (is_string($pages) === true) {
+                return ['query' => $pages];
+            }
+            if (is_array($pages) === false) {
+                $pages = [];
+            }
+            return $pages;
+        },
+
+        /**
+         * Sets the custom query for the page selector dialog.
+         * @deprecated Use `pages` instead
+         */
         'query' => function ($query = null) {
             return $query;
+        },
+
+        'info' => function ($info = null) {
+            return $info;
         },
 
         'highlights' => function ($highlights = true) {
@@ -95,10 +116,22 @@ return [
     'api' => function () {
         return [
             [
-                'pattern' => 'files',
+                'pattern' => ['files', '(:any)/files'],
                 'method' => 'GET',
-                'action' => function () {
-                    $params = array_merge($this->field()->files(), [
+                'action' => function ($button = null) {
+                    $field = $this->field();
+
+                    $params = $field->files();
+                    // allow buttons to override base params
+                    if ($button) {
+                        $buttonProps = $field->buttons()[$button] ?? [];
+                        if (is_array($buttonProps)) {
+                           $buttonParams = $buttonProps['files'] ?? [];
+                           $params = array_merge($params, $buttonParams);
+                        }
+                    }
+
+                    $params = array_merge($params, [
                         'page'   => $this->requestQuery('page'),
                         'search' => $this->requestQuery('search')
                     ]);
@@ -107,11 +140,20 @@ return [
                 }
             ],
             [
-                'pattern' => 'upload',
+                'pattern' => ['upload', '(:any)/upload'],
                 'method' => 'POST',
-                'action' => function () {
+                'action' => function ($button = null) {
                     $field   = $this->field();
                     $uploads = $field->uploads();
+
+                    // allow buttons to override base params
+                    if ($button) {
+                        $buttonProps = $field->buttons()[$button] ?? [];
+                        if (is_array($buttonProps)) {
+                           $buttonParams = $buttonProps['uploads'] ?? [];
+                           $uploads = array_merge($uploads, $buttonParams);
+                        }
+                    }
 
                     return $this->field()->upload($this, $uploads, function ($file, $parent) use ($field) {
                         $absolute = $field->model()->is($parent) === false;
@@ -124,20 +166,33 @@ return [
                 }
             ],
             [
-                'pattern' => 'pages',
+                'pattern' => ['pages', '(:any)/pages'],
                 'method' => 'GET',
-                'action' => function () {
+                'action' => function ($button = null) {
                     $field = $this->field();
-                    $model = $field->model();
-                    $query = $field->query()['pagelink'] ?? false;
 
-                    $params = [
-                        'page'     => $this->requestQuery('page'),
+                    $params = [];
+                    // deprecated query option
+                    if ($field->query() && $field->query()['pagelink']) {
+                        $params['query'] = $field->query()['pagelink'];
+                    }
+                    $params = array_merge($params, $field->pages());
+
+                    // allow buttons to override base params
+                    if ($button) {
+                        $buttonProps = $field->buttons()[$button] ?? [];
+                        if (is_array($buttonProps)) {
+                           $buttonParams = $buttonProps['pages'] ?? [];
+                           $params = array_merge($params, $buttonParams);
+                        }
+                    }
+
+                    $params = array_merge($params, [
+                        'page'   => $this->requestQuery('page'),
                         'parent'   => $this->requestQuery('parent'),
-                        'model'    => $model,
-                        'query'    => $query,
-                        'search'   => $this->requestQuery('search'),
-                    ];
+                        'model'    => $field->model(),
+                        'search' => $this->requestQuery('search')
+                    ]);
 
                     return (new PagePicker($params))->toArray();
                 }
