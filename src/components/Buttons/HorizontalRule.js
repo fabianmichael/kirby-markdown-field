@@ -6,7 +6,7 @@ export default class HorizontalRule extends Button {
 
   get button() {
     return {
-      icon: "horizontal-rule",
+      icon: "divider",
       label: this.input.$t("markdown.toolbar.button.hr"),
       command: this.command,
     };

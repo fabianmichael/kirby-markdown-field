@@ -3,14 +3,15 @@ import Button from "./Button.js";
 export default class PageLink extends Button {
   get button() {
     return {
-      icon: "pagelink",
+      icon: "page",
       label: this.input.$t("markdown.toolbar.button.pagelink"),
       command: () => {
-        this.editor.emit("dialog", this, {
-          endpoint: this.input.endpoints.field + "/pages",
-          multiple: false,
-          selected: [],
-        });
+        alert("dialog…")
+        // this.editor.emit("dialog", this, {
+        //   endpoint: this.input.endpoints.field + "/pages",
+        //   multiple: false,
+        //   selected: [],
+        // });
       },
     };
   }
@@ -61,9 +62,9 @@ export default class PageLink extends Button {
     return ([null, 'kirbytext'].includes(this.options.style) && this.input.kirbytext);
   }
 
-  get dialog() {
-    return "k-pages-dialog";
-  }
+  // get dialog() {
+  //   return "k-pages-dialog";
+  // }
 
   get name() {
     return "pagelink";

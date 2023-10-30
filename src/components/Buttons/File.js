@@ -32,11 +32,12 @@ export default class File extends Button {
   }
 
   get openSelectDialog() {
-    return () => this.editor.emit("dialog", this, {
-      endpoint: this.input.endpoints.field + "/files",
-      multiple: false,
-      selected: [],
-    })
+    return () => alert("dialog…");
+    // return () => this.editor.emit("dialog", this, {
+    //   endpoint: this.input.endpoints.field + "/files",
+    //   multiple: false,
+    //   selected: [],
+    // })
   }
 
   get command() {
@@ -62,9 +63,9 @@ export default class File extends Button {
     }
   }
 
-  get dialog() {
-    return "k-files-dialog";
-  }
+  // get dialog() {
+  //   return "k-files-dialog";
+  // }
 
   get name() {
     return "file";

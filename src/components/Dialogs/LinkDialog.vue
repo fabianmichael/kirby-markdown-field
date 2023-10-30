@@ -36,8 +36,7 @@ export default {
       fields: {
         type: {
           label: this.$t("markdown.linktype"),
-          type: "radio",
-          columns: 2,
+          type: "toggles",
           options: [
             {
               value: "url",
@@ -48,6 +47,10 @@ export default {
               text: this.$t("email"),
             },
           ],
+        },
+        link: {
+          label: "LINK!!!",
+          type: "link",
         },
         url: {
           label: this.$t("url"),

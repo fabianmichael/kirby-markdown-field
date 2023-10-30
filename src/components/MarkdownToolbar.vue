@@ -18,7 +18,7 @@
             <k-button
               :key="buttonIndex"
               :icon="button.icon"
-              :tooltip="button.label"
+              :title="button.label"
               tabindex="-1"
               :class="(isDisabled() ? 'is-disabled ' : '') + 'k-markdown-toolbar-button'"
               @click="$refs[buttonIndex + '-dropdown'][0].toggle()"
@@ -44,7 +44,7 @@
           <k-button
             :key="buttonIndex"
             :icon="button.icon"
-            :tooltip="button.label"
+            :title="button.label"
             :class="(isDisabled() ? 'is-disabled ' : '') + (isActive() || (name === 'invisibles' && invisibles) ? 'is-active ' : '') + 'k-markdown-toolbar-button' + (button.align === 'right' ? ' k-markdown-toolbar-button-right' : '')"
             tabindex="-1"
             @click="button.command"
