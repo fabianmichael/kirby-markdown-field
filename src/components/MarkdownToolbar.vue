@@ -116,7 +116,7 @@ export default {
 	border-start-start-radius: var(--rounded);
 	border-start-end-radius: var(--rounded);
 	border-bottom: 1px solid var(--color-background);
-	min-height: 38px;
+	min-height: 32px;
 }
 
 .k-markdown-toolbar-wrapper {
@@ -125,8 +125,8 @@ export default {
 }
 
 .k-markdown-toolbar-button {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
 }
 
 .k-markdown-toolbar-divider {
