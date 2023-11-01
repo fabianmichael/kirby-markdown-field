@@ -5,45 +5,139 @@ export default class Link extends Button {
     return {
       icon: "url",
       label: this.input.$t("toolbar.button.link") + this.formatKeyName(this.keys()[0]),
-      command: () => this.editor.emit("dialog", this),
+      command: () => this.openDialog(),
     };
   }
 
-  get command() {
-    return (value) => {
-      if (this.isDisabled()) {
-        return;
+  openDialog() {
+
+    const fields = {
+      href: {
+        label: window.panel.$t("link"),
+        type: "link",
+        placeholder: window.panel.$t("url.placeholder"),
+        icon: "url"
+      },
+      text: {
+        label: window.panel.$t("link.text"),
+        type: "text",
+      },
+    };
+
+    if (this.useKirbytext) {
+      fields['target'] = {
+        label: window.panel.$t("open.newWindow"),
+        type: "toggle",
+        text: [window.panel.$t("no"), window.panel.$t("yes")]
+      };
+    }
+
+    this.input.$panel.dialog.open({
+      component: "k-link-dialog",
+      props: {
+        fields: {
+          href: {
+            label: window.panel.$t("link"),
+            type: "link",
+            placeholder: window.panel.$t("url.placeholder"),
+            icon: "url"
+          },
+          text: {
+            label: window.panel.$t("link.text"),
+            type: "text",
+          },
+          target: {
+            label: window.panel.$t("open.newWindow"),
+            type: "toggle",
+            text: [window.panel.$t("no"), window.panel.$t("yes")]
+          },
+        },
+        value: "",
+      },
+      on: {
+        cancel: () => this.input.focus(),
+        submit: (values) => {
+          this.input.$panel.dialog.close();
+          delete values.title;
+          values.text = values.text || null;
+          console.log("inserto", values)
+          this.insertLink(values);
+        }
       }
+    });
+  }
 
-      if (value.type === "email") {
-        const email = value.email !== null ? value.email : "";
+  insertLink({ href, text, target }) {
+    if (this.isDisabled()) {
+      return;
+    }
 
-        if (this.useKirbytext) {
-          const text = value.text ? ` text: ${value.text}` : "";
-          this.editor.insert(`(email: ${email}${text})`);
-        } else {
-          if (value.text) {
-            this.editor.insert(`[${value.text}](mailto:${email})`);
-          } else {
-            this.editor.insert(`<${email}>`);
-          }
-        }
+    console.log("uhu", href, text, target);
+
+    if (href === '' || href === null) {
+      return;
+    }
+
+    const hasText = text !== '' && text !== null;
+    const linkType = this.linkType(href);
+
+    console.log("lt", linkType, hasText);
+
+    if (linkType === 'email') {
+      if (this.useKirbytext) {
+        const email = href.replace(/^email:/, '');
+        const textAttr = hasText ? ` text: ${text}` : '';
+        this.editor.insert(`(email: ${email}${textAttr})`);
+      } else if (hasText) {
+        this.editor.insert(`[${text}](mailto:${email})`);
       } else {
-        const url = value.url !== null ? value.url : "";
-
-        if (this.useKirbytext) {
-          const text = value.text ? ` text: ${value.text}` : "";
-          const blank = value.blank ? " target: _blank" : "";
-          this.editor.insert(`(link: ${url}${text}${blank})`);
-        } else {
-          if (value.text) {
-            this.editor.insert(`[${value.text}](${url})`);
-          } else {
-            this.editor.insert(`<${url}>`);
-          }
-        }
+        this.editor.insert(`<${email}>`);
+      }
+    } else {
+      if (this.useKirbytext) {
+        const textAttr = hasText ? ` text: ${value.text}` : "";
+        const targetAttr = target ? " target: _blank" : "";
+        this.editor.insert(`(link: ${href}${textAttr}${targetAttr})`);
+      } else if (hasText) {
+        this.editor.insert(`[${text}](${href})`);
+      } else {
+        this.editor.insert(`<${href}>`);
       }
     }
+  }
+
+
+  linkType(value) {
+    if (typeof value !== "string") {
+      return 'custom';
+    }
+
+    if (/^(http|https):\/\//.test(value)) {
+      return 'url';
+    }
+
+    if (value.startsWith('page://') || value.startsWith('/@/page/')) {
+      return 'page';
+    }
+
+    if (value.startsWith('file://') || value.startsWith('/@/file/')) {
+      return 'file';
+    }
+
+
+    if (value.startsWith('tel:')) {
+      return 'tel';
+    }
+
+    if (value.startsWith('email:')) {
+      return 'email';
+    }
+
+    if (value.startsWith('#')) {
+      return '#';
+    }
+
+    return 'custom';
   }
 
   configure(options) {
@@ -69,15 +163,11 @@ export default class Link extends Button {
     return ([null, 'kirbytext'].includes(this.options.style) && this.input.kirbytext);
   }
 
-  get dialog() {
-    return "k-markdown-link-dialog";
-  }
-
   keys() {
     return [
       {
         key: "Mod-k",
-        run: () => this.editor.emit("dialog", this),
+        run: () => this.openDialog(),
       }
     ];
   }

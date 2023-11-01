@@ -1,6 +1,8 @@
 import "./variables.css";
 import "./syntax.css";
 
+import Toolbar from "./components/MarkdownToolbar.vue";
+
 import MarkdownBlock from "./components/MarkdownBlock.vue";
 import MarkdownField from "./components/MarkdownField.vue";
 import MarkdownInput from "./components/MarkdownInput.vue";
@@ -8,6 +10,7 @@ import MarkdownInput from "./components/MarkdownInput.vue";
 window.panel.plugin("fabianmichael/markdown-field", {
   components: {
     "k-markdown-input": MarkdownInput,
+    "k-markdown-toolbar": Toolbar,
   },
   blocks: {
     markdown: MarkdownBlock,

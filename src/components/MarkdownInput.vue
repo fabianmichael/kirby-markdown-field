@@ -52,9 +52,6 @@
 
 <script>
 import Field from "./MarkdownField.vue";
-import Toolbar from "./MarkdownToolbar.vue";
-
-import LinkDialog from "./Dialogs/LinkDialog.vue";
 
 import Editor from './Editor.js';
 import Highlight from "./Extensions/Highlight.js";
@@ -73,19 +70,12 @@ import InlineCode from "./Buttons/InlineCode.js"
 import Invisibles from "./Buttons/Invisibles.js"
 import Link from "./Buttons/Link.js"
 import OrderedList from "./Buttons/OrderedList.js"
-import PageLink from "./Buttons/PageLink.js"
 import SpecialChars from "./Buttons/SpecialChars.js"
 import Strikethrough from "./Buttons/Strikethrough.js"
 import StrongEmphasis from "./Buttons/StrongEmphasis.js"
 import Extension from './Extension.js';
 
-
-
 export default {
-  components: {
-    "k-markdown-toolbar": Toolbar,
-    "k-markdown-link-dialog": LinkDialog,
-  },
   data() {
     return {
       editor: Object,
@@ -238,10 +228,6 @@ export default {
         new StrongEmphasis(),
         ...this.createButtons(),
       ];
-
-      if (this.kirbytext) {
-        available.push(new PageLink());
-      }
 
       const mapped = available.reduce((accumulator, extension) => ({
         ...accumulator,

@@ -187,9 +187,10 @@ export default {
 }
 
 .k-markdown-toolbar .k-button-text kbd {
+  background: hsla(0deg 0% 100% / 25%);
+  color: white;
   font-variant-numeric: tabular-nums;
   margin-left: 2.5rem;
-  opacity: 0.6;
 }
 
 </style>
