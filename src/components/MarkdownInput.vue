@@ -385,8 +385,8 @@ export default {
 /**
  * 1. Make sure there's no overflow
  */
-.k-markdown-input .k-input-element {
-  width: 100%; /* 1 */
+.k-input[data-type="markdown"] .k-input-element {
+  max-width: 100%; /* 1 */
 }
 
 </style>

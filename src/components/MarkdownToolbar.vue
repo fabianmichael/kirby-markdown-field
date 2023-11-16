@@ -1,6 +1,6 @@
 <template>
   <nav class="k-markdown-toolbar">
-    <div class="k-markdown-toolbar-wrapper">
+    <!-- <div class="k-markdown-toolbar-wrapper"> -->
       <template v-for="({ button, name, isActive, isDisabled }, buttonIndex) in layout">
 
         <!-- divider -->
@@ -14,7 +14,7 @@
 
         <!-- dropdown -->
         <template v-else-if="button.dropdown">
-          <k-dropdown :key="buttonIndex">
+          <div :key="buttonIndex">
             <k-button
               :key="buttonIndex"
               :icon="button.icon"
@@ -36,7 +36,7 @@
                 @click="dropdownItem.command"
               ><span v-html="dropdownItem.label"/></k-dropdown-item>
             </k-dropdown-content>
-          </k-dropdown>
+          </div>
         </template>
 
         <!-- single button -->
@@ -52,7 +52,7 @@
         </template>
 
       </template>
-    </div>
+    <!-- </div> -->
   </nav>
 </template>
 
@@ -117,12 +117,18 @@ export default {
 	border-start-end-radius: var(--rounded);
 	border-bottom: 1px solid var(--color-background);
 	min-height: 32px;
+  max-width: 100%;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
-.k-markdown-toolbar-wrapper {
+/* .k-markdown-toolbar-wrapper {
 	max-width: 100%;
   display: flex;
-}
+  overflow-x: auto;
+  overflow-y: hidden;
+} */
 
 .k-markdown-toolbar-button {
   width: 32px;
@@ -153,12 +159,12 @@ export default {
   left: 0;
   position: sticky;
   right: 0;
-  top: 0;
+  top: var(--header-sticky-offset);
   z-index: 4;
 }
 
-.k-markdown-input-wrap:focus-within .k-markdown-toolbar .k-markdown-toolbar-button:hover {
-  background: rgba(239,239,239,.5);
+.k-markdown-input-wrap .k-markdown-toolbar .k-markdown-toolbar-button:hover {
+  background: var(--toolbar-hover);
 }
 
 .k-markdown-input-wrap:focus-within .k-markdown-toolbar .k-markdown-toolbar-button.is-active {
@@ -191,6 +197,7 @@ export default {
   color: white;
   font-variant-numeric: tabular-nums;
   margin-left: 2.5rem;
+  padding-block: 2px;
 }
 
 </style>
