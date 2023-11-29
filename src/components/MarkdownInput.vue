@@ -28,33 +28,11 @@
       @keydown.meta.enter="onSubmit"
       @keydown.ctrl.enter="onSubmit"
     />
-
-    <component
-      v-for="extension in this.dialogs"
-      v-bind="$props"
-      :key="extension.name"
-      :extension="extension"
-      :is="extension.dialog"
-      :ref="`dialog-${extension.name}`"
-      @cancel="cancel"
-      @close="cancel"
-      @submit="submitDialog(extension, ...arguments)"
-    />
-
-    <k-upload
-      v-if="uploads"
-      ref="fileUpload"
-      @success="insertUpload"
-    />
-
   </div>
 </template>
 
 <script>
 import Field from "./MarkdownField.vue";
-import Toolbar from "./MarkdownToolbar.vue";
-
-import LinkDialog from "./Dialogs/LinkDialog.vue";
 
 import Editor from './Editor.js';
 import Highlight from "./Extensions/Highlight.js";
@@ -73,30 +51,21 @@ import InlineCode from "./Buttons/InlineCode.js"
 import Invisibles from "./Buttons/Invisibles.js"
 import Link from "./Buttons/Link.js"
 import OrderedList from "./Buttons/OrderedList.js"
-import PageLink from "./Buttons/PageLink.js"
 import SpecialChars from "./Buttons/SpecialChars.js"
 import Strikethrough from "./Buttons/Strikethrough.js"
 import StrongEmphasis from "./Buttons/StrongEmphasis.js"
 import Extension from './Extension.js';
 
-
-
 export default {
-  components: {
-    "k-markdown-toolbar": Toolbar,
-    "k-markdown-link-dialog": LinkDialog,
-  },
   data() {
     return {
       editor: Object,
-      skipNextChangeEvent: false,
-      currentDialog: null,
+      skipNextInputEvent: false,
       activeMarks: [],
       isDragOver: false,
       invisibles: false,
       toolbarButtons: [],
       active: [],
-      dialogs: [],
     };
   },
   props: {
@@ -119,11 +88,24 @@ export default {
     currentLanguage() {
       return this.$language;
     },
+    uploadOptions() {
+      const restoreSelection = this.editor.restoreSelectionCallback();
+
+      return {
+        url: this.$panel.urls.api + "/" + this.endpoints.field + "/upload",
+        multiple: false,
+        on: {
+          cancel: restoreSelection,
+          done: (files) => {
+            restoreSelection(() => this.insertUpload(files));
+          },
+        },
+      };
+    },
   },
   watch: {
     value(newVal, oldVal) {
       if (newVal !== undefined && newVal !== this.editor.value) {
-        // this.skipNextChangeEvent = true
         // let scrollInfo = this.editor.getScrollInfo()
         // set the new value as the editor's content
         // this.editor.setValue(newVal)
@@ -150,12 +132,14 @@ export default {
         active: (active) => {
           this.active = active;
         },
-        dialog: (extension, ...args) => {
-          this.openDialog(extension, ...args);
-        },
-        update: (value) => {
+        update: async (value) => {
           if (this.$refs.toolbar) {
             this.$refs.toolbar.closeDropdowns();
+          }
+
+          if (this.skipNextInputEvent) {
+            this.skipNextInputEvent = false;
+            return;
           }
           this.$emit("input", value);
         },
@@ -166,7 +150,6 @@ export default {
     });
 
     this.toolbarButtons = this.editor.buttons;
-    this.dialogs = this.editor.dialogs;
 
     if (this.autofocus && !this.disabled) {
       this.focus().then(() => {
@@ -239,10 +222,6 @@ export default {
         ...this.createButtons(),
       ];
 
-      if (this.kirbytext) {
-        available.push(new PageLink());
-      }
-
       const mapped = available.reduce((accumulator, extension) => ({
         ...accumulator,
         [extension.name]: extension
@@ -289,49 +268,44 @@ export default {
       let highlights = this.customHighlights.filter(definition => this.highlights === true || Array.isArray(this.highlights) && this.highlights.includes(definition.name));
       return highlights.map(definition => new Highlight(definition));
     },
-    /**
-     * Extension dialogs
-     */
-    openDialog(extension, ...args) {
-      const dialogName = `dialog-${extension.name}`;
-      const dialog = this.$refs[dialogName][0];
-      dialog.open(...args);
-      this.currentDialog = dialog;
-    },
-
-    cancel() {
-      this.currentDialog = null;
-      setTimeout(() => this.focus());
-    },
-
-    submitDialog(extension, ...args) {
-      this.currentDialog = null;
-      this.focus();
-      extension.command(...args);
-    },
 
     /**
      * File handling
      */
+    async insertFile(files) {
+      if (files?.length > 0) {
+        const text = files.map((file) => file.dragText).join("\n\n");
+        this.editor.focus();
+        this.editor.insert(text);
+      }
+    },
+
     insertUpload(files, response) {
-      this.editor.insert(response.map((file) => file.dragText).join("\n\n"));
-      this.$events.$emit("file.create");
-      this.$events.$emit("model.update");
-      this.$store.dispatch("notification/success", ":)");
+      this.insertFile(files);
+      this.$events.emit("model.update");
+      this.skipNextInputEvent = true;
     },
 
-    selectFile() {
-      this.$refs.fileDialog.open({
-        endpoint: this.endpoints.field + "/files",
-        multiple: false,
+    file() {
+      const restoreSelection = this.editor.restoreSelectionCallback();
+      this.$panel.dialog.open({
+        component: "k-files-dialog",
+        props: {
+          endpoint: this.endpoints.field + "/files",
+          multiple: false
+        },
+        on: {
+          cancel: restoreSelection,
+          submit: (file) => {
+            restoreSelection(() => this.insertFile(file));
+            this.$panel.dialog.close();
+          }
+        }
       });
     },
 
-    uploadFile() {
-      this.$refs.fileUpload.open({
-        url: this.$urls.api + '/' + this.endpoints.field + '/upload',
-        multiple: false,
-      });
+    upload() {
+      this.$panel.upload.pick(this.uploadOptions);
     },
 
     /**
@@ -342,17 +316,16 @@ export default {
 
       // dropping files
       if (this.uploads && this.$helper.isUploadEvent($event)) {
-        return this.$refs.fileUpload.drop($event.dataTransfer.files, {
-          url: "/api/" + this.endpoints.field + "/upload",
-          multiple: false
-        });
+        return this.$panel.upload.open(
+          $event.dataTransfer.files,
+          this.uploadOptions
+        );
       }
 
       // dropping text
-      const drag = this.$store.state.drag;
-      if (drag && drag.type === "text") {
-        this.editor.insert(drag.data, true);
+      if (this.$panel.drag.type === "text") {
         this.focus();
+        this.editor.insert(this.$panel.drag.data);
       }
     },
 
@@ -399,8 +372,8 @@ export default {
 /**
  * 1. Make sure there's no overflow
  */
-.k-markdown-input .k-input-element {
-  width: 100%; /* 1 */
+.k-input[data-type="markdown"] .k-input-element {
+  max-width: 100%; /* 1 */
 }
 
 </style>

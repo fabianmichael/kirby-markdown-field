@@ -19,7 +19,7 @@ export default class File extends Button {
           {
             label: this.input.$t("toolbar.button.file.upload"),
             icon: "upload",
-            command: () => this.input.uploadFile(),
+            command: () => this.input.upload(),
           },
         ],
       }
@@ -32,11 +32,7 @@ export default class File extends Button {
   }
 
   get openSelectDialog() {
-    return () => this.editor.emit("dialog", this, {
-      endpoint: this.input.endpoints.field + "/files",
-      multiple: false,
-      selected: [],
-    })
+    return () => this.input.file();
   }
 
   get command() {
@@ -60,10 +56,6 @@ export default class File extends Button {
         this.editor.insert(selected.map((file) => file.dragText).join("\n\n"));
       }
     }
-  }
-
-  get dialog() {
-    return "k-files-dialog";
   }
 
   get name() {

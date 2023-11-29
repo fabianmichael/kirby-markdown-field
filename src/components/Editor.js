@@ -214,6 +214,23 @@ export default class Editor extends Emitter {
     return false;
   }
 
+  restoreSelectionCallback() {
+    // store selection
+    const { anchor, head } = this.state.selection.main;
+
+    // restore selection as `insert` method
+    // depends on it
+    return (fn) => {
+      setTimeout(() => {
+        this.view.dispatch({selection: { anchor, head }});
+
+        if (fn) {
+          fn();
+        }
+      });
+    };
+  }
+
   get state() {
     return this.view ? this.view.state : null;
   }

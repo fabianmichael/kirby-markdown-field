@@ -12,7 +12,6 @@ import InlineCode from "./Buttons/InlineCode.js"
 import Invisibles from "./Buttons/Invisibles.js"
 import Link from "./Buttons/Link.js"
 import OrderedList from "./Buttons/OrderedList.js"
-import PageLink from "./Buttons/PageLink.js"
 import SpecialChars from "./Buttons/SpecialChars.js"
 import Strikethrough from "./Buttons/Strikethrough.js"
 import StrongEmphasis from "./Buttons/StrongEmphasis.js"
@@ -33,7 +32,6 @@ export default {
   Invisibles,
   Link,
   OrderedList,
-  PageLink,
   SpecialChars,
   Strikethrough,
   StrongEmphasis,
