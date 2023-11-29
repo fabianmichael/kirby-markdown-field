@@ -60,7 +60,6 @@ export default class Link extends Button {
           this.input.$panel.dialog.close();
           delete values.title;
           values.text = values.text || null;
-          console.log("inserto", values)
           this.insertLink(values);
         }
       }
@@ -72,16 +71,12 @@ export default class Link extends Button {
       return;
     }
 
-    console.log("uhu", href, text, target);
-
     if (href === '' || href === null) {
       return;
     }
 
     const hasText = text !== '' && text !== null;
     const linkType = this.linkType(href);
-
-    console.log("lt", linkType, hasText);
 
     if (linkType === 'email') {
       if (this.useKirbytext) {

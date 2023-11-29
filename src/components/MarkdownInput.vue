@@ -40,13 +40,6 @@
       @close="cancel"
       @submit="submitDialog(extension, ...arguments)"
     />
-
-    <k-upload
-      v-if="uploads"
-      ref="fileUpload"
-      @success="insertUpload"
-    />
-
   </div>
 </template>
 
@@ -79,7 +72,7 @@ export default {
   data() {
     return {
       editor: Object,
-      skipNextChangeEvent: false,
+      skipNextInputEvent: false,
       currentDialog: null,
       activeMarks: [],
       isDragOver: false,
@@ -109,11 +102,24 @@ export default {
     currentLanguage() {
       return this.$language;
     },
+    uploadOptions() {
+      const restoreSelection = this.editor.restoreSelectionCallback();
+
+      return {
+        url: this.$panel.urls.api + "/" + this.endpoints.field + "/upload",
+        multiple: false,
+        on: {
+          cancel: restoreSelection,
+          done: (files) => {
+            restoreSelection(() => this.insertUpload(files));
+          },
+        },
+      };
+    },
   },
   watch: {
     value(newVal, oldVal) {
       if (newVal !== undefined && newVal !== this.editor.value) {
-        // this.skipNextChangeEvent = true
         // let scrollInfo = this.editor.getScrollInfo()
         // set the new value as the editor's content
         // this.editor.setValue(newVal)
@@ -143,9 +149,14 @@ export default {
         dialog: (extension, ...args) => {
           this.openDialog(extension, ...args);
         },
-        update: (value) => {
+        update: async (value) => {
           if (this.$refs.toolbar) {
             this.$refs.toolbar.closeDropdowns();
+          }
+
+          if (this.skipNextInputEvent) {
+            this.skipNextInputEvent = false;
+            return;
           }
           this.$emit("input", value);
         },
@@ -299,25 +310,40 @@ export default {
     /**
      * File handling
      */
+    async insertFile(files) {
+      if (files?.length > 0) {
+        const text = files.map((file) => file.dragText).join("\n\n");
+        this.editor.focus();
+        this.editor.insert(text);
+      }
+    },
+
     insertUpload(files, response) {
-      this.editor.insert(response.map((file) => file.dragText).join("\n\n"));
-      this.$events.$emit("file.create");
-      this.$events.$emit("model.update");
-      this.$store.dispatch("notification/success", ":)");
+      this.insertFile(files);
+      this.$events.emit("model.update");
+      this.skipNextInputEvent = true;
     },
 
-    selectFile() {
-      this.$refs.fileDialog.open({
-        endpoint: this.endpoints.field + "/files",
-        multiple: false,
+    file() {
+      const restoreSelection = this.editor.restoreSelectionCallback();
+      this.$panel.dialog.open({
+        component: "k-files-dialog",
+        props: {
+          endpoint: this.endpoints.field + "/files",
+          multiple: false
+        },
+        on: {
+          cancel: restoreSelection,
+          submit: (file) => {
+            restoreSelection(() => this.insertFile(file));
+            this.$panel.dialog.close();
+          }
+        }
       });
     },
 
-    uploadFile() {
-      this.$refs.fileUpload.open({
-        url: this.$urls.api + '/' + this.endpoints.field + '/upload',
-        multiple: false,
-      });
+    upload() {
+      this.$panel.upload.pick(this.uploadOptions);
     },
 
     /**
@@ -328,17 +354,16 @@ export default {
 
       // dropping files
       if (this.uploads && this.$helper.isUploadEvent($event)) {
-        return this.$refs.fileUpload.drop($event.dataTransfer.files, {
-          url: "/api/" + this.endpoints.field + "/upload",
-          multiple: false
-        });
+        return this.$panel.upload.open(
+          $event.dataTransfer.files,
+          this.uploadOptions
+        );
       }
 
       // dropping text
-      const drag = this.$store.state.drag;
-      if (drag && drag.type === "text") {
-        this.editor.insert(drag.data, true);
+      if (this.$panel.drag.type === "text") {
         this.focus();
+        this.editor.insert(this.$panel.drag.data);
       }
     },
 
