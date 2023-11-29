@@ -28,18 +28,6 @@
       @keydown.meta.enter="onSubmit"
       @keydown.ctrl.enter="onSubmit"
     />
-
-    <component
-      v-for="extension in this.dialogs"
-      v-bind="$props"
-      :key="extension.name"
-      :extension="extension"
-      :is="extension.dialog"
-      :ref="`dialog-${extension.name}`"
-      @cancel="cancel"
-      @close="cancel"
-      @submit="submitDialog(extension, ...arguments)"
-    />
   </div>
 </template>
 
@@ -73,13 +61,11 @@ export default {
     return {
       editor: Object,
       skipNextInputEvent: false,
-      currentDialog: null,
       activeMarks: [],
       isDragOver: false,
       invisibles: false,
       toolbarButtons: [],
       active: [],
-      dialogs: [],
     };
   },
   props: {
@@ -146,9 +132,6 @@ export default {
         active: (active) => {
           this.active = active;
         },
-        dialog: (extension, ...args) => {
-          this.openDialog(extension, ...args);
-        },
         update: async (value) => {
           if (this.$refs.toolbar) {
             this.$refs.toolbar.closeDropdowns();
@@ -167,7 +150,6 @@ export default {
     });
 
     this.toolbarButtons = this.editor.buttons;
-    this.dialogs = this.editor.dialogs;
 
     if (this.autofocus && !this.disabled) {
       this.focus().then(() => {
@@ -285,26 +267,6 @@ export default {
       if (this.highlights === false) return [];
       let highlights = this.customHighlights.filter(definition => this.highlights === true || Array.isArray(this.highlights) && this.highlights.includes(definition.name));
       return highlights.map(definition => new Highlight(definition));
-    },
-    /**
-     * Extension dialogs
-     */
-    openDialog(extension, ...args) {
-      const dialogName = `dialog-${extension.name}`;
-      const dialog = this.$refs[dialogName][0];
-      dialog.open(...args);
-      this.currentDialog = dialog;
-    },
-
-    cancel() {
-      this.currentDialog = null;
-      setTimeout(() => this.focus());
-    },
-
-    submitDialog(extension, ...args) {
-      this.currentDialog = null;
-      this.focus();
-      extension.command(...args);
     },
 
     /**

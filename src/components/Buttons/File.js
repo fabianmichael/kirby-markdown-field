@@ -58,10 +58,6 @@ export default class File extends Button {
     }
   }
 
-  // get dialog() {
-  //   return "k-files-dialog";
-  // }
-
   get name() {
     return "file";
   }
