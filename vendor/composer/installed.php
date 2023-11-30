@@ -1,8 +1,8 @@
 <?php return array(
     'root' => array(
         'name' => 'fabianmichael/kirby-markdown-field',
-        'pretty_version' => '2.2.0',
-        'version' => '2.2.0.0',
+        'pretty_version' => '3.0.0-alpha.2',
+        'version' => '3.0.0.0-alpha2',
         'reference' => NULL,
         'type' => 'kirby-plugin',
         'install_path' => __DIR__ . '/../../',
@@ -11,8 +11,8 @@
     ),
     'versions' => array(
         'fabianmichael/kirby-markdown-field' => array(
-            'pretty_version' => '2.2.0',
-            'version' => '2.2.0.0',
+            'pretty_version' => '3.0.0-alpha.2',
+            'version' => '3.0.0.0-alpha2',
             'reference' => NULL,
             'type' => 'kirby-plugin',
             'install_path' => __DIR__ . '/../../',
