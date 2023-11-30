@@ -105,7 +105,7 @@ return [
 				);
 			}
 
-			foreach ($this->option('fabianmichael.markdown-field.customHighlights', []) as $highlight) {
+			foreach ($this->kirby()->option('fabianmichael.markdown-field.customHighlights', []) as $highlight) {
 				$highlights[] = is_callable($highlight) ? $highlight() : $highlight;
 			}
 

@@ -74,7 +74,7 @@
     },
     computed: {
       layout() {
-        let layout = this.buttons.sort((a, b) => {
+        let layout = this.buttons.toSorted((a, b) => {
           if (a.name === "invisibles")
             return 1;
           if (b.name === "invisibles")
@@ -675,9 +675,9 @@
       if (skip > limit)
         skip = limit;
       limit -= skip;
-      let { value: value2 } = this.cursor.next(skip);
-      this.pos += (value2.length + skip) * dir;
-      this.value = value2.length <= limit ? value2 : dir < 0 ? value2.slice(value2.length - limit) : value2.slice(0, limit);
+      let { value } = this.cursor.next(skip);
+      this.pos += (value.length + skip) * dir;
+      this.value = value.length <= limit ? value : dir < 0 ? value.slice(value.length - limit) : value.slice(0, limit);
       this.done = !this.value;
       return this;
     }
@@ -700,7 +700,7 @@
       this.done = false;
     }
     next(skip = 0) {
-      let { done, lineBreak, value: value2 } = this.inner.next(skip);
+      let { done, lineBreak, value } = this.inner.next(skip);
       if (done) {
         this.done = true;
         this.value = "";
@@ -712,7 +712,7 @@
           this.next();
         }
       } else {
-        this.value = value2;
+        this.value = value;
         this.afterBreak = false;
       }
       return this;
@@ -1097,16 +1097,16 @@
     } else
       sections.push(len, ins);
   }
-  function addInsert(values2, sections, value2) {
-    if (value2.length == 0)
+  function addInsert(values2, sections, value) {
+    if (value.length == 0)
       return;
     let index = sections.length - 2 >> 1;
     if (index < values2.length) {
-      values2[values2.length - 1] = values2[values2.length - 1].append(value2);
+      values2[values2.length - 1] = values2[values2.length - 1].append(value);
     } else {
       while (values2.length < index)
         values2.push(Text.empty);
-      values2.push(value2);
+      values2.push(value);
     }
   }
   function iterChanges(desc, f, individual) {
@@ -1297,8 +1297,8 @@
       return level == 3 ? null : level;
     }
     get goalColumn() {
-      let value2 = this.flags >> 5;
-      return value2 == 33554431 ? void 0 : value2;
+      let value = this.flags >> 5;
+      return value == 33554431 ? void 0 : value;
     }
     map(change, assoc = -1) {
       let from, to;
@@ -1427,8 +1427,8 @@
     static define(config = {}) {
       return new Facet(config.combine || ((a) => a), config.compareInput || ((a, b) => a === b), config.compare || (!config.combine ? sameArray$1 : (a, b) => a === b), !!config.static, config.enables);
     }
-    of(value2) {
-      return new FacetProvider([], this, 0, value2);
+    of(value) {
+      return new FacetProvider([], this, 0, value);
     }
     compute(deps, get2) {
       if (this.isStatic)
@@ -1450,11 +1450,11 @@
     return a == b || a.length == b.length && a.every((e, i2) => e === b[i2]);
   }
   class FacetProvider {
-    constructor(dependencies, facet, type, value2) {
+    constructor(dependencies, facet, type, value) {
       this.dependencies = dependencies;
       this.facet = facet;
       this.type = type;
-      this.value = value2;
+      this.value = value;
       this.id = nextID++;
     }
     dynamicSlot(addresses) {
@@ -1527,12 +1527,12 @@
     function get2(state) {
       let values2 = [];
       for (let i2 = 0; i2 < providerAddrs.length; i2++) {
-        let value2 = getAddr(state, providerAddrs[i2]);
+        let value = getAddr(state, providerAddrs[i2]);
         if (providerTypes[i2] == 2)
-          for (let val of value2)
+          for (let val of value)
             values2.push(val);
         else
-          values2.push(value2);
+          values2.push(value);
       }
       return facet.combine(values2);
     }
@@ -1546,10 +1546,10 @@
       update(state, tr) {
         if (!ensureAll(state, dynamic))
           return 0;
-        let value2 = get2(state);
-        if (facet.compare(value2, state.values[idx]))
+        let value = get2(state);
+        if (facet.compare(value, state.values[idx]))
           return 0;
-        state.values[idx] = value2;
+        state.values[idx] = value;
         return 1;
       },
       reconfigure(state, oldState) {
@@ -1559,12 +1559,12 @@
           state.values[idx] = oldValue;
           return 0;
         }
-        let value2 = get2(state);
-        if (facet.compare(value2, oldValue)) {
+        let value = get2(state);
+        if (facet.compare(value, oldValue)) {
           state.values[idx] = oldValue;
           return 0;
         }
-        state.values[idx] = value2;
+        state.values[idx] = value;
         return 1;
       }
     };
@@ -1598,10 +1598,10 @@
         },
         update: (state, tr) => {
           let oldVal = state.values[idx];
-          let value2 = this.updateF(oldVal, tr);
-          if (this.compareF(oldVal, value2))
+          let value = this.updateF(oldVal, tr);
+          if (this.compareF(oldVal, value))
             return 0;
-          state.values[idx] = value2;
+          state.values[idx] = value;
           return 1;
         },
         reconfigure: (state, oldState) => {
@@ -1622,8 +1622,8 @@
     }
   }
   const Prec_ = { lowest: 4, low: 3, default: 2, high: 1, highest: 0 };
-  function prec(value2) {
-    return (ext) => new PrecExtension(ext, value2);
+  function prec(value) {
+    return (ext) => new PrecExtension(ext, value);
   }
   const Prec = {
     highest: /* @__PURE__ */ prec(Prec_.highest),
@@ -1697,8 +1697,8 @@
           if (sameArray$1(oldProviders, providers)) {
             staticValues.push(oldState.facet(facet));
           } else {
-            let value2 = facet.combine(providers.map((p) => p.value));
-            staticValues.push(oldState && facet.compare(value2, oldState.facet(facet)) ? oldState.facet(facet) : value2);
+            let value = facet.combine(providers.map((p) => p.value));
+            staticValues.push(oldState && facet.compare(value, oldState.facet(facet)) ? oldState.facet(facet) : value);
           }
         } else {
           for (let p of providers) {
@@ -1794,31 +1794,31 @@
     combine: (values2) => values2.length ? values2[0] : false
   });
   class Annotation {
-    constructor(type, value2) {
+    constructor(type, value) {
       this.type = type;
-      this.value = value2;
+      this.value = value;
     }
     static define() {
       return new AnnotationType();
     }
   }
   class AnnotationType {
-    of(value2) {
-      return new Annotation(this, value2);
+    of(value) {
+      return new Annotation(this, value);
     }
   }
   class StateEffectType {
     constructor(map2) {
       this.map = map2;
     }
-    of(value2) {
-      return new StateEffect(this, value2);
+    of(value) {
+      return new StateEffect(this, value);
     }
   }
   class StateEffect {
-    constructor(type, value2) {
+    constructor(type, value) {
       this.type = type;
-      this.value = value2;
+      this.value = value;
     }
     map(mapping) {
       let mapped = this.type.map(this.value, mapping);
@@ -1961,13 +1961,13 @@
     let state = tr.startState;
     let result2 = true;
     for (let filter2 of state.facet(changeFilter)) {
-      let value2 = filter2(tr);
-      if (value2 === false) {
+      let value = filter2(tr);
+      if (value === false) {
         result2 = false;
         break;
       }
-      if (Array.isArray(value2))
-        result2 = result2 === true ? value2 : joinRanges(result2, value2);
+      if (Array.isArray(value))
+        result2 = result2 === true ? value : joinRanges(result2, value);
     }
     if (result2 !== true) {
       let changes, back;
@@ -2003,8 +2003,8 @@
     return spec == tr ? tr : Transaction.create(state, tr.changes, tr.selection, spec.effects, spec.annotations, spec.scrollIntoView);
   }
   const none$2 = [];
-  function asArray(value2) {
-    return value2 == null ? none$2 : Array.isArray(value2) ? value2 : [value2];
+  function asArray(value) {
+    return value == null ? none$2 : Array.isArray(value) ? value : [value];
   }
   var CharCategory = /* @__PURE__ */ function(CharCategory2) {
     CharCategory2[CharCategory2["Word"] = 0] = "Word";
@@ -2149,9 +2149,9 @@
       };
       if (fields)
         for (let prop in fields) {
-          let value2 = fields[prop];
-          if (value2 instanceof StateField && this.config.address[value2.id] != null)
-            result2[prop] = value2.spec.toJSON(this.field(fields[prop]), this);
+          let value = fields[prop];
+          if (value instanceof StateField && this.config.address[value.id] != null)
+            result2[prop] = value.spec.toJSON(this.field(fields[prop]), this);
         }
       return result2;
     }
@@ -2162,8 +2162,8 @@
       if (fields)
         for (let prop in fields) {
           if (Object.prototype.hasOwnProperty.call(json, prop)) {
-            let field = fields[prop], value2 = json[prop];
-            fieldInit.push(field.init((state) => field.spec.fromJSON(value2, state)));
+            let field = fields[prop], value = json[prop];
+            fieldInit.push(field.init((state) => field.spec.fromJSON(value, state)));
           }
         }
       return EditorState.create({
@@ -2258,13 +2258,13 @@
     let result2 = {};
     for (let config of configs)
       for (let key of Object.keys(config)) {
-        let value2 = config[key], current = result2[key];
+        let value = config[key], current = result2[key];
         if (current === void 0)
-          result2[key] = value2;
-        else if (current === value2 || value2 === void 0)
+          result2[key] = value;
+        else if (current === value || value === void 0)
           ;
         else if (Object.hasOwnProperty.call(combine, key))
-          result2[key] = combine[key](current, value2);
+          result2[key] = combine[key](current, value);
         else
           throw new Error("Config merge conflict for field " + key);
       }
@@ -2285,23 +2285,23 @@
   RangeValue.prototype.point = false;
   RangeValue.prototype.mapMode = MapMode.TrackDel;
   class Range$1 {
-    constructor(from, to, value2) {
+    constructor(from, to, value) {
       this.from = from;
       this.to = to;
-      this.value = value2;
+      this.value = value;
     }
-    static create(from, to, value2) {
-      return new Range$1(from, to, value2);
+    static create(from, to, value) {
+      return new Range$1(from, to, value);
     }
   }
   function cmpRange(a, b) {
     return a.from - b.from || a.value.startSide - b.value.startSide;
   }
   class Chunk {
-    constructor(from, to, value2, maxPoint) {
+    constructor(from, to, value, maxPoint) {
       this.from = from;
       this.to = to;
-      this.value = value2;
+      this.value = value;
       this.maxPoint = maxPoint;
     }
     get length() {
@@ -2328,7 +2328,7 @@
           return false;
     }
     map(offset, changes) {
-      let value2 = [], from = [], to = [], newPos = -1, maxPoint = -1;
+      let value = [], from = [], to = [], newPos = -1, maxPoint = -1;
       for (let i2 = 0; i2 < this.value.length; i2++) {
         let val = this.value[i2], curFrom = this.from[i2] + offset, curTo = this.to[i2] + offset, newFrom, newTo;
         if (curFrom == curTo) {
@@ -2353,11 +2353,11 @@
           newPos = newFrom;
         if (val.point)
           maxPoint = Math.max(maxPoint, newTo - newFrom);
-        value2.push(val);
+        value.push(val);
         from.push(newFrom - newPos);
         to.push(newTo - newPos);
       }
-      return { mapped: value2.length ? new Chunk(from, to, value2, maxPoint) : null, pos: newPos };
+      return { mapped: value.length ? new Chunk(from, to, value, maxPoint) : null, pos: newPos };
     }
   }
   class RangeSet {
@@ -2550,13 +2550,13 @@
         this.value = [];
       }
     }
-    add(from, to, value2) {
-      if (!this.addInner(from, to, value2))
-        (this.nextLayer || (this.nextLayer = new RangeSetBuilder())).add(from, to, value2);
+    add(from, to, value) {
+      if (!this.addInner(from, to, value))
+        (this.nextLayer || (this.nextLayer = new RangeSetBuilder())).add(from, to, value);
     }
-    addInner(from, to, value2) {
-      let diff = from - this.lastTo || value2.startSide - this.last.endSide;
-      if (diff <= 0 && (from - this.lastFrom || value2.startSide - this.last.startSide) < 0)
+    addInner(from, to, value) {
+      let diff = from - this.lastTo || value.startSide - this.last.endSide;
+      if (diff <= 0 && (from - this.lastFrom || value.startSide - this.last.startSide) < 0)
         throw new Error("Ranges must be added sorted by `from` position and `startSide`");
       if (diff < 0)
         return false;
@@ -2566,11 +2566,11 @@
         this.chunkStart = from;
       this.from.push(from - this.chunkStart);
       this.to.push(to - this.chunkStart);
-      this.last = value2;
+      this.last = value;
       this.lastFrom = from;
       this.lastTo = to;
-      this.value.push(value2);
-      if (value2.point)
+      this.value.push(value);
+      if (value.point)
         this.maxPoint = Math.max(this.maxPoint, to - from);
       return true;
     }
@@ -2796,10 +2796,10 @@
       this.minActive = findMinIndex(this.active, this.activeTo);
     }
     addActive(trackOpen) {
-      let i2 = 0, { value: value2, to, rank } = this.cursor;
+      let i2 = 0, { value, to, rank } = this.cursor;
       while (i2 < this.activeRank.length && this.activeRank[i2] <= rank)
         i2++;
-      insert(this.active, i2, value2);
+      insert(this.active, i2, value);
       insert(this.activeTo, i2, to);
       insert(this.activeRank, i2, rank);
       if (trackOpen)
@@ -2914,15 +2914,15 @@
       array[i2] = array[i2 + 1];
     array.pop();
   }
-  function insert(array, index, value2) {
+  function insert(array, index, value) {
     for (let i2 = array.length - 1; i2 >= index; i2--)
       array[i2 + 1] = array[i2];
-    array[index] = value2;
+    array[index] = value;
   }
-  function findMinIndex(value2, array) {
+  function findMinIndex(value, array) {
     let found = -1, foundPos = 1e9;
     for (let i2 = 0; i2 < array.length; i2++)
-      if ((array[i2] - foundPos || value2[i2].endSide - value2[found].endSide) < 0) {
+      if ((array[i2] - foundPos || value[i2].endSide - value[found].endSide) < 0) {
         found = i2;
         foundPos = array[i2];
       }
@@ -2968,19 +2968,19 @@
         if (isAt && spec2 == null)
           return target.push(selectors[0] + ";");
         for (let prop in spec2) {
-          let value2 = spec2[prop];
+          let value = spec2[prop];
           if (/&/.test(prop)) {
             render(
               prop.split(/,\s*/).map((part) => selectors.map((sel) => part.replace(/&/, sel))).reduce((a, b) => a.concat(b)),
-              value2,
+              value,
               target
             );
-          } else if (value2 && typeof value2 == "object") {
+          } else if (value && typeof value == "object") {
             if (!isAt)
               throw new RangeError("The value of a property (" + prop + ") should be a primitive value.");
-            render(splitSelector(prop), value2, local, keyframes);
-          } else if (value2 != null) {
-            local.push(prop.replace(/_.*/, "").replace(/[A-Z]/g, (l) => "-" + l.toLowerCase()) + ": " + value2 + ";");
+            render(splitSelector(prop), value, local, keyframes);
+          } else if (value != null) {
+            local.push(prop.replace(/_.*/, "").replace(/[A-Z]/g, (l) => "-" + l.toLowerCase()) + ": " + value + ";");
           }
         }
         if (local.length || keyframes) {
@@ -4672,7 +4672,7 @@
     buildText(length, active, openStart) {
       while (length > 0) {
         if (this.textOff == this.text.length) {
-          let { value: value2, lineBreak, done } = this.cursor.next(this.skip);
+          let { value, lineBreak, done } = this.cursor.next(this.skip);
           this.skip = 0;
           if (done)
             throw new Error("Ran out of text content when drawing inline views");
@@ -4688,7 +4688,7 @@
             length--;
             continue;
           } else {
-            this.text = value2;
+            this.text = value;
             this.textOff = 0;
           }
         }
@@ -6077,7 +6077,7 @@
     for (; ; ) {
       let moved = false;
       for (let set of atoms) {
-        set.between(pos.from - 1, pos.from + 1, (from, to, value2) => {
+        set.between(pos.from - 1, pos.from + 1, (from, to, value) => {
           if (pos.from > from && pos.from < to) {
             pos = oldPos.head > pos.from ? EditorSelection.cursor(from, 1) : EditorSelection.cursor(to, -1);
             moved = true;
@@ -6799,8 +6799,8 @@
     get outdated() {
       return (this.flags & 2) > 0;
     }
-    set outdated(value2) {
-      this.flags = (value2 ? 2 : 0) | this.flags & ~2;
+    set outdated(value) {
+      this.flags = (value ? 2 : 0) | this.flags & ~2;
     }
     setHeight(oracle, height) {
       if (this.height != height) {
@@ -6961,15 +6961,15 @@
       let { from, length } = doc2.line(firstLine + line);
       return new BlockInfo(from, length, top2 + lineHeight * line, lineHeight, BlockType.Text);
     }
-    lineAt(value2, type, doc2, top2, offset) {
+    lineAt(value, type, doc2, top2, offset) {
       if (type == QueryType.ByHeight)
-        return this.blockAt(value2, doc2, top2, offset);
+        return this.blockAt(value, doc2, top2, offset);
       if (type == QueryType.ByPosNoHeight) {
-        let { from: from2, to } = doc2.lineAt(value2);
+        let { from: from2, to } = doc2.lineAt(value);
         return new BlockInfo(from2, to - from2, 0, 0, BlockType.Text);
       }
       let { firstLine, lineHeight } = this.lines(doc2, offset);
-      let { from, length, number: number2 } = doc2.lineAt(value2);
+      let { from, length, number: number2 } = doc2.lineAt(value);
       return new BlockInfo(from, length, top2 + lineHeight * (number2 - firstLine), lineHeight, BlockType.Text);
     }
     forEachLine(from, to, doc2, top2, offset, f) {
@@ -7057,10 +7057,10 @@
       let mid = top2 + this.left.height;
       return height < mid ? this.left.blockAt(height, doc2, top2, offset) : this.right.blockAt(height, doc2, mid, offset + this.left.length + this.break);
     }
-    lineAt(value2, type, doc2, top2, offset) {
+    lineAt(value, type, doc2, top2, offset) {
       let rightTop = top2 + this.left.height, rightOffset = offset + this.left.length + this.break;
-      let left = type == QueryType.ByHeight ? value2 < rightTop : value2 < rightOffset;
-      let base2 = left ? this.left.lineAt(value2, type, doc2, top2, offset) : this.right.lineAt(value2, type, doc2, rightTop, rightOffset);
+      let left = type == QueryType.ByHeight ? value < rightTop : value < rightOffset;
+      let base2 = left ? this.left.lineAt(value, type, doc2, top2, offset) : this.right.lineAt(value, type, doc2, rightTop, rightOffset);
       if (this.break || (left ? base2.to < rightOffset : base2.from > rightOffset))
         return base2;
       let subQuery = type == QueryType.ByPosNoHeight ? QueryType.ByPosNoHeight : QueryType.ByPos;
@@ -9060,9 +9060,9 @@
   }
   function attrsFromFacet(view, facet, base2) {
     for (let sources = view.state.facet(facet), i2 = sources.length - 1; i2 >= 0; i2--) {
-      let source = sources[i2], value2 = typeof source == "function" ? source(view) : source;
-      if (value2)
-        combineAttrs(value2, base2);
+      let source = sources[i2], value = typeof source == "function" ? source(view) : source;
+      if (value)
+        combineAttrs(value, base2);
     }
     return base2;
   }
@@ -9741,8 +9741,8 @@
       this.props = null;
       if (props && props.length) {
         this.props = /* @__PURE__ */ Object.create(null);
-        for (let [prop, value2] of props)
-          this.props[typeof prop == "number" ? prop : prop.id] = value2;
+        for (let [prop, value] of props)
+          this.props[typeof prop == "number" ? prop : prop.id] = value;
       }
     }
     toString() {
@@ -10668,30 +10668,30 @@
     constructor() {
       this.map = /* @__PURE__ */ new WeakMap();
     }
-    setBuffer(buffer, index, value2) {
+    setBuffer(buffer, index, value) {
       let inner = this.map.get(buffer);
       if (!inner)
         this.map.set(buffer, inner = /* @__PURE__ */ new Map());
-      inner.set(index, value2);
+      inner.set(index, value);
     }
     getBuffer(buffer, index) {
       let inner = this.map.get(buffer);
       return inner && inner.get(index);
     }
-    set(node, value2) {
+    set(node, value) {
       if (node instanceof BufferNode)
-        this.setBuffer(node.context.buffer, node.index, value2);
+        this.setBuffer(node.context.buffer, node.index, value);
       else if (node instanceof TreeNode)
-        this.map.set(node.tree, value2);
+        this.map.set(node.tree, value);
     }
     get(node) {
       return node instanceof BufferNode ? this.getBuffer(node.context.buffer, node.index) : node instanceof TreeNode ? this.map.get(node.tree) : void 0;
     }
-    cursorSet(cursor, value2) {
+    cursorSet(cursor, value) {
       if (cursor.buffer)
-        this.setBuffer(cursor.buffer.buffer, cursor.index, value2);
+        this.setBuffer(cursor.buffer.buffer, cursor.index, value);
       else
-        this.map.set(cursor.tree, value2);
+        this.map.set(cursor.tree, value);
     }
     cursorGet(cursor) {
       return cursor.buffer ? this.getBuffer(cursor.buffer.buffer, cursor.index) : this.map.get(cursor.tree);
@@ -11296,9 +11296,9 @@
   function highlightTags(highlighters, tags2) {
     let result2 = null;
     for (let highlighter of highlighters) {
-      let value2 = highlighter.style(tags2);
-      if (value2)
-        result2 = result2 ? result2 + " " + value2 : value2;
+      let value = highlighter.style(tags2);
+      if (value)
+        result2 = result2 ? result2 + " " + value : value;
     }
     return result2;
   }
@@ -11833,13 +11833,13 @@
   }
   Language.state = /* @__PURE__ */ StateField.define({
     create: LanguageState.init,
-    update(value2, tr) {
+    update(value, tr) {
       for (let e of tr.effects)
         if (e.is(Language.setState))
           return e.value;
       if (tr.startState.facet(language) != tr.state.facet(language))
         return LanguageState.init(tr.state);
-      return value2.apply(tr);
+      return value.apply(tr);
     }
   });
   let requestIdle = (callback) => {
@@ -12372,19 +12372,19 @@
   function createTokenType(extra, tagStr) {
     let tag = null;
     for (let part of tagStr.split(".")) {
-      let value2 = extra[part] || tags$2[part];
-      if (!value2) {
+      let value = extra[part] || tags$2[part];
+      if (!value) {
         warnForPart(part, `Unknown highlighting tag ${part}`);
-      } else if (typeof value2 == "function") {
+      } else if (typeof value == "function") {
         if (!tag)
           warnForPart(part, `Modifier ${part} used at start of tag`);
         else
-          tag = value2(tag);
+          tag = value(tag);
       } else {
         if (tag)
           warnForPart(part, `Tag ${part} used as modifier`);
         else
-          tag = value2;
+          tag = value;
       }
     }
     if (!tag)
@@ -12445,8 +12445,8 @@
         state = state.isolate();
       return state;
     },
-    toJSON(value2) {
-      return { done: value2.done.map((e) => e.toJSON()), undone: value2.undone.map((e) => e.toJSON()) };
+    toJSON(value) {
+      return { done: value.done.map((e) => e.toJSON()), undone: value.undone.map((e) => e.toJSON()) };
     },
     fromJSON(json) {
       return new HistoryState(json.done.map(HistEvent.fromJSON), json.undone.map(HistEvent.fromJSON));
@@ -13099,9 +13099,9 @@
   function isNaN$1(obj) {
     return isNumber(obj) && _isNaN(obj);
   }
-  function constant(value2) {
+  function constant(value) {
     return function() {
-      return value2;
+      return value;
     };
   }
   function createSizePropertyCheck(getSizeProperty) {
@@ -13435,8 +13435,8 @@
     return length ? obj : void 0;
   }
   function get(object2, path, defaultValue) {
-    var value2 = deepGet(object2, toPath(path));
-    return isUndefined(value2) ? defaultValue : value2;
+    var value = deepGet(object2, toPath(path));
+    return isUndefined(value) ? defaultValue : value;
   }
   function has(obj, path) {
     path = toPath(path);
@@ -13449,8 +13449,8 @@
     }
     return !!length;
   }
-  function identity(value2) {
-    return value2;
+  function identity(value) {
+    return value;
   }
   function matcher(attrs) {
     attrs = extendOwn({}, attrs);
@@ -13469,39 +13469,39 @@
       return func;
     switch (argCount == null ? 3 : argCount) {
       case 1:
-        return function(value2) {
-          return func.call(context, value2);
+        return function(value) {
+          return func.call(context, value);
         };
       case 3:
-        return function(value2, index, collection) {
-          return func.call(context, value2, index, collection);
+        return function(value, index, collection) {
+          return func.call(context, value, index, collection);
         };
       case 4:
-        return function(accumulator, value2, index, collection) {
-          return func.call(context, accumulator, value2, index, collection);
+        return function(accumulator, value, index, collection) {
+          return func.call(context, accumulator, value, index, collection);
         };
     }
     return function() {
       return func.apply(context, arguments);
     };
   }
-  function baseIteratee(value2, context, argCount) {
-    if (value2 == null)
+  function baseIteratee(value, context, argCount) {
+    if (value == null)
       return identity;
-    if (isFunction$1(value2))
-      return optimizeCb(value2, context, argCount);
-    if (isObject(value2) && !isArray(value2))
-      return matcher(value2);
-    return property(value2);
+    if (isFunction$1(value))
+      return optimizeCb(value, context, argCount);
+    if (isObject(value) && !isArray(value))
+      return matcher(value);
+    return property(value);
   }
-  function iteratee(value2, context) {
-    return baseIteratee(value2, context, Infinity);
+  function iteratee(value, context) {
+    return baseIteratee(value, context, Infinity);
   }
   _$1.iteratee = iteratee;
-  function cb(value2, context, argCount) {
+  function cb(value, context, argCount) {
     if (_$1.iteratee !== iteratee)
-      return _$1.iteratee(value2, context);
-    return baseIteratee(value2, context, argCount);
+      return _$1.iteratee(value, context);
+    return baseIteratee(value, context, argCount);
   }
   function mapObject(obj, iteratee2, context) {
     iteratee2 = cb(iteratee2, context);
@@ -13696,18 +13696,18 @@
     }
     var idx = output.length;
     for (var i2 = 0, length = getLength(input); i2 < length; i2++) {
-      var value2 = input[i2];
-      if (isArrayLike(value2) && (isArray(value2) || isArguments$1(value2))) {
+      var value = input[i2];
+      if (isArrayLike(value) && (isArray(value) || isArguments$1(value))) {
         if (depth > 1) {
-          flatten$1(value2, depth - 1, strict, output);
+          flatten$1(value, depth - 1, strict, output);
           idx = output.length;
         } else {
-          var j = 0, len = value2.length;
+          var j = 0, len = value.length;
           while (j < len)
-            output[idx++] = value2[j++];
+            output[idx++] = value[j++];
         }
       } else if (!strict) {
-        output[idx++] = value2;
+        output[idx++] = value;
       }
     }
     return output;
@@ -13874,11 +13874,11 @@
   const findLastIndex = createPredicateIndexFinder(-1);
   function sortedIndex(array, obj, iteratee2, context) {
     iteratee2 = cb(iteratee2, context, 1);
-    var value2 = iteratee2(obj);
+    var value = iteratee2(obj);
     var low = 0, high = getLength(array);
     while (low < high) {
       var mid = Math.floor((low + high) / 2);
-      if (iteratee2(array[mid]) < value2)
+      if (iteratee2(array[mid]) < value)
         low = mid + 1;
       else
         high = mid;
@@ -13967,9 +13967,9 @@
   function filter(obj, predicate, context) {
     var results = [];
     predicate = cb(predicate, context);
-    each(obj, function(value2, index, list) {
-      if (predicate(value2, index, list))
-        results.push(value2);
+    each(obj, function(value, index, list) {
+      if (predicate(value, index, list))
+        results.push(value);
     });
     return results;
   }
@@ -14032,13 +14032,13 @@
     return filter(obj, matcher(attrs));
   }
   function max(obj, iteratee2, context) {
-    var result2 = -Infinity, lastComputed = -Infinity, value2, computed;
+    var result2 = -Infinity, lastComputed = -Infinity, value, computed;
     if (iteratee2 == null || typeof iteratee2 == "number" && typeof obj[0] != "object" && obj != null) {
       obj = isArrayLike(obj) ? obj : values$1(obj);
       for (var i2 = 0, length = obj.length; i2 < length; i2++) {
-        value2 = obj[i2];
-        if (value2 != null && value2 > result2) {
-          result2 = value2;
+        value = obj[i2];
+        if (value != null && value > result2) {
+          result2 = value;
         }
       }
     } else {
@@ -14054,13 +14054,13 @@
     return result2;
   }
   function min(obj, iteratee2, context) {
-    var result2 = Infinity, lastComputed = Infinity, value2, computed;
+    var result2 = Infinity, lastComputed = Infinity, value, computed;
     if (iteratee2 == null || typeof iteratee2 == "number" && typeof obj[0] != "object" && obj != null) {
       obj = isArrayLike(obj) ? obj : values$1(obj);
       for (var i2 = 0, length = obj.length; i2 < length; i2++) {
-        value2 = obj[i2];
-        if (value2 != null && value2 < result2) {
-          result2 = value2;
+        value = obj[i2];
+        if (value != null && value < result2) {
+          result2 = value;
         }
       }
     } else {
@@ -14112,11 +14112,11 @@
   function sortBy(obj, iteratee2, context) {
     var index = 0;
     iteratee2 = cb(iteratee2, context);
-    return pluck(map(obj, function(value2, key, list) {
+    return pluck(map(obj, function(value, key, list) {
       return {
-        value: value2,
+        value,
         index: index++,
-        criteria: iteratee2(value2, key, list)
+        criteria: iteratee2(value, key, list)
       };
     }).sort(function(left, right) {
       var a = left.criteria;
@@ -14134,37 +14134,37 @@
     return function(obj, iteratee2, context) {
       var result2 = partition2 ? [[], []] : {};
       iteratee2 = cb(iteratee2, context);
-      each(obj, function(value2, index) {
-        var key = iteratee2(value2, index, obj);
-        behavior(result2, value2, key);
+      each(obj, function(value, index) {
+        var key = iteratee2(value, index, obj);
+        behavior(result2, value, key);
       });
       return result2;
     };
   }
-  const groupBy = group(function(result2, value2, key) {
+  const groupBy = group(function(result2, value, key) {
     if (has$1(result2, key))
-      result2[key].push(value2);
+      result2[key].push(value);
     else
-      result2[key] = [value2];
+      result2[key] = [value];
   });
-  const indexBy = group(function(result2, value2, key) {
-    result2[key] = value2;
+  const indexBy = group(function(result2, value, key) {
+    result2[key] = value;
   });
-  const countBy = group(function(result2, value2, key) {
+  const countBy = group(function(result2, value, key) {
     if (has$1(result2, key))
       result2[key]++;
     else
       result2[key] = 1;
   });
-  const partition = group(function(result2, value2, pass) {
-    result2[pass ? 0 : 1].push(value2);
+  const partition = group(function(result2, value, pass) {
+    result2[pass ? 0 : 1].push(value);
   }, true);
   function size(obj) {
     if (obj == null)
       return 0;
     return isArrayLike(obj) ? obj.length : keys(obj).length;
   }
-  function keyInObj(value2, key, obj) {
+  function keyInObj(value, key, obj) {
     return key in obj;
   }
   const pick = restArguments(function(obj, keys2) {
@@ -14182,9 +14182,9 @@
     }
     for (var i2 = 0, length = keys2.length; i2 < length; i2++) {
       var key = keys2[i2];
-      var value2 = obj[key];
-      if (iteratee2(value2, key, obj))
-        result2[key] = value2;
+      var value = obj[key];
+      if (iteratee2(value, key, obj))
+        result2[key] = value;
     }
     return result2;
   });
@@ -14196,7 +14196,7 @@
         context = keys2[1];
     } else {
       keys2 = map(flatten$1(keys2, false, false), String);
-      iteratee2 = function(value2, key) {
+      iteratee2 = function(value, key) {
         return !contains(keys2, key);
       };
     }
@@ -14230,8 +14230,8 @@
   }
   const difference = restArguments(function(array, rest2) {
     rest2 = flatten$1(rest2, true, true);
-    return filter(array, function(value2) {
-      return !contains(rest2, value2);
+    return filter(array, function(value) {
+      return !contains(rest2, value);
     });
   });
   const without = restArguments(function(array, otherArrays) {
@@ -14248,18 +14248,18 @@
     var result2 = [];
     var seen = [];
     for (var i2 = 0, length = getLength(array); i2 < length; i2++) {
-      var value2 = array[i2], computed = iteratee2 ? iteratee2(value2, i2, array) : value2;
+      var value = array[i2], computed = iteratee2 ? iteratee2(value, i2, array) : value;
       if (isSorted && !iteratee2) {
         if (!i2 || seen !== computed)
-          result2.push(value2);
+          result2.push(value);
         seen = computed;
       } else if (iteratee2) {
         if (!contains(seen, computed)) {
           seen.push(computed);
-          result2.push(value2);
+          result2.push(value);
         }
-      } else if (!contains(result2, value2)) {
-        result2.push(value2);
+      } else if (!contains(result2, value)) {
+        result2.push(value);
       }
     }
     return result2;
@@ -14634,7 +14634,9 @@
           if (isFirstLine) {
             inlineTokens = candidates;
           } else {
-            inlineTokens = inlineTokens.filter((name2) => candidates.includes(name2));
+            inlineTokens = inlineTokens.filter(
+              (name2) => candidates.includes(name2)
+            );
             if (inlineTokens.length === 0) {
               inlineDone = true;
             }
@@ -14731,7 +14733,13 @@
   }
   function toggleBlockFormat(view, blockFormats, type) {
     const state = view.state;
-    let { from, to, anchor, head, empty: isSelectionEmpty } = state.selection.main;
+    let {
+      from,
+      to,
+      anchor,
+      head,
+      empty: isSelectionEmpty
+    } = state.selection.main;
     const firstLine = state.doc.lineAt(from);
     const lastLine = state.doc.lineAt(to);
     const tree = ensureSyntaxTree(state, lastLine.to, 500);
@@ -14748,7 +14756,10 @@
           } else if (blockFormats.markTokenExists(node.name)) {
             mark = { ...node, from: from2, to: to2 };
             if (block === "OrderedList") {
-              listNumber = parseInt(line.text.slice(from2 - line.from, to2 - line.from), 10);
+              listNumber = parseInt(
+                line.text.slice(from2 - line.from, to2 - line.from),
+                10
+              );
             }
           }
           if (block && mark) {
@@ -14849,10 +14860,20 @@
           insert2 = view.state.sliceDoc(from + mark.length, to - mark.length);
           pos2 -= mark.length;
         } else if (isInFirstWord) {
-          insert2 = [parts[0].slice(mark.length), parts[1], mark, ...parts.slice(2)].join("");
+          insert2 = [
+            parts[0].slice(mark.length),
+            parts[1],
+            mark,
+            ...parts.slice(2)
+          ].join("");
           pos2 -= mark.length;
         } else if (isInLastWord) {
-          insert2 = [...parts.slice(0, partsCount - 2), mark, parts[partsCount - 2], parts[partsCount - 1].slice(0, -1 * mark.length)].join("");
+          insert2 = [
+            ...parts.slice(0, partsCount - 2),
+            mark,
+            parts[partsCount - 2],
+            parts[partsCount - 1].slice(0, -1 * mark.length)
+          ].join("");
           pos2 += mark.length;
         } else if (!isInFirstWord && !isInLastWord) {
           let i2 = 0;
@@ -14865,7 +14886,13 @@
               break;
             }
           }
-          insert2 = [...parts.slice(0, i2 - 1), mark, ...parts.slice(i2 - 1, i2 + 2), mark, ...parts.slice(i2 + 2)].join("");
+          insert2 = [
+            ...parts.slice(0, i2 - 1),
+            mark,
+            ...parts.slice(i2 - 1, i2 + 2),
+            mark,
+            ...parts.slice(i2 + 2)
+          ].join("");
           pos2 += mark.length;
         } else
           ;
@@ -14922,7 +14949,9 @@
       let marks = node ? node.marks : [];
       let leading = trailing;
       trailing = "";
-      if (node && marks.some((mark) => inlineFormats.exists(mark) && inlineFormats.get(mark).expelEnclosingWhitespace)) {
+      if (node && marks.some(
+        (mark) => inlineFormats.exists(mark) && inlineFormats.get(mark).expelEnclosingWhitespace
+      )) {
         let [_2, lead, inner2, trail] = /^(\s*)(.*?)(\s*)$/.exec(node.text);
         leading += lead;
         trailing = trail;
@@ -15073,7 +15102,12 @@
     return renderLine(nodes, blockFormats, inlineFormats);
   }
   function toggleSelectionInlineFormat(view, blockFormats, inlineFormats, type) {
-    const action = getActiveTokens(view, blockFormats, inlineFormats, true).includes(type) ? "remove" : "add";
+    const action = getActiveTokens(
+      view,
+      blockFormats,
+      inlineFormats,
+      true
+    ).includes(type) ? "remove" : "add";
     const state = view.state;
     const selection = state.selection.main;
     const firstLine = state.doc.lineAt(selection.from);
@@ -15083,7 +15117,16 @@
     let lengthBefore = 0;
     for (let n = firstLine.number; n <= lastLine.number; n++) {
       lengthBefore += state.doc.line(n).text.length;
-      lines.push(toggleInlineFormatForLine(view, blockFormats, inlineFormats, n, type, action));
+      lines.push(
+        toggleInlineFormatForLine(
+          view,
+          blockFormats,
+          inlineFormats,
+          n,
+          type,
+          action
+        )
+      );
     }
     let insert2 = lines.join(view.state.lineBreak);
     let lengthChange = insert2.length - lengthBefore;
@@ -15117,7 +15160,10 @@
       return toggleSelectionInlineFormat(view, blockFormats, inlineFormats, type);
     }
   }
-  let [nav, doc] = typeof navigator != "undefined" ? [navigator, document] : [{ userAgent: "", vendor: "", platform: "" }, { documentElement: { style: {} } }];
+  let [nav, doc] = typeof navigator != "undefined" ? [navigator, document] : [
+    { userAgent: "", vendor: "", platform: "" },
+    { documentElement: { style: {} } }
+  ];
   const ie_edge = /Edge\/(\d+)/.exec(nav.userAgent);
   const ie_upto10 = /MSIE \d/.test(nav.userAgent);
   const ie_11up = /Trident\/(?:[7-9]|\d{2,})\..*rv:(\d+)/.exec(nav.userAgent);
@@ -15294,9 +15340,18 @@
   }
   window.addEventListener("keydown", toggleModifierKeydown);
   window.addEventListener("keyup", toggleModifierKeydown);
-  window.addEventListener("onpagehide", () => toggleModifierKeydown({ metaKey: false, ctrlKey: false }));
-  window.addEventListener("blur", () => toggleModifierKeydown({ metaKey: false, ctrlKey: false }));
-  document.addEventListener("visibilitychange", () => document.hidden ? toggleModifierKeydown({ metaKey: false, ctrlKey: false }) : null);
+  window.addEventListener(
+    "onpagehide",
+    () => toggleModifierKeydown({ metaKey: false, ctrlKey: false })
+  );
+  window.addEventListener(
+    "blur",
+    () => toggleModifierKeydown({ metaKey: false, ctrlKey: false })
+  );
+  document.addEventListener(
+    "visibilitychange",
+    () => document.hidden ? toggleModifierKeydown({ metaKey: false, ctrlKey: false }) : null
+  );
   function highlightURLs(extension, view) {
     const b = new RangeSetBuilder();
     for (let { from, to } of view.visibleRanges) {
@@ -15329,13 +15384,20 @@
                 attributes = { "data-panel-url": `${api}/files/${url}` };
               } else {
                 let lastIndex = url.lastIndexOf("/");
-                attributes = { "data-panel-url": `/pages/${url.substr(0, lastIndex)}/files/${url.substr(lastIndex + 1)}` };
+                attributes = {
+                  "data-panel-url": `/pages/${url.substr(
+                    0,
+                    lastIndex
+                  )}/files/${url.substr(lastIndex + 1)}`
+                };
               }
             } else if (["link", "video", "gist"].includes(tag)) {
               if (isURL(url) || url.startsWith("/")) {
                 attributes = { "data-url": url };
               } else if (tag === "link") {
-                attributes = { "data-panel-url": `/pages/${url.replace("/", "+")}` };
+                attributes = {
+                  "data-panel-url": `/pages/${url.replace("/", "+")}`
+                };
               }
             } else if (tag === "email") {
               attributes = { "data-url": `mailto:${url}`, "data-sametab": true };
@@ -15361,43 +15423,44 @@
   class URLs extends Extension {
     plugins() {
       const extension = this;
-      const clickableLinksPlugin = ViewPlugin.fromClass(class {
-        constructor(view) {
-          this.decorations = highlightURLs(extension, view);
-        }
-        update(update) {
-          if (update.docChanged || update.viewportChanged) {
-            this.decorations = highlightURLs(extension, update.view);
+      const clickableLinksPlugin = ViewPlugin.fromClass(
+        class {
+          constructor(view) {
+            this.decorations = highlightURLs(extension, view);
           }
-        }
-      }, {
-        decorations: (v) => v.decorations,
-        eventHandlers: {
-          click(e) {
-            if (e.metaKey) {
-              const link = e.target.classList.contains("cm-url") ? e.target : e.target.closest(".cm-url");
-              if (!link) {
-                return;
-              }
-              if (/^[a-z]+:\/\/$/.test(link.dataset.url)) {
-                return;
-              }
-              if (link.dataset.panelUrl) {
-                extension.input.$go(link.dataset.panelUrl);
-                return;
-              }
-              if (link.dataset.sametab) {
-                window.location.href = link.dataset.url;
-              } else {
-                window.open(link.dataset.url, "_blank", "noopener,noreferrer");
+          update(update) {
+            if (update.docChanged || update.viewportChanged) {
+              this.decorations = highlightURLs(extension, update.view);
+            }
+          }
+        },
+        {
+          decorations: (v) => v.decorations,
+          eventHandlers: {
+            click(e) {
+              if (e.metaKey) {
+                const link = e.target.classList.contains("cm-url") ? e.target : e.target.closest(".cm-url");
+                if (!link) {
+                  return;
+                }
+                if (/^[a-z]+:\/\/$/.test(link.dataset.url)) {
+                  return;
+                }
+                if (link.dataset.panelUrl) {
+                  extension.input.$go(link.dataset.panelUrl);
+                  return;
+                }
+                if (link.dataset.sametab) {
+                  window.location.href = link.dataset.url;
+                } else {
+                  window.open(link.dataset.url, "_blank", "noopener,noreferrer");
+                }
               }
             }
           }
         }
-      });
-      return [
-        clickableLinksPlugin
-      ];
+      );
+      return [clickableLinksPlugin];
     }
     get token() {
       return "URL";
@@ -15416,7 +15479,7 @@
   class DropCursor extends Extension {
     plugins() {
       return [
-        ViewPlugin.define((view) => {
+        ViewPlugin.define(() => {
         }, {
           eventHandlers: {
             dragover: onDragOver
@@ -15450,23 +15513,29 @@
         return [];
       }
       return [
-        ViewPlugin.define((view) => {
-          view.$$scrollParent = getScrollParent(view.dom);
-          view.$$scrollParentTop = 0;
-          view.$$updateScrollParentTop = debounce(() => {
-            view.$$scrollParentTop = view.$$scrollParent.scrollTop;
-          }, 50);
-          view.$$updateScrollParentTop();
-        }, {
-          eventHandlers: {
-            blur(eventName, view) {
-              view.$$scrollParent.scrollTo(view.$$scrollParent.scrollLeft, view.$$scrollParentTop);
-            },
-            scroll(eventName, view) {
-              view.$$updateScrollParentTop();
+        ViewPlugin.define(
+          (view) => {
+            view.$$scrollParent = getScrollParent(view.dom);
+            view.$$scrollParentTop = 0;
+            view.$$updateScrollParentTop = debounce(() => {
+              view.$$scrollParentTop = view.$$scrollParent.scrollTop;
+            }, 50);
+            view.$$updateScrollParentTop();
+          },
+          {
+            eventHandlers: {
+              blur(eventName, view) {
+                view.$$scrollParent.scrollTo(
+                  view.$$scrollParent.scrollLeft,
+                  view.$$scrollParentTop
+                );
+              },
+              scroll(eventName, view) {
+                view.$$updateScrollParentTop();
+              }
             }
           }
-        })
+        )
       ];
     }
     get type() {
@@ -15555,22 +15624,13 @@
       this.extensions = extensions;
     }
     getPluginsByType(type = "extension") {
-      return this.extensions.filter((extension) => extension.type === type).reduce((result2, extension) => [
-        ...result2,
-        ...extension.plugins()
-      ], []);
+      return this.extensions.filter((extension) => extension.type === type).reduce((result2, extension) => [...result2, ...extension.plugins()], []);
     }
     getButtons() {
-      return this.extensions.filter((extension) => extension.type === "button").reduce((result2, extension) => [
-        ...result2,
-        extension
-      ], []);
+      return this.extensions.filter((extension) => extension.type === "button").reduce((result2, extension) => [...result2, extension], []);
     }
     getDialogs() {
-      return this.extensions.filter((extension) => extension.dialog).reduce((result2, extension) => [
-        ...result2,
-        extension
-      ], []);
+      return this.extensions.filter((extension) => extension.dialog).reduce((result2, extension) => [...result2, extension], []);
     }
     getFormats(type) {
       const formats = this.extensions.filter((extension) => extension.syntax).reduce((result2, extension) => {
@@ -15583,10 +15643,7 @@
       return type === "block" ? new InlineFormats$1(formats) : new InlineFormats(formats);
     }
     getKeymap() {
-      return this.extensions.filter((extension) => extension.keys).reduce((result2, extension) => [
-        ...result2,
-        ...extension.keys()
-      ], []);
+      return this.extensions.filter((extension) => extension.keys).reduce((result2, extension) => [...result2, ...extension.keys()], []);
     }
   }
   const UnicodeRegexpSupport = /x/.unicode != null ? "gu" : "g";
@@ -15597,7 +15654,10 @@
     "\u200B",
     "	"
   ];
-  const InvisiblesRegex = new RegExp(`( {2}$)|([${InvisibleChars.join("")}])`, UnicodeRegexpSupport);
+  const InvisiblesRegex = new RegExp(
+    `( {2}$)|([${InvisibleChars.join("")}])`,
+    UnicodeRegexpSupport
+  );
   class Invisibles$1 extends Extension {
     plugins() {
       const decorator = new MatchDecorator({
@@ -15631,9 +15691,9 @@
     }
   }
   class CompositeBlock {
-    constructor(type, value2, from, hash2, end, children, positions) {
+    constructor(type, value, from, hash2, end, children, positions) {
       this.type = type;
-      this.value = value2;
+      this.value = value;
       this.from = from;
       this.hash = hash2;
       this.end = end;
@@ -15641,9 +15701,9 @@
       this.positions = positions;
       this.hashProp = [[NodeProp.contextHash, hash2]];
     }
-    static create(type, value2, from, parentHash, end) {
-      let hash2 = parentHash + (parentHash << 8) + type + (value2 << 4) | 0;
-      return new CompositeBlock(type, value2, from, hash2, end, [], []);
+    static create(type, value, from, parentHash, end) {
+      let hash2 = parentHash + (parentHash << 8) + type + (value << 4) | 0;
+      return new CompositeBlock(type, value, from, hash2, end, [], []);
     }
     addChild(child, pos) {
       if (child.prop(NodeProp.contextHash) != this.hash)
@@ -16386,12 +16446,12 @@
     prevLineEnd() {
       return this.atEnd ? this.lineStart : this.lineStart - 1;
     }
-    startContext(type, start, value2 = 0) {
-      this.block = CompositeBlock.create(type, value2, this.lineStart + start, this.block.hash, this.lineStart + this.line.text.length);
+    startContext(type, start, value = 0) {
+      this.block = CompositeBlock.create(type, value, this.lineStart + start, this.block.hash, this.lineStart + this.line.text.length);
       this.stack.push(this.block);
     }
-    startComposite(type, start, value2 = 0) {
-      this.startContext(this.parser.getNodeType(type), start, value2);
+    startComposite(type, start, value = 0) {
+      this.startContext(this.parser.getNodeType(type), start, value);
     }
     addNode(block, from, to) {
       if (typeof block == "number")
@@ -17485,18 +17545,18 @@
       else
         this.shift(action, next, nextEnd);
     }
-    useNode(value2, next) {
+    useNode(value, next) {
       let index = this.p.reused.length - 1;
-      if (index < 0 || this.p.reused[index] != value2) {
-        this.p.reused.push(value2);
+      if (index < 0 || this.p.reused[index] != value) {
+        this.p.reused.push(value);
         index++;
       }
       let start = this.pos;
-      this.reducePos = this.pos = start + value2.length;
+      this.reducePos = this.pos = start + value.length;
       this.pushState(next, start);
       this.buffer.push(index, start, this.reducePos, -1);
       if (this.curContext)
-        this.updateContext(this.curContext.tracker.reuse(this.curContext.context, value2, this, this.p.stream.reset(this.pos - value2.length)));
+        this.updateContext(this.curContext.tracker.reuse(this.curContext.context, value, this, this.p.stream.reset(this.pos - value.length)));
     }
     split() {
       let parent = this;
@@ -17953,11 +18013,11 @@
       return input;
     let array = null;
     for (let pos = 0, out = 0; pos < input.length; ) {
-      let value2 = 0;
+      let value = 0;
       for (; ; ) {
         let next = input.charCodeAt(pos++), stop = false;
         if (next == 126) {
-          value2 = 65535;
+          value = 65535;
           break;
         }
         if (next >= 92)
@@ -17969,15 +18029,15 @@
           digit -= 46;
           stop = true;
         }
-        value2 += digit;
+        value += digit;
         if (stop)
           break;
-        value2 *= 46;
+        value *= 46;
       }
       if (array)
-        array[out++] = value2;
+        array[out++] = value;
       else
-        array = new Type2(value2);
+        array = new Type2(value);
     }
     return array;
   }
@@ -18476,8 +18536,8 @@
       let nodeProps = [];
       for (let i2 = 0; i2 < nodeNames.length; i2++)
         nodeProps.push([]);
-      function setProp(nodeID, prop, value2) {
-        nodeProps[nodeID].push([prop, prop.deserialize(String(value2))]);
+      function setProp(nodeID, prop, value) {
+        nodeProps[nodeID].push([prop, prop.deserialize(String(value))]);
       }
       if (spec.nodeProps)
         for (let propSpec of spec.nodeProps) {
@@ -18489,9 +18549,9 @@
             if (next >= 0) {
               setProp(next, prop, propSpec[i2++]);
             } else {
-              let value2 = propSpec[i2 + -next];
+              let value = propSpec[i2 + -next];
               for (let j = -next; j > 0; j--)
-                setProp(propSpec[i2++], prop, value2);
+                setProp(propSpec[i2++], prop, value);
               i2++;
             }
           }
@@ -18521,7 +18581,7 @@
       this.data = decodeArray(spec.stateData);
       this.goto = decodeArray(spec.goto);
       this.maxTerm = spec.maxTerm;
-      this.tokenizers = spec.tokenizers.map((value2) => typeof value2 == "number" ? new TokenGroup(tokenArray, value2) : value2);
+      this.tokenizers = spec.tokenizers.map((value) => typeof value == "number" ? new TokenGroup(tokenArray, value) : value);
       this.topRules = spec.topRules;
       this.dialects = spec.dialects || {};
       this.dynamicPrecedences = spec.dynamicPrecedences || null;
@@ -18601,9 +18661,9 @@
             break;
         }
         if ((this.data[i2 + 2] & 65536 >> 16) == 0) {
-          let value2 = this.data[i2 + 1];
-          if (!result2.some((v, i3) => i3 & 1 && v == value2))
-            result2.push(this.data[i2], value2);
+          let value = this.data[i2 + 1];
+          if (!result2.some((v, i3) => i3 & 1 && v == value))
+            result2.push(this.data[i2], value);
         }
       }
       return result2;
@@ -18955,9 +19015,9 @@
   function getAttrs(element, input) {
     let attrs = /* @__PURE__ */ Object.create(null);
     for (let att of element.firstChild.getChildren("Attribute")) {
-      let name2 = att.getChild("AttributeName"), value2 = att.getChild("AttributeValue") || att.getChild("UnquotedAttributeValue");
+      let name2 = att.getChild("AttributeName"), value = att.getChild("AttributeValue") || att.getChild("UnquotedAttributeValue");
       if (name2)
-        attrs[input.read(name2.from, name2.to)] = !value2 ? "" : value2.name == "AttributeValue" ? input.read(value2.from + 1, value2.to - 1) : input.read(value2.from, value2.to);
+        attrs[input.read(name2.from, name2.to)] = !value ? "" : value.name == "AttributeValue" ? input.read(value.from + 1, value.to - 1) : input.read(value.from, value.to);
     }
     return attrs;
   }
@@ -19117,7 +19177,7 @@
     tokenData: "Ay~R![OX$wX^%]^p$wpq%]qr(crs+}st,otu2Uuv$wvw2rwx2}xy3jyz3uz{3z{|4_|}8U}!O8a!O!P8x!P!Q9Z!Q![;e![!]<Y!]!^<x!^!_$w!_!`=T!`!a=`!a!b$w!b!c>O!c!}$w!}#O?[#O#P$w#P#Q?g#Q#R2U#R#T$w#T#U?r#U#c$w#c#d@q#d#o$w#o#pAQ#p#q2U#q#rA]#r#sAh#s#y$w#y#z%]#z$f$w$f$g%]$g#BY$w#BY#BZ%]#BZ$IS$w$IS$I_%]$I_$I|$w$I|$JO%]$JO$JT$w$JT$JU%]$JU$KV$w$KV$KW%]$KW&FU$w&FU&FV%]&FV~$wW$zQOy%Qz~%QW%VQoWOy%Qz~%Q~%bf#T~OX%QX^&v^p%Qpq&vqy%Qz#y%Q#y#z&v#z$f%Q$f$g&v$g#BY%Q#BY#BZ&v#BZ$IS%Q$IS$I_&v$I_$I|%Q$I|$JO&v$JO$JT%Q$JT$JU&v$JU$KV%Q$KV$KW&v$KW&FU%Q&FU&FV&v&FV~%Q~&}f#T~oWOX%QX^&v^p%Qpq&vqy%Qz#y%Q#y#z&v#z$f%Q$f$g&v$g#BY%Q#BY#BZ&v#BZ$IS%Q$IS$I_&v$I_$I|%Q$I|$JO&v$JO$JT%Q$JT$JU&v$JU$KV%Q$KV$KW&v$KW&FU%Q&FU&FV&v&FV~%Q^(fSOy%Qz#]%Q#]#^(r#^~%Q^(wSoWOy%Qz#a%Q#a#b)T#b~%Q^)YSoWOy%Qz#d%Q#d#e)f#e~%Q^)kSoWOy%Qz#c%Q#c#d)w#d~%Q^)|SoWOy%Qz#f%Q#f#g*Y#g~%Q^*_SoWOy%Qz#h%Q#h#i*k#i~%Q^*pSoWOy%Qz#T%Q#T#U*|#U~%Q^+RSoWOy%Qz#b%Q#b#c+_#c~%Q^+dSoWOy%Qz#h%Q#h#i+p#i~%Q^+wQ!VUoWOy%Qz~%Q~,QUOY+}Zr+}rs,ds#O+}#O#P,i#P~+}~,iOh~~,lPO~+}_,tWtPOy%Qz!Q%Q!Q![-^![!c%Q!c!i-^!i#T%Q#T#Z-^#Z~%Q^-cWoWOy%Qz!Q%Q!Q![-{![!c%Q!c!i-{!i#T%Q#T#Z-{#Z~%Q^.QWoWOy%Qz!Q%Q!Q![.j![!c%Q!c!i.j!i#T%Q#T#Z.j#Z~%Q^.qWfUoWOy%Qz!Q%Q!Q![/Z![!c%Q!c!i/Z!i#T%Q#T#Z/Z#Z~%Q^/bWfUoWOy%Qz!Q%Q!Q![/z![!c%Q!c!i/z!i#T%Q#T#Z/z#Z~%Q^0PWoWOy%Qz!Q%Q!Q![0i![!c%Q!c!i0i!i#T%Q#T#Z0i#Z~%Q^0pWfUoWOy%Qz!Q%Q!Q![1Y![!c%Q!c!i1Y!i#T%Q#T#Z1Y#Z~%Q^1_WoWOy%Qz!Q%Q!Q![1w![!c%Q!c!i1w!i#T%Q#T#Z1w#Z~%Q^2OQfUoWOy%Qz~%QY2XSOy%Qz!_%Q!_!`2e!`~%QY2lQzQoWOy%Qz~%QX2wQXPOy%Qz~%Q~3QUOY2}Zw2}wx,dx#O2}#O#P3d#P~2}~3gPO~2}_3oQbVOy%Qz~%Q~3zOa~_4RSUPjSOy%Qz!_%Q!_!`2e!`~%Q_4fUjS!PPOy%Qz!O%Q!O!P4x!P!Q%Q!Q![7_![~%Q^4}SoWOy%Qz!Q%Q!Q![5Z![~%Q^5bWoW#ZUOy%Qz!Q%Q!Q![5Z![!g%Q!g!h5z!h#X%Q#X#Y5z#Y~%Q^6PWoWOy%Qz{%Q{|6i|}%Q}!O6i!O!Q%Q!Q![6z![~%Q^6nSoWOy%Qz!Q%Q!Q![6z![~%Q^7RSoW#ZUOy%Qz!Q%Q!Q![6z![~%Q^7fYoW#ZUOy%Qz!O%Q!O!P5Z!P!Q%Q!Q![7_![!g%Q!g!h5z!h#X%Q#X#Y5z#Y~%Q_8ZQpVOy%Qz~%Q^8fUjSOy%Qz!O%Q!O!P4x!P!Q%Q!Q![7_![~%Q_8}S#WPOy%Qz!Q%Q!Q![5Z![~%Q~9`RjSOy%Qz{9i{~%Q~9nSoWOy9iyz9zz{:o{~9i~9}ROz9zz{:W{~9z~:ZTOz9zz{:W{!P9z!P!Q:j!Q~9z~:oOR~~:tUoWOy9iyz9zz{:o{!P9i!P!Q;W!Q~9i~;_QoWR~Oy%Qz~%Q^;jY#ZUOy%Qz!O%Q!O!P5Z!P!Q%Q!Q![7_![!g%Q!g!h5z!h#X%Q#X#Y5z#Y~%QX<_S]POy%Qz![%Q![!]<k!]~%QX<rQ^PoWOy%Qz~%Q_<}Q!WVOy%Qz~%QY=YQzQOy%Qz~%QX=eS|POy%Qz!`%Q!`!a=q!a~%QX=xQ|PoWOy%Qz~%QX>RUOy%Qz!c%Q!c!}>e!}#T%Q#T#o>e#o~%QX>lY!YPoWOy%Qz}%Q}!O>e!O!Q%Q!Q![>e![!c%Q!c!}>e!}#T%Q#T#o>e#o~%QX?aQxPOy%Qz~%Q^?lQvUOy%Qz~%QX?uSOy%Qz#b%Q#b#c@R#c~%QX@WSoWOy%Qz#W%Q#W#X@d#X~%QX@kQ!`PoWOy%Qz~%QX@tSOy%Qz#f%Q#f#g@d#g~%QXAVQ!RPOy%Qz~%Q_AbQ!QVOy%Qz~%QZAmS!PPOy%Qz!_%Q!_!`2e!`~%Q",
     tokenizers: [descendant, unitToken, identifiers, 0, 1, 2, 3],
     topRules: { "StyleSheet": [0, 4] },
-    specialized: [{ term: 94, get: (value2) => spec_callee[value2] || -1 }, { term: 56, get: (value2) => spec_AtKeyword[value2] || -1 }, { term: 95, get: (value2) => spec_identifier$1[value2] || -1 }],
+    specialized: [{ term: 94, get: (value) => spec_callee[value] || -1 }, { term: 56, get: (value) => spec_AtKeyword[value] || -1 }, { term: 95, get: (value) => spec_identifier$1[value] || -1 }],
     tokenPrec: 1078
   });
   let _properties = null;
@@ -19954,8 +20014,8 @@
       input.advance();
     }
   });
-  function tsExtends(value2, stack) {
-    return value2 == "extends" && stack.dialectEnabled(Dialect_ts) ? TSExtends : -1;
+  function tsExtends(value, stack) {
+    return value == "extends" && stack.dialectEnabled(Dialect_ts) ? TSExtends : -1;
   }
   const jsHighlight = styleTags({
     "get set async static": tags$2.modifier,
@@ -20034,7 +20094,7 @@
     topRules: { "Script": [0, 7] },
     dialects: { jsx: 11707, ts: 11709 },
     dynamicPrecedences: { "149": 1, "176": 1 },
-    specialized: [{ term: 289, get: (value2, stack) => tsExtends(value2, stack) << 1 }, { term: 289, get: (value2) => spec_identifier[value2] || -1 }, { term: 299, get: (value2) => spec_word[value2] || -1 }, { term: 63, get: (value2) => spec_LessThan[value2] || -1 }],
+    specialized: [{ term: 289, get: (value, stack) => tsExtends(value, stack) << 1 }, { term: 289, get: (value) => spec_identifier[value] || -1 }, { term: 299, get: (value) => spec_word[value] || -1 }, { term: 63, get: (value) => spec_LessThan[value] || -1 }],
     tokenPrec: 11730
   });
   function toSet(chars) {
@@ -20274,8 +20334,8 @@
     }
   }
   const setActive = /* @__PURE__ */ StateEffect.define({
-    map(value2, changes) {
-      return value2 && value2.map(changes);
+    map(value, changes) {
+      return value && value.map(changes);
     }
   });
   const moveToField = /* @__PURE__ */ StateEffect.define();
@@ -20283,18 +20343,18 @@
     create() {
       return null;
     },
-    update(value2, tr) {
+    update(value, tr) {
       for (let effect of tr.effects) {
         if (effect.is(setActive))
           return effect.value;
-        if (effect.is(moveToField) && value2)
-          return new ActiveSnippet(value2.ranges, effect.value);
+        if (effect.is(moveToField) && value)
+          return new ActiveSnippet(value.ranges, effect.value);
       }
-      if (value2 && tr.docChanged)
-        value2 = value2.map(tr.changes);
-      if (value2 && tr.selection && !value2.selectionInsideField(tr.selection))
-        value2 = null;
-      return value2;
+      if (value && tr.docChanged)
+        value = value.map(tr.changes);
+      if (value && tr.selection && !value.selectionInsideField(tr.selection))
+        value = null;
+      return value;
     },
     provide: (f) => EditorView.decorations.from(f, (val) => val ? val.deco : Decoration.none)
   });
@@ -21136,8 +21196,8 @@
         } else {
           token = /^[^\s<>='"]*$/;
         }
-        for (let value2 of attrs)
-          options.push({ label: value2, apply: quoteStart + value2 + quoteEnd, type: "constant" });
+        for (let value of attrs)
+          options.push({ label: value, apply: quoteStart + value + quoteEnd, type: "constant" });
       }
     }
     return { from, to, options, validFor: token };
@@ -21539,40 +21599,47 @@
     const tagNamesPattern = knownTags.join("|");
     return {
       defineNodes: ["Kirbytag"],
-      parseInline: [{
-        name: "Kirbytag",
-        parse(cx, next, pos) {
-          if (next != 40) {
-            return -1;
-          }
-          let after2 = cx.slice(pos, cx.end);
-          let regex = new RegExp(`(\\((?:${tagNamesPattern}):)|(\\()|(\\))`, "gi");
-          let level = 0;
-          let match;
-          let inTag = false;
-          while (match = regex.exec(after2)) {
-            if (!inTag && !match[1]) {
+      parseInline: [
+        {
+          name: "Kirbytag",
+          parse(cx, next, pos) {
+            if (next != 40) {
               return -1;
             }
-            if (!inTag && match[1]) {
-              inTag = true;
-              level += 1;
-            } else if (inTag && (match[1] || match[2])) {
-              level += 1;
-            } else if (inTag && match[3]) {
-              level -= 1;
-              if (level === 0) {
-                return cx.addElement(cx.elt("Kirbytag", pos, pos + match.index + match[0].length));
+            let after2 = cx.slice(pos, cx.end);
+            let regex = new RegExp(
+              `(\\((?:${tagNamesPattern}):)|(\\()|(\\))`,
+              "gi"
+            );
+            let level = 0;
+            let match;
+            let inTag = false;
+            while (match = regex.exec(after2)) {
+              if (!inTag && !match[1]) {
+                return -1;
+              }
+              if (!inTag && match[1]) {
+                inTag = true;
+                level += 1;
+              } else if (inTag && (match[1] || match[2])) {
+                level += 1;
+              } else if (inTag && match[3]) {
+                level -= 1;
+                if (level === 0) {
+                  return cx.addElement(
+                    cx.elt("Kirbytag", pos, pos + match.index + match[0].length)
+                  );
+                }
               }
             }
-          }
-          return -1;
-        },
-        before: "Emphasis"
-      }],
+            return -1;
+          },
+          before: "Emphasis"
+        }
+      ],
       props: [
         styleTags({
-          "Kirbytag": tags.kirbytag
+          Kirbytag: tags.kirbytag
         })
       ]
     };
@@ -21580,19 +21647,21 @@
   const HighlightDelim = { resolve: "Highlight", mark: "HighlightMark" };
   const Highlight$2 = {
     defineNodes: ["Highlight", "HighlightMark"],
-    parseInline: [{
-      name: "Highlight",
-      parse(cx, next, pos) {
-        if (next != 61 || cx.char(pos + 1) != 61) {
-          return -1;
-        }
-        return cx.addDelimiter(HighlightDelim, pos, pos + 2, true, true);
-      },
-      after: "Emphasis"
-    }],
+    parseInline: [
+      {
+        name: "Highlight",
+        parse(cx, next, pos) {
+          if (next != 61 || cx.char(pos + 1) != 61) {
+            return -1;
+          }
+          return cx.addDelimiter(HighlightDelim, pos, pos + 2, true, true);
+        },
+        after: "Emphasis"
+      }
+    ],
     props: [
       styleTags({
-        "HighlightMark": tags$2.processingInstruction,
+        HighlightMark: tags$2.processingInstruction,
         "Highlight/...": tags.highlight
       })
     ]
@@ -21779,27 +21848,47 @@
       let lastLine = null;
       for (let pos = from; pos <= to; ) {
         const line = view.state.doc.lineAt(pos);
-        const blockToken = getBlockNameAt(view, blockFormats, pos + line.text.match(/^\s*/)[0].length);
+        const blockToken = getBlockNameAt(
+          view,
+          blockFormats,
+          pos + line.text.match(/^\s*/)[0].length
+        );
         let matches = null;
         if (blockFormats.exists(blockToken)) {
           const style = blockFormats.get(blockToken);
           if (!style.mark) {
-            builder.add(line.from, line.from, Decoration.line({ attributes: { class: style.class } }));
+            builder.add(
+              line.from,
+              line.from,
+              Decoration.line({ attributes: { class: style.class } })
+            );
           } else if (style.mark) {
             matches = line.text.match(style.mark);
-            if (matches) {
-              const [, prefix, mark, suffix] = matches;
-              builder.add(line.from, line.from, Decoration.line({ attributes: {
-                class: style.class,
-                style: `--cm-indent: ${prefix.length}ch; --cm-mark: ${mark.length + suffix.length}ch;`
-              } }));
-            } else if (matches && style.multiLine && lastLine) {
+            if (matches && style.multiLine && lastLine) {
               matches = lastLine.matches;
               const [, prefix, mark, suffix] = matches;
-              builder.add(line.from, line.from, Decoration.line({ attributes: {
-                class: style.class,
-                style: `--cm-indent: ${prefix.length + mark.length + suffix.length}ch;`
-              } }));
+              builder.add(
+                line.from,
+                line.from,
+                Decoration.line({
+                  attributes: {
+                    class: style.class,
+                    style: `--cm-indent: ${prefix.length + mark.length + suffix.length}ch;`
+                  }
+                })
+              );
+            } else if (matches) {
+              const [, prefix, mark, suffix] = matches;
+              builder.add(
+                line.from,
+                line.from,
+                Decoration.line({
+                  attributes: {
+                    class: style.class,
+                    style: `--cm-indent: ${prefix.length}ch; --cm-mark: ${mark.length + suffix.length}ch;`
+                  }
+                })
+              );
             }
           }
         }
@@ -21841,7 +21930,7 @@
     plugins() {
       const editor = this.editor;
       const useKirbytext = this.input.kirbytext;
-      const pasteUrlsPlugin = ViewPlugin.define((view) => ({}), {
+      const pasteUrlsPlugin = ViewPlugin.define(() => ({}), {
         eventHandlers: {
           paste(e, view) {
             let pasted = e.clipboardData.getData("text");
@@ -21866,7 +21955,11 @@
             let [, prefix, linkText, suffix] = view.state.sliceDoc(from, to).match(/^(\s*)(.*?)(\s*)$/);
             let link = useKirbytext ? `(link: ${pasted} text: ${linkText})` : `[${linkText}](${pasted})`;
             view.dispatch({
-              changes: { insert: link, from: from + prefix.length, to: to - suffix.length },
+              changes: {
+                insert: link,
+                from: from + prefix.length,
+                to: to - suffix.length
+              },
               annotations: Transaction.userEvent.of("paste"),
               scrollIntoView: true
             });
@@ -21874,9 +21967,7 @@
           }
         }
       });
-      return [
-        pasteUrlsPlugin
-      ];
+      return [pasteUrlsPlugin];
     }
     get type() {
       return "language";
@@ -21906,7 +21997,10 @@
     return b.finish();
   }
   function toggleTaskListCheckbox(view, pos) {
-    let old = view.state.doc.sliceString(pos, Math.min(pos + 3, view.state.doc.length));
+    let old = view.state.doc.sliceString(
+      pos,
+      Math.min(pos + 3, view.state.doc.length)
+    );
     let insert2;
     if (old == "[ ]") {
       insert2 = "[x]";
@@ -21954,28 +22048,29 @@
       ];
     }
     plugins() {
-      const taskListPlugin = ViewPlugin.fromClass(class {
-        constructor(view) {
-          this.decorations = checkboxes(view);
-        }
-        update(update) {
-          if (update.docChanged || update.viewportChanged) {
-            this.decorations = checkboxes(update.view);
+      const taskListPlugin = ViewPlugin.fromClass(
+        class {
+          constructor(view) {
+            this.decorations = checkboxes(view);
           }
-        }
-      }, {
-        decorations: (v) => v.decorations,
-        eventHandlers: {
-          mousedown: ({ target }, view) => {
-            if (target.classList && target.classList.contains("cm-taskmarker") || target.closest(".cm-taskmarker")) {
-              return toggleTaskListCheckbox(view, view.posAtDOM(target));
+          update(update) {
+            if (update.docChanged || update.viewportChanged) {
+              this.decorations = checkboxes(update.view);
+            }
+          }
+        },
+        {
+          decorations: (v) => v.decorations,
+          eventHandlers: {
+            mousedown: ({ target }, view) => {
+              if (target.classList && target.classList.contains("cm-taskmarker") || target.closest(".cm-taskmarker")) {
+                return toggleTaskListCheckbox(view, view.posAtDOM(target));
+              }
             }
           }
         }
-      });
-      return [
-        taskListPlugin
-      ];
+      );
+      return [taskListPlugin];
     }
     get token() {
       return "TaskMarker";
@@ -22044,7 +22139,14 @@
           fontWeight: "700"
         },
         {
-          tag: [tags$2.heading1, tags$2.heading2, tags$2.heading3, tags$2.heading4, tags$2.heading5, tags$2.heading6],
+          tag: [
+            tags$2.heading1,
+            tags$2.heading2,
+            tags$2.heading3,
+            tags$2.heading4,
+            tags$2.heading5,
+            tags$2.heading6
+          ],
           fontWeight: "700",
           color: "currentColor"
         },
@@ -22118,36 +22220,34 @@
     );
   }
   function scrollMargin() {
-    return ViewPlugin.fromClass(class {
-      constructor(view) {
-        this.margin = {
-          bottom: 60,
-          top: 60
-        };
+    return ViewPlugin.fromClass(
+      class {
+        constructor() {
+          this.margin = {
+            bottom: 60,
+            top: 60
+          };
+        }
+      },
+      {
+        provide: (plugin) => EditorView.scrollMargins.of((view) => {
+          let value = view.plugin(plugin);
+          return value;
+        })
       }
-    }, {
-      provide: (plugin) => EditorView.scrollMargins.of((view) => {
-        let value2 = view.plugin(plugin);
-        return value2;
-      })
-    });
+    );
   }
   class Theme extends Extension {
     plugins() {
-      return [
-        theme(),
-        highlightStyle(),
-        scrollMargin(),
-        EditorView.lineWrapping
-      ];
+      return [theme(), highlightStyle(), scrollMargin(), EditorView.lineWrapping];
     }
     get type() {
       return "theme";
     }
   }
-  const isKnownDesktopBrowser = (browser.safari || browser.chrome || browser.gecko) && (!browser.android && !browser.ios);
+  const isKnownDesktopBrowser = (browser.safari || browser.chrome || browser.gecko) && !browser.android && !browser.ios;
   class Editor extends Emitter {
-    constructor(value2, options = {}) {
+    constructor(value, options = {}) {
       super();
       this.activeTokens = [];
       this.metaKeyDown = false;
@@ -22173,7 +22273,7 @@
       this.blockFormats = this.extensions.getFormats("block");
       this.buttons = this.extensions.getButtons();
       this.dialogs = this.extensions.getDialogs();
-      this.view = this.createView(value2);
+      this.view = this.createView(value);
     }
     keymap() {
       return keymap.of([
@@ -22190,20 +22290,24 @@
       return events;
     }
     createExtensions() {
-      return new Extensions([
-        new MarkdownLanguage(),
-        new LineStyles(),
-        new Invisibles$1(),
-        new URLs(),
-        new PasteUrls(),
-        new TaskLists(),
-        new DropCursor(),
-        new Theme(),
-        new FirefoxBlurFix(),
-        ...this.options.extensions
-      ], this, this.options.input);
+      return new Extensions(
+        [
+          new MarkdownLanguage(),
+          new LineStyles(),
+          new Invisibles$1(),
+          new URLs(),
+          new PasteUrls(),
+          new TaskLists(),
+          new DropCursor(),
+          new Theme(),
+          new FirefoxBlurFix(),
+          ...this.options.extensions
+        ],
+        this,
+        this.options.input
+      );
     }
-    createState(value2) {
+    createState(value) {
       const extensions = [
         history(),
         this.keymap(),
@@ -22218,25 +22322,29 @@
         this.extensions.getPluginsByType("extension")
       ].filter((v) => v);
       return EditorState.create({
-        doc: value2,
+        doc: value,
         selection: this.state ? this.state.selection : null,
         extensions,
         tabSize: 4
       });
     }
-    createView(value2) {
+    createView(value) {
       const debouncedUpdateActiveTokens = debounce(() => {
-        this.activeTokens = getActiveTokens(this.view, this.blockFormats, this.inlineFormats);
+        this.activeTokens = getActiveTokens(
+          this.view,
+          this.blockFormats,
+          this.inlineFormats
+        );
         this.emit("active", this.activeTokens);
       }, 50);
       const view = new EditorView({
-        state: this.createState(value2),
+        state: this.createState(value),
         parent: this.options.element,
         readOnly: this.options.readOnly,
         dispatch: (...transaction) => {
           this.view.update(transaction);
-          const value3 = this.view.state.doc.toString();
-          this.emit("update", value3);
+          const value2 = this.view.state.doc.toString();
+          this.emit("update", value2);
           debouncedUpdateActiveTokens();
         }
       });
@@ -22301,12 +22409,12 @@
     get state() {
       return this.view ? this.view.state : null;
     }
-    setValue(value2) {
+    setValue(value) {
       this.view.dispatch({
         changes: {
           from: 0,
           to: this.view.state.doc.length,
-          insert: value2
+          insert: value
         }
       });
     }
@@ -22314,19 +22422,30 @@
       return toggleBlockFormat(this.view, this.blockFormats, type);
     }
     toggleInlineFormat(type) {
-      return toggleInlineFormat(this.view, this.blockFormats, this.inlineFormats, type);
+      return toggleInlineFormat(
+        this.view,
+        this.blockFormats,
+        this.inlineFormats,
+        type
+      );
     }
     toggleInvisibles(force = null) {
       if (force === this.options.invisibles) {
         return;
       }
       this.options.invisibles = typeof force === "boolean" ? force : !this.options.invisibles;
-      const effects = this.invisibles.reconfigure(this.options.invisibles ? this.extensions.getPluginsByType("invisibles") : []);
+      const effects = this.invisibles.reconfigure(
+        this.options.invisibles ? this.extensions.getPluginsByType("invisibles") : []
+      );
       this.dispatch({ effects });
       this.emit("invisibles", this.options.invisibles);
     }
     updateActiveTokens() {
-      this.activeTokens = getActiveTokens(this.view, this.blockFormats, this.inlineFormats);
+      this.activeTokens = getActiveTokens(
+        this.view,
+        this.blockFormats,
+        this.inlineFormats
+      );
     }
     get value() {
       return this.view ? this.view.state.doc.toString() : "";
@@ -22620,10 +22739,15 @@
       ];
     }
     get command() {
-      return () => this.editor.dispatch(this.editor.state.changeByRange((range2) => ({
-        changes: [{ from: range2.from, insert: "[^" }, { from: range2.to, insert: "]" }],
-        range: EditorSelection.range(range2.from + 2, range2.to + 2)
-      })));
+      return () => this.editor.dispatch(
+        this.editor.state.changeByRange((range2) => ({
+          changes: [
+            { from: range2.from, insert: "[^" },
+            { from: range2.to, insert: "]" }
+          ],
+          range: EditorSelection.range(range2.from + 2, range2.to + 2)
+        }))
+      );
     }
     get name() {
       return "footnote";
@@ -22637,7 +22761,9 @@
       return {
         icon: "title",
         label: this.input.$t("toolbar.button.headings"),
-        dropdown: this.dropdownItems().filter((item) => this.options.levels.includes(item.name))
+        dropdown: this.dropdownItems().filter(
+          (item) => this.options.levels.includes(item.name)
+        )
       };
     }
     configure(options) {
@@ -22656,7 +22782,11 @@
         {
           name: "h1",
           icon: "h1",
-          label: this.input.$t("markdown.toolbar.button.heading.1") + this.formatKeyName({ mac: "Ctrl-Alt-1", key: "Alt-Shift-1" }, "<kbd>", "</kbd>"),
+          label: this.input.$t("markdown.toolbar.button.heading.1") + this.formatKeyName(
+            { mac: "Ctrl-Alt-1", key: "Alt-Shift-1" },
+            "<kbd>",
+            "</kbd>"
+          ),
           command: () => this.editor.toggleBlockFormat("ATXHeading1"),
           token: "ATXHeading1",
           tokenType: "block"
@@ -22664,7 +22794,11 @@
         {
           name: "h2",
           icon: "h2",
-          label: this.input.$t("markdown.toolbar.button.heading.2") + this.formatKeyName({ mac: "Ctrl-Alt-2", key: "Alt-Shift-2" }, "<kbd>", "</kbd>"),
+          label: this.input.$t("markdown.toolbar.button.heading.2") + this.formatKeyName(
+            { mac: "Ctrl-Alt-2", key: "Alt-Shift-2" },
+            "<kbd>",
+            "</kbd>"
+          ),
           command: () => this.editor.toggleBlockFormat("ATXHeading2"),
           token: "ATXHeading2",
           tokenType: "block"
@@ -22672,7 +22806,11 @@
         {
           name: "h3",
           icon: "h3",
-          label: this.input.$t("markdown.toolbar.button.heading.3") + this.formatKeyName({ mac: "Ctrl-Alt-3", key: "Alt-Shift-3" }, "<kbd>", "</kbd>"),
+          label: this.input.$t("markdown.toolbar.button.heading.3") + this.formatKeyName(
+            { mac: "Ctrl-Alt-3", key: "Alt-Shift-3" },
+            "<kbd>",
+            "</kbd>"
+          ),
           command: () => this.editor.toggleBlockFormat("ATXHeading3"),
           token: "ATXHeading3",
           tokenType: "block"
@@ -22680,7 +22818,11 @@
         {
           name: "h4",
           icon: "h4",
-          label: this.input.$t("markdown.toolbar.button.heading.4") + this.formatKeyName({ mac: "Ctrl-Alt-4", key: "Alt-Shift-4" }, "<kbd>", "</kbd>"),
+          label: this.input.$t("markdown.toolbar.button.heading.4") + this.formatKeyName(
+            { mac: "Ctrl-Alt-4", key: "Alt-Shift-4" },
+            "<kbd>",
+            "</kbd>"
+          ),
           command: () => this.editor.toggleBlockFormat("ATXHeading4"),
           token: "ATXHeading4",
           tokenType: "block"
@@ -22688,7 +22830,11 @@
         {
           name: "h5",
           icon: "h5",
-          label: this.input.$t("markdown.toolbar.button.heading.5") + this.formatKeyName({ mac: "Ctrl-Alt-5", key: "Alt-Shift-5" }, "<kbd>", "</kbd>"),
+          label: this.input.$t("markdown.toolbar.button.heading.5") + this.formatKeyName(
+            { mac: "Ctrl-Alt-5", key: "Alt-Shift-5" },
+            "<kbd>",
+            "</kbd>"
+          ),
           command: () => this.editor.toggleBlockFormat("ATXHeading5"),
           token: "ATXHeading5",
           tokenType: "block"
@@ -22696,7 +22842,11 @@
         {
           name: "h6",
           icon: "h6",
-          label: this.input.$t("markdown.toolbar.button.heading.6") + this.formatKeyName({ mac: "Ctrl-Alt-6", key: "Alt-Shift-6" }, "<kbd>", "</kbd>"),
+          label: this.input.$t("markdown.toolbar.button.heading.6") + this.formatKeyName(
+            { mac: "Ctrl-Alt-6", key: "Alt-Shift-6" },
+            "<kbd>",
+            "</kbd>"
+          ),
           command: () => this.editor.toggleBlockFormat("ATXHeading6"),
           token: "ATXHeading6",
           tokenType: "block"
@@ -22954,10 +23104,10 @@
       const hasText = text !== "" && text !== null;
       const linkType = this.linkType(href);
       if (linkType === "email") {
+        const email = href.replace(/^email:/, "");
         if (this.useKirbytext) {
-          const email2 = href.replace(/^email:/, "");
           const textAttr = hasText ? ` text: ${text}` : "";
-          this.editor.insert(`(email: ${email2}${textAttr})`);
+          this.editor.insert(`(email: ${email}${textAttr})`);
         } else if (hasText) {
           this.editor.insert(`[${text}](mailto:${email})`);
         } else {
@@ -22965,7 +23115,7 @@
         }
       } else {
         if (this.useKirbytext) {
-          const textAttr = hasText ? ` text: ${value.text}` : "";
+          const textAttr = hasText ? ` text: ${text}` : "";
           const targetAttr = target ? " target: _blank" : "";
           this.editor.insert(`(link: ${href}${textAttr}${targetAttr})`);
         } else if (hasText) {
@@ -22975,26 +23125,26 @@
         }
       }
     }
-    linkType(value2) {
-      if (typeof value2 !== "string") {
+    linkType(value) {
+      if (typeof value !== "string") {
         return "custom";
       }
-      if (/^(http|https):\/\//.test(value2)) {
+      if (/^(http|https):\/\//.test(value)) {
         return "url";
       }
-      if (value2.startsWith("page://") || value2.startsWith("/@/page/")) {
+      if (value.startsWith("page://") || value.startsWith("/@/page/")) {
         return "page";
       }
-      if (value2.startsWith("file://") || value2.startsWith("/@/file/")) {
+      if (value.startsWith("file://") || value.startsWith("/@/file/")) {
         return "file";
       }
-      if (value2.startsWith("tel:")) {
+      if (value.startsWith("tel:")) {
         return "tel";
       }
-      if (value2.startsWith("email:")) {
+      if (value.startsWith("email:")) {
         return "email";
       }
-      if (value2.startsWith("#")) {
+      if (value.startsWith("#")) {
         return "#";
       }
       return "custom";
@@ -23180,17 +23330,6 @@
   }
   const MarkdownInput_vue_vue_type_style_index_0_lang = "";
   const _sfc_main = {
-    data() {
-      return {
-        editor: Object,
-        skipNextInputEvent: false,
-        activeMarks: [],
-        isDragOver: false,
-        invisibles: false,
-        toolbarButtons: [],
-        active: []
-      };
-    },
     props: {
       ...MarkdownField.props,
       hideToolbar: {
@@ -23205,6 +23344,17 @@
         type: String,
         default: "normal"
       }
+    },
+    data() {
+      return {
+        editor: Object,
+        skipNextInputEvent: false,
+        activeMarks: [],
+        isDragOver: false,
+        invisibles: false,
+        toolbarButtons: [],
+        active: []
+      };
     },
     computed: {
       currentLanguage() {
@@ -23225,7 +23375,7 @@
       }
     },
     watch: {
-      value(newVal, oldVal) {
+      value(newVal) {
         if (newVal !== void 0 && newVal !== this.editor.value) {
           this.editor.setValue(newVal);
         }
@@ -23248,7 +23398,7 @@
           active: (active) => {
             this.active = active;
           },
-          update: async (value2) => {
+          update: async (value) => {
             if (this.$refs.toolbar) {
               this.$refs.toolbar.closeDropdowns();
             }
@@ -23256,10 +23406,10 @@
               this.skipNextInputEvent = false;
               return;
             }
-            this.$emit("input", value2);
+            this.$emit("input", value);
           },
-          invisibles: (value2) => {
-            this.invisibles = value2;
+          invisibles: (value) => {
+            this.invisibles = value;
           }
         }
       });
@@ -23290,19 +23440,25 @@
         if (!window.markdownEditorButtons) {
           return [];
         }
-        return window.markdownEditorButtons.reduce((accumulator, definition) => [
-          ...accumulator,
-          Button.factory(definition)
-        ], []);
+        return window.markdownEditorButtons.reduce(
+          (accumulator, definition) => [
+            ...accumulator,
+            Button.factory(definition)
+          ],
+          []
+        );
       },
       createCustomExtensions() {
         if (!window.markdownEditorExtensions) {
           return [];
         }
-        return window.markdownEditorExtensions.reduce((accumulator, definition) => [
-          ...accumulator,
-          Extension.factory(definition)
-        ], []);
+        return window.markdownEditorExtensions.reduce(
+          (accumulator, definition) => [
+            ...accumulator,
+            Extension.factory(definition)
+          ],
+          []
+        );
       },
       createToolbarButtons() {
         const available = [
@@ -23324,28 +23480,27 @@
           new StrongEmphasis(),
           ...this.createButtons()
         ];
-        const mapped = available.reduce((accumulator, extension) => ({
-          ...accumulator,
-          [extension.name]: extension
-        }), {});
+        const mapped = available.reduce(
+          (accumulator, extension) => ({
+            ...accumulator,
+            [extension.name]: extension
+          }),
+          {}
+        );
         if (this.buttons === true) {
           this.buttons = {
-            "headlines": [
-              "h1",
-              "h2",
-              "h3"
-            ],
-            "bold": {},
-            "italic": {},
-            "divider__0": {},
-            "link": {},
-            "file": {},
-            "image": {},
-            "code": {},
-            "divider__1": {},
-            "ul": {},
-            "ol": {},
-            "invisibles": {}
+            headlines: ["h1", "h2", "h3"],
+            bold: {},
+            italic: {},
+            divider__0: {},
+            link: {},
+            file: {},
+            image: {},
+            code: {},
+            divider__1: {},
+            ul: {},
+            ol: {},
+            invisibles: {}
           };
         }
         const layout = [];
@@ -23361,7 +23516,9 @@
       createHighlights() {
         if (this.highlights === false)
           return [];
-        let highlights = this.customHighlights.filter((definition) => this.highlights === true || Array.isArray(this.highlights) && this.highlights.includes(definition.name));
+        let highlights = this.customHighlights.filter(
+          (definition) => this.highlights === true || Array.isArray(this.highlights) && this.highlights.includes(definition.name)
+        );
         return highlights.map((definition) => new Highlight$1(definition));
       },
       async insertFile(files) {
@@ -23371,7 +23528,7 @@
           this.editor.insert(text);
         }
       },
-      insertUpload(files, response) {
+      insertUpload(files) {
         this.insertFile(files);
         this.$events.emit("model.update");
         this.skipNextInputEvent = true;
@@ -23477,9 +23634,9 @@
     },
     icons: {
       "special-chars": '<path d="M14 20V17.8432C15.8631 16.6512 17.5 13.9677 17.5 10.8844C17.5 7.8107 15.5 4.85516 12 4.85516C8.5 4.85516 6.5 7.8107 6.5 10.8844C6.5 13.9677 8.13687 16.6512 10 17.8432V20H3V18H7.7597C5.66635 16.5054 4 13.9889 4 10.8844C4 6.24653 7.5 3 12 3C16.5 3 20 6.24653 20 10.8844C20 13.9889 18.3336 16.5054 16.2403 18H21V20H14Z"></path>',
-      "footnote": '<path fill="currentColor" d="M15 3h1.11v.42A2.5 2.5 0 0 1 20 5.5v3.06h-1.11V5.5a1.4 1.4 0 0 0-2.78 0v3.06H15V3ZM5 4h7v1c-2 .5-2 1.5-2 2.5v10c0 1 0 2 2 2.5v1H5v-1c2-.5 2-1.5 2-2.5v-10c0-1 0-2-2-2.5V4Z"/>',
-      "highlight": '<path d="M15.2427 4.51138L8.50547 11.2486L7.79836 13.3699L6.7574 14.4109L9.58583 17.2393L10.6268 16.1983L12.7481 15.4912L19.4853 8.75402L15.2427 4.51138ZM21.6066 8.04692C21.9972 8.43744 21.9972 9.0706 21.6066 9.46113L13.8285 17.2393L11.7071 17.9464L10.2929 19.3606C9.90241 19.7511 9.26925 19.7511 8.87872 19.3606L4.63608 15.118C4.24556 14.7275 4.24556 14.0943 4.63608 13.7038L6.0503 12.2896L6.7574 10.1682L14.5356 2.39006C14.9261 1.99954 15.5593 1.99954 15.9498 2.39006L21.6066 8.04692ZM15.2427 7.33981L16.6569 8.75402L11.7071 13.7038L10.2929 12.2896L15.2427 7.33981ZM4.28253 16.8858L7.11096 19.7142L5.69674 21.1284L1.4541 19.7142L4.28253 16.8858Z"></path>',
-      "eraser": '<path d="M8.58564 8.85461L3.63589 13.8044L8.83021 18.9987L9.99985 18.998V18.9967H11.1714L14.9496 15.2186L8.58564 8.85461ZM9.99985 7.44039L16.3638 13.8044L19.1922 10.9759L12.8283 4.61197L9.99985 7.44039ZM13.9999 18.9967H20.9999V20.9967H11.9999L8.00229 20.9992L1.51457 14.5115C1.12405 14.1209 1.12405 13.4878 1.51457 13.0972L12.1212 2.49065C12.5117 2.10012 13.1449 2.10012 13.5354 2.49065L21.3136 10.2688C21.7041 10.6593 21.7041 11.2925 21.3136 11.683L13.9999 18.9967Z"></path>'
+      footnote: '<path fill="currentColor" d="M15 3h1.11v.42A2.5 2.5 0 0 1 20 5.5v3.06h-1.11V5.5a1.4 1.4 0 0 0-2.78 0v3.06H15V3ZM5 4h7v1c-2 .5-2 1.5-2 2.5v10c0 1 0 2 2 2.5v1H5v-1c2-.5 2-1.5 2-2.5v-10c0-1 0-2-2-2.5V4Z"/>',
+      highlight: '<path d="M15.2427 4.51138L8.50547 11.2486L7.79836 13.3699L6.7574 14.4109L9.58583 17.2393L10.6268 16.1983L12.7481 15.4912L19.4853 8.75402L15.2427 4.51138ZM21.6066 8.04692C21.9972 8.43744 21.9972 9.0706 21.6066 9.46113L13.8285 17.2393L11.7071 17.9464L10.2929 19.3606C9.90241 19.7511 9.26925 19.7511 8.87872 19.3606L4.63608 15.118C4.24556 14.7275 4.24556 14.0943 4.63608 13.7038L6.0503 12.2896L6.7574 10.1682L14.5356 2.39006C14.9261 1.99954 15.5593 1.99954 15.9498 2.39006L21.6066 8.04692ZM15.2427 7.33981L16.6569 8.75402L11.7071 13.7038L10.2929 12.2896L15.2427 7.33981ZM4.28253 16.8858L7.11096 19.7142L5.69674 21.1284L1.4541 19.7142L4.28253 16.8858Z"></path>',
+      eraser: '<path d="M8.58564 8.85461L3.63589 13.8044L8.83021 18.9987L9.99985 18.998V18.9967H11.1714L14.9496 15.2186L8.58564 8.85461ZM9.99985 7.44039L16.3638 13.8044L19.1922 10.9759L12.8283 4.61197L9.99985 7.44039ZM13.9999 18.9967H20.9999V20.9967H11.9999L8.00229 20.9992L1.51457 14.5115C1.12405 14.1209 1.12405 13.4878 1.51457 13.0972L12.1212 2.49065C12.5117 2.10012 13.1449 2.10012 13.5354 2.49065L21.3136 10.2688C21.7041 10.6593 21.7041 11.2925 21.3136 11.683L13.9999 18.9967Z"></path>'
     }
   });
 })();

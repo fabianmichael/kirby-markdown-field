@@ -807,14 +807,14 @@
 	border-top-left-radius: var(--rounded);
 }
 .k-markdown-toolbar {
-  height: auto;
-  background: var(--color-white);
+	height: auto;
+	background: var(--color-white);
 	border-bottom: 1px solid var(--color-background);
 	min-height: 32px;
-  max-width: 100%;
-  display: flex;
-  overflow-x: auto;
-  overflow-y: hidden;
+	max-width: 100%;
+	display: flex;
+	overflow-x: auto;
+	overflow-y: hidden;
 }
 
 /* .k-markdown-toolbar-wrapper {
@@ -824,92 +824,93 @@
   overflow-y: hidden;
 } */
 .k-markdown-toolbar-button {
-  width: 32px;
-  height: 32px;
+	width: 32px;
+	height: 32px;
 }
 .k-markdown-toolbar-divider {
-  width: 1px;
-  border-width: 0;
-  background: var(--color-background);
+	width: 1px;
+	border-width: 0;
+	background: var(--color-background);
 }
 
 /* disabled state of toolbar buttons */
 .k-markdown-toolbar .k-markdown-toolbar-button.is-disabled {
-  opacity: 0.25;
-  pointer-events: none;
+	opacity: 0.25;
+	pointer-events: none;
 }
 
 /* Editor has focus */
 .k-markdown-toolbar {
-  color: #aaa
+	color: #aaa;
 }
 .k-markdown-input-wrap:focus-within .k-markdown-toolbar {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  color: var(--color-text);
-  left: 0;
-  position: sticky;
-  right: 0;
-  top: var(--header-sticky-offset);
-  z-index: 4;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+	color: var(--color-text);
+	left: 0;
+	position: sticky;
+	right: 0;
+	top: var(--header-sticky-offset);
+	z-index: 4;
 }
 .k-markdown-input-wrap .k-markdown-toolbar .k-markdown-toolbar-button:hover {
-  background: var(--toolbar-hover);
+	background: var(--toolbar-hover);
 }
-.k-markdown-input-wrap:focus-within .k-markdown-toolbar .k-markdown-toolbar-button.is-active {
-  color: #3872be;
+.k-markdown-input-wrap:focus-within
+	.k-markdown-toolbar
+	.k-markdown-toolbar-button.is-active {
+	color: #3872be;
 }
-.k-markdown-input-wrap:focus-within .k-markdown-toolbar .k-markdown-toolbar-button.is-active:hover {
-  background: rgba(66, 113, 174, 0.075);
+.k-markdown-input-wrap:focus-within
+	.k-markdown-toolbar
+	.k-markdown-toolbar-button.is-active:hover {
+	background: rgba(66, 113, 174, 0.075);
 }
 
 /* Align invisibles button to the right of the toolbar */
 .k-markdown-toolbar-button-right {
-  border-left: 1px solid var(--color-background);
-  margin-left: auto;
+	border-left: 1px solid var(--color-background);
+	margin-left: auto;
 }
 
 /** Active state for dropdown items */
 .k-markdown-toolbar .k-button.k-dropdown-item[aria-current="true"] {
-  color: #8fbfff;
+	color: #8fbfff;
 }
 .k-markdown-toolbar .k-button-text {
-  align-items: baseline;
-  display: flex;
-  justify-content: space-between;
+	align-items: baseline;
+	display: flex;
+	justify-content: space-between;
 }
 .k-markdown-toolbar .k-button-text kbd {
-  background: hsla(0deg 0% 100% / 25%);
-  color: white;
-  font-variant-numeric: tabular-nums;
-  margin-left: 2.5rem;
-  padding-top: 2px;
-  padding-bottom: 2px;
+	background: hsla(0deg 0% 100% / 25%);
+	color: white;
+	font-variant-numeric: tabular-nums;
+	margin-left: 2.5rem;
+	padding-top: 2px;
+	padding-bottom: 2px;
 }
-
 
 .k-block-container-type-markdown {
-  padding: 0;
+	padding: 0;
 }
 .k-block-type-markdown-input {
-  background: none;
-  border-radius: 0;
-  padding: 0;
+	background: none;
+	border-radius: 0;
+	padding: 0;
 }
-
 
 /**
  * General field setup
  */
 .k-markdown-input-wrap[data-font-family="sans-serif"] .cm-line {
-  --cm-mark: 0 !important;
-  --cm-indent: 0 !important;
+	--cm-mark: 0 !important;
+	--cm-indent: 0 !important;
 }
 
 /**
  * 1. Make sure there's no overflow
  */
 .k-input[data-type="markdown"] .k-input-element {
-  max-width: 100%; /* 1 */
+	max-width: 100%; /* 1 */
 }
-
