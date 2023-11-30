@@ -16,7 +16,7 @@
     }
   ],
   "require": {
-    "php": ">=8.0.0",
+    "php": ">=8.1.0",
     "getkirby/composer-installer": "^1.2"
   },
   "extra": {

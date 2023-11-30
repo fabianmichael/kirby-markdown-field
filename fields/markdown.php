@@ -41,7 +41,7 @@ return [
          * Sets the font family (sans or monospace)
          */
         'font' => function (string $font = null) {
-            return in_array($font, ['sans', 'sans-serif']) === true ? 'sans-serif' : 'monospace';
+            return 'sans-serif' === true ? 'sans-serif' : 'monospace';
         },
 
         /**
@@ -91,12 +91,12 @@ return [
          * positives.
          */
         'knownKirbytags' => function () {
-            return array_keys(kirby()->extensions('tags'));
+            return array_keys($this->kirby()->extensions('tags'));
         },
         'customHighlights' => function () {
             $highlights = [];
 
-            foreach (kirby()->plugins() as $plugin) {
+            foreach ($this->kirby()->plugins() as $plugin) {
                 $highlights = array_merge(
                     $highlights,
                     array_map(
@@ -106,7 +106,7 @@ return [
                 );
             }
 
-            foreach (option('fabianmichael.markdown-field.customHighlights', []) as $highlight) {
+            foreach ($this->option('fabianmichael.markdown-field.customHighlights', []) as $highlight) {
                 $highlights[] = is_callable($highlight) ? $highlight() : $highlight;
             }
 
@@ -165,38 +165,6 @@ return [
                     });
                 }
             ],
-            [
-                'pattern' => ['pages', '(:any)/pages'],
-                'method' => 'GET',
-                'action' => function ($button = null) {
-                    $field = $this->field();
-
-                    $params = [];
-                    // deprecated query option
-                    if ($field->query() && $field->query()['pagelink']) {
-                        $params['query'] = $field->query()['pagelink'];
-                    }
-                    $params = array_merge($params, $field->pages());
-
-                    // allow buttons to override base params
-                    if ($button) {
-                        $buttonProps = $field->buttons()[$button] ?? [];
-                        if (is_array($buttonProps)) {
-                           $buttonParams = $buttonProps['pages'] ?? [];
-                           $params = array_merge($params, $buttonParams);
-                        }
-                    }
-
-                    $params = array_merge($params, [
-                        'page'   => $this->requestQuery('page'),
-                        'parent'   => $this->requestQuery('parent'),
-                        'model'    => $field->model(),
-                        'search' => $this->requestQuery('search')
-                    ]);
-
-                    return (new PagePicker($params))->toArray();
-                }
-            ]
         ];
     },
 ];
