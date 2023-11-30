@@ -2,67 +2,66 @@ import { formatKeyName } from "./Utils/keymap.js";
 import completeAssign from "./Utils/complete-assign.js";
 
 export default class Extension {
+	constructor(options = {}) {
+		this.configure(options);
+		this._init = false;
+	}
 
-  constructor(options = {}) {
-    this.configure(options);
-    this._init = false;
-  }
+	configure(options = {}) {
+		if (this._init) {
+			throw "Extensions cannot be configured after they have been initalized.";
+		}
 
-  configure(options = {}) {
-    if (this._init) {
-      throw "Extensions cannot be configured after they have been initalized.";
-    }
+		this.options = {
+			...this.defaults,
+			...options
+		};
+	}
 
-    this.options = {
-      ...this.defaults,
-      ...options,
-    };
-  }
+	init() {
+		return (this._init = true);
+	}
 
-  init() {
-    return this._init = true;
-  }
+	bindEditor(editor) {
+		this.editor = editor;
+	}
 
-  bindEditor(editor) {
-    this.editor = editor;
-  }
+	bindInput(input) {
+		this.input = input;
+	}
 
-  bindInput(input) {
-    this.input = input;
-  }
+	formatKeyName(name, before, after) {
+		return formatKeyName(name, this.input.$t, before, after);
+	}
 
-  formatKeyName(name, before, after) {
-    return formatKeyName(name, this.input.$t, before, after);
-  }
+	get name() {
+		return null;
+	}
 
-  get name() {
-    return null;
-  }
+	get type() {
+		return "extension";
+	}
 
-  get type() {
-    return "extension";
-  }
+	get defaults() {
+		return {
+			input: null
+		};
+	}
 
-  get defaults() {
-    return {
-      input: null,
-    };
-  }
+	plugins() {
+		return [];
+	}
 
-  plugins() {
-    return [];
-  }
+	get syntax() {
+		return null;
+	}
 
-  get syntax() {
-    return null;
-  }
-
-  /**
-   * Creates a custom extension from an object
-   */
-  static factory(definition) {
-    const extension = new Extension();
-    completeAssign(extension, definition);
-    return extension;
-  }
+	/**
+	 * Creates a custom extension from an object
+	 */
+	static factory(definition) {
+		const extension = new Extension();
+		completeAssign(extension, definition);
+		return extension;
+	}
 }

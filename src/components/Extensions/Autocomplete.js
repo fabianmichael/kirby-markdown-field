@@ -4,7 +4,6 @@
 // import {CompletionSource, autocompletion, CompletionContext, startCompletion,
 //   currentCompletions, completionStatus, completeFromList } from "@codemirror/autocomplete"
 
-
 // export default function autocomplete() {
 //   function from(list) {
 //     return (cx) => { /* cx = completitionContext */
@@ -34,6 +33,3 @@
 
 //   return autocompletion({override: [from("link image")]})
 // }
-
-
-

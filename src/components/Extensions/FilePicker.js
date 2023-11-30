@@ -39,7 +39,6 @@
 //     return "k-files-dialog";
 //   }
 
-
 //   plugins() {
 //     const extension = this;
 
@@ -134,7 +133,6 @@
 //         }
 //       }
 //     );
-
 
 //     return [
 //       fileSelectorPlugin,
