@@ -24,20 +24,20 @@ function lineDeco(view, blockFormats) {
         } else if (style.mark) {
           matches = line.text.match(style.mark)
 
-          if (matches) {
-            // first line
-            const [, prefix, mark, suffix] = matches;
-            builder.add(line.from, line.from,  Decoration.line({ attributes: {
-              class: style.class,
-              style: `--cm-indent: ${prefix.length}ch; --cm-mark: ${mark.length + suffix.length}ch;`,
-            } }));
-          } else if (matches && style.multiLine && lastLine) {
+          if (matches && style.multiLine && lastLine) {
             // continued block format without marker
             matches = lastLine.matches;
             const [, prefix, mark, suffix] = matches;
             builder.add(line.from, line.from, Decoration.line({ attributes: {
               class: style.class,
               style: `--cm-indent: ${prefix.length + mark.length + suffix.length}ch;`,
+            } }));
+          } else if (matches) {
+            // first line
+            const [, prefix, mark, suffix] = matches;
+            builder.add(line.from, line.from,  Decoration.line({ attributes: {
+              class: style.class,
+              style: `--cm-indent: ${prefix.length}ch; --cm-mark: ${mark.length + suffix.length}ch;`,
             } }));
           }
         }

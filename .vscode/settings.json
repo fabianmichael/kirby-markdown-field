@@ -1,0 +1,20 @@
+{
+  "[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    }
+  },
+  "search.exclude": {
+    "**/package-lock.json": true,
+    "**/composer.lock": true,
+    "**/yarn.lock": true,
+    "**/vendor/**": true
+  },
+  "css.validate": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  }
+}

@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <nav class="k-markdown-toolbar">
     <!-- <div class="k-markdown-toolbar-wrapper"> -->
@@ -45,7 +46,7 @@
             :key="buttonIndex"
             :icon="button.icon"
             :title="button.label"
-            :class="(isDisabled() ? 'is-disabled ' : '') + (isActive() || (name === 'invisibles' && invisibles) ? 'is-active ' : '') + 'k-markdown-toolbar-button' + (button.align === 'right' ? ' k-markdown-toolbar-button-right' : '')"
+            :class="(isDisabled() ? 'is-disabled ' : '') + (isActive() || (name === 'invisibles' && invisibles) ? 'is-active ' : '') + 'k-markdown-toolbar-button' + (button.align === 'right' ? ' k-markdown-toolbar-button-right' : '')"
             tabindex="-1"
             @click="button.command"
           />
@@ -75,7 +76,7 @@ export default {
   computed: {
     layout() {
       // ensure, that invisibles item always comes last
-      let layout = this.buttons.sort((a, b) => {
+      let layout = this.buttons.toSorted((a, b) => {
         if (a.name === "invisibles") return 1;
         if (b.name === "invisibles") return -1;
         return 0;

@@ -10,10 +10,17 @@
   },
   "scripts": {
     "dev": "kirbyup src/index.js --watch",
-    "build": "kirbyup src/index.js"
+    "build": "kirbyup src/index.js",
+    "lint": "eslint \"src/**/*.{js,vue}\"",
+		"lint:fix": "npm run lint -- --fix",
+    "format": "prettier --write \"src/**/*.{js,vue}\""
   },
   "devDependencies": {
-    "kirbyup": "^2.0.1"
+    "kirbyup": "^2.0.1",
+    "eslint": "^8.52.0",
+		"eslint-config-prettier": "^9.0.0",
+		"eslint-plugin-vue": "^9.18.1",
+    "prettier": "^3.1.0"
   },
   "dependencies": {
     "@codemirror/commands": "^6.1.1",
@@ -24,5 +31,20 @@
     "@codemirror/view": "^6.3.0",
     "@lezer/highlight": "^1.1.1",
     "underscore": "^1.13.6"
-  }
+  },
+  "browserslist": [
+		"last 2 Android versions",
+		"last 2 Chrome versions",
+		"last 2 ChromeAndroid versions",
+		"last 2 Edge versions",
+		"last 2 Firefox versions",
+		"last 2 FirefoxAndroid versions",
+		"last 2 iOS versions",
+		"last 2 KaiOS versions",
+		"last 2 Safari versions",
+		"last 2 Samsung versions",
+		"last 2 Opera versions",
+		"last 2 OperaMobile versions",
+		"last 2 UCAndroid versions"
+	]
 }

@@ -79,8 +79,9 @@ export default class Link extends Button {
     const linkType = this.linkType(href);
 
     if (linkType === 'email') {
+      const email = href.replace(/^email:/, '');
+
       if (this.useKirbytext) {
-        const email = href.replace(/^email:/, '');
         const textAttr = hasText ? ` text: ${text}` : '';
         this.editor.insert(`(email: ${email}${textAttr})`);
       } else if (hasText) {
@@ -90,7 +91,7 @@ export default class Link extends Button {
       }
     } else {
       if (this.useKirbytext) {
-        const textAttr = hasText ? ` text: ${value.text}` : "";
+        const textAttr = hasText ? ` text: ${text}` : "";
         const targetAttr = target ? " target: _blank" : "";
         this.editor.insert(`(link: ${href}${textAttr}${targetAttr})`);
       } else if (hasText) {

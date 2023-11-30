@@ -57,17 +57,6 @@ import StrongEmphasis from "./Buttons/StrongEmphasis.js"
 import Extension from './Extension.js';
 
 export default {
-  data() {
-    return {
-      editor: Object,
-      skipNextInputEvent: false,
-      activeMarks: [],
-      isDragOver: false,
-      invisibles: false,
-      toolbarButtons: [],
-      active: [],
-    };
-  },
   props: {
     ...Field.props,
     hideToolbar: {
@@ -83,6 +72,17 @@ export default {
       type: String,
       default: "normal",
     }
+  },
+  data() {
+    return {
+      editor: Object,
+      skipNextInputEvent: false,
+      activeMarks: [],
+      isDragOver: false,
+      invisibles: false,
+      toolbarButtons: [],
+      active: [],
+    };
   },
   computed: {
     currentLanguage() {
@@ -104,7 +104,7 @@ export default {
     },
   },
   watch: {
-    value(newVal, oldVal) {
+    value(newVal) {
       if (newVal !== undefined && newVal !== this.editor.value) {
         // let scrollInfo = this.editor.getScrollInfo()
         // set the new value as the editor's content
@@ -280,7 +280,7 @@ export default {
       }
     },
 
-    insertUpload(files, response) {
+    insertUpload(files) {
       this.insertFile(files);
       this.$events.emit("model.update");
       this.skipNextInputEvent = true;
