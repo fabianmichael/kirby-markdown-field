@@ -40,7 +40,7 @@ return [
 		 * Sets the font family (sans or monospace)
 		 */
 		'font' => function (string $font = null) {
-			return 'sans-serif' === true ? 'sans-serif' : 'monospace';
+			return $font === 'sans-serif' ? 'sans-serif' : 'monospace';
 		},
 
 		/**

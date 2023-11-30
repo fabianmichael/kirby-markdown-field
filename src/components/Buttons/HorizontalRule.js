@@ -5,7 +5,7 @@ import { ltrim, rtrim } from "../Utils/strings.js";
 export default class HorizontalRule extends Button {
 	get button() {
 		return {
-			icon: "divider",
+			icon: "separator",
 			label: this.input.$t("markdown.toolbar.button.hr"),
 			command: this.command
 		};

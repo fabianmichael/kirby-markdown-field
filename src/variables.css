@@ -1,7 +1,7 @@
 .k-markdown-input-wrap {
   --cm-content-padding-y: .25rem;
   --cm-line-padding-x: var(--field-input-padding);
-  --cm-font-size: var(--text-base);
+  --cm-font-size: var(--input-font-size);
   --cm-font-family: var(--font-mono);
   --cm-line-height: 1.5;
   --cm-code-background: rgba(0, 0, 0, 0.05);
@@ -20,11 +20,6 @@
 
 .k-markdown-input-wrap[data-font-family="sans-serif"] {
   --cm-font-family: var(--font-sans);
-}
-
-.k-markdown-input-wrap[data-font-size="small"] {
-  --cm-font-size: var(--text-sm);
-  --cm-line-height: 1.5;
 }
 
 /* Handle disabled state like core textarea */
