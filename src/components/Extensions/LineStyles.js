@@ -32,7 +32,7 @@ function lineDeco(view, blockFormats) {
 				} else if (style.mark) {
 					matches = line.text.match(style.mark);
 
-					if (matches && style.multiLine && lastLine) {
+					/*if (matches && style.multiLine && lastLine) {
 						// continued block format without marker
 						matches = lastLine.matches;
 						const [, prefix, mark, suffix] = matches;
@@ -48,7 +48,7 @@ function lineDeco(view, blockFormats) {
 								}
 							})
 						);
-					} else if (matches) {
+					} else*/if (matches) {
 						// first line
 						const [, prefix, mark, suffix] = matches;
 						builder.add(
@@ -67,10 +67,10 @@ function lineDeco(view, blockFormats) {
 				}
 			}
 
-			lastLine = {
-				token: blockToken,
-				matches: matches
-			};
+			// lastLine = {
+			// 	token: blockToken,
+			// 	matches: matches
+			// };
 
 			pos = line.to + 1;
 		}
