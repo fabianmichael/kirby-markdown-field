@@ -18,7 +18,7 @@ Enhanced, extensible Markdown field for Kirby CMS. Now available in version 2!
 
 💡 **TL;DR:** The Markdown field, you all have been waiting for!
 
-![Screenshot of the editor field](https://github.com/fabianmichael/kirby-markdown-field/assets/395617/ea3bcc4e-72fd-4f62-9e3b-d245f7ad109b)
+![Screenshot of the editor field](https://github.com/fabianmichael/kirby-markdown-field/assets/395617/590ebc77-fe2e-46ae-98f4-e565f86fc82f)
 
 ## Overview
 
