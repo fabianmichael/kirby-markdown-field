@@ -1,17 +1,22 @@
 <template>
 	<k-field
-		:input="uid"
+		:input="_uid"
 		v-bind="$props"
 		:counter="counterOptions"
 		class="k-markdown-field"
 	>
 		<template #label>
-			<label class="k-field-label" @click="focus">
-				{{ label }}
-				<abbr v-if="required" :title="$t('field.required')">*</abbr>
-			</label>
+			<k-label
+				:input="_uid"
+				:required="required"
+				:title="label"
+				type="field"
+			>
+				<span @click="focus">
+					{{ label }}
+				</span>
+			</k-label>
 		</template>
-
 		<k-input
 			:id="_uid"
 			ref="input"
