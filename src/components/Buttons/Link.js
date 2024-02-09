@@ -12,6 +12,12 @@ export default class Link extends Button {
 	}
 
 	openDialog() {
+		const selection = this.editor.view.viewState.state.selection.main;
+		const contents = this.editor.view.viewState.state.sliceDoc(
+			selection.from,
+			selection.to
+		);
+
 		const fields = {
 			href: {
 				label: window.panel.$t("link"),
@@ -21,7 +27,8 @@ export default class Link extends Button {
 			},
 			text: {
 				label: window.panel.$t("link.text"),
-				type: "text"
+				type: "text",
+				placeholder: contents
 			}
 		};
 
@@ -36,23 +43,7 @@ export default class Link extends Button {
 		this.input.$panel.dialog.open({
 			component: "k-link-dialog",
 			props: {
-				fields: {
-					href: {
-						label: window.panel.$t("link"),
-						type: "link",
-						placeholder: window.panel.$t("url.placeholder"),
-						icon: "url"
-					},
-					text: {
-						label: window.panel.$t("link.text"),
-						type: "text"
-					},
-					target: {
-						label: window.panel.$t("open.newWindow"),
-						type: "toggle",
-						text: [window.panel.$t("no"), window.panel.$t("yes")]
-					}
-				},
+				fields,
 				value: ""
 			},
 			on: {
@@ -60,7 +51,7 @@ export default class Link extends Button {
 				submit: (values) => {
 					this.input.$panel.dialog.close();
 					delete values.title;
-					values.text = values.text || null;
+					values.text = values.text || contents || null;
 					this.insertLink(values);
 				}
 			}
