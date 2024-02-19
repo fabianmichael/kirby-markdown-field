@@ -6,7 +6,7 @@ Enhanced, extensible Markdown field for Kirby CMS. Now available in version 2!
 
 - Sophisticated, but subtle highlighting for Markdown and Kirbytext
 - Context-based format toggling (almost WYSIWYG-like)
-- Smart indentation for wrapping headlines, list items and blockquotes
+- Smart indentation for wrapping headlines, list items, and blockquotes
 - Keyboard shortcuts for most actions
 - Custom toolbar buttons
 - Custom syntax highlights
@@ -22,7 +22,7 @@ Enhanced, extensible Markdown field for Kirby CMS. Now available in version 2!
 
 ## Overview
 
-> This plugin is completely free and published under the MIT license. However, if you are using it in a commercial project and want to help me keep up with maintenance, please consider to **[❤️ sponsor me](https://github.com/sponsors/fabianmichael)** for securing the continued development of the plugin.
+> This plugin is completely free and published under the MIT license. However, if you are using it in a commercial project and want to help me keep up with maintenance, please consider **[❤️ sponsoring me](https://github.com/sponsors/fabianmichael)** for securing the continued development of the plugin.
 
 ## Table of Contents
 
@@ -65,7 +65,7 @@ Alternatively, download and copy this repository to `/site/plugins/markdown-fiel
 
 ## 2. Setup
 
-This field can replace any `textarea` field you have set up, and works out of the box with as little config as:
+This field can replace any `textarea` field you have set up and works out of the box with as little config as:
 
 ```yaml
 editor:
@@ -87,15 +87,15 @@ You have access to the very same options as [the textarea field](https://getkirb
 
 ### 3.2. Font settings
 
-You can choose between monospace (`monospace`) and sans-serif (`sans`) font. The monospace font offers a more sophisticated layout with indentation for multiline list elements, headings and blockquote – things, which would be much harder to implement (and slower to calculate) for a proportional font.
+You can choose between monospace (`monospace`) and sans-serif (`sans`) font. The monospace font offers a more sophisticated layout with indentation for multiline list elements, headings, and blockquote – things, which would be much harder to implement (and slower to calculate) for a proportional font.
 
 While the sans-serif might be more appealing to non-technical writers at first, the monospace should be the preferred version in most cases.
 
 ### 3.3. Buttons
 
-This field is packing the usual [textarea](https://getkirby.com/docs/reference/panel/fields/textarea) buttons, and many more.
+This field is packing the usual [textarea](https://getkirby.com/docs/reference/panel/fields/textarea) buttons and many more.
 
-`headlines` can contain the whole range of headings from `h1` to `h6`, and therefore accepts an array of allowed leves (default is `h1, h2, h3`). Use `headlines` as key in this case:
+`headlines` can contain the whole range of headings from `h1` to `h6`, and therefore accepts an array of allowed levels (default is `h1, h2, h3`). Use `headlines` as key in this case:
 
 ```yaml
 buttons:
@@ -129,13 +129,13 @@ buttons: false
 The full list of available buttons. As you can see, some buttons can also have
 configuration options. Take the `bold` button for example. Markdown allows different
 syntaxes for bold text, i.e. `__bold__` and `**bold**`. The editor’s syntax highlighter
-will always recognize both, but you can adjust, what the editor will use, when
-you click the toolbar button or hitting the respective keyboard shortcut.
+will always recognize both, but you can adjust, what the editor will use when
+you click the toolbar button or by hitting the respective keyboard shortcut.
 
-For the `link` and `pagelink` buttons, you can specify whether these thould insert
-`markdown` or `kirbytext` markup. By default, this will be determed by the
+For the `link` and `pagelink` buttons, you can specify whether these should insert
+`markdown` or `kirbytext` markup. By default, this will be determined by the
 [`kirbytext`](https://getkirby.com/docs/reference/system/options/kirbytext) option by
-default but can be overriden on a per-button basis.
+default but can be overridden on a per-button basis.
 
 All button configuration is optional, you can always use `- ul` instead of `ul: -`,
 if you want to stick to the default settings.
@@ -229,7 +229,7 @@ pages:
 
 ### 3.6. Size
 
-You can define the height of the field when empty. Default is `two-lines`, which mimics the textarea's default empty height.
+You can define the height of the field when empty. The default is `two-lines`, which mimics the textarea's default empty height.
 
 If you want the field to mimic a text field but with some markdown highlighting on top of it, set the size to `one-line` and `buttons: false`.
 
@@ -260,11 +260,11 @@ Then in your `panel.css`:
 
 ## 4. Extension API
 
-The API has changed from version 1, old plugins are not compatible any more and require a few adjustments. See `extension-examples` folder.
+The API has changed from version 1, old plugins are not compatible anymore and require a few adjustments. See `extension-examples` folder.
 
 There are two types of extensions, which allow you to extend the editor to adjust it better to your specific needs:
 
-- **Custom buttons:** You can define your own buttons, which can be added to the editor toolbar. Buttons can define keyboard shortcuts, displays dropdowns and even show a popup.
+- **Custom buttons:** You can define your own buttons, which can be added to the editor toolbar. Buttons can define keyboard shortcuts, display dropdowns, and even show a popup.
 - **Custom extensions:** You can define your own editor extensions. An example can be found in the `extension-examples/indent-with-tab` folder.
 - **Custom highlights:** You can define regex-based custom highlights, which allow you to highlight any text, such as markup for custom syntax (e.g. global text snippets or Wiki-style links)
 
@@ -311,11 +311,11 @@ npm run dev
 npm run build
 ```
 
-> You **must** run the build process before pushing the repo, else the hot-reload code will prevent it to work in any install.
+> You **must** run the build process before pushing the repo, or else the hot-reload code will prevent it from working in any install.
 
 ## 7. Migrating from Version 1
 
-- Setting available **headline levels** now work a bit differently, see [3.3. Buttons](#33-buttons). This was necessary to allow for multiple, configurable dropdowns in the future/extensions.
+- Setting available **headline levels** now works a bit differently, see [3.3. Buttons](#33-buttons). This was necessary to allow for multiple, configurable dropdowns in the future/extensions.
 - The `horizontal-rule` button was renamed to `hr`.
 - The `modals` option has been removed. Clicking the link button will always display a modal.
 - The `link` and `email` buttons have been merged into a single popup.
@@ -328,20 +328,20 @@ npm run build
 
 ## 8. Known Issues
 
-- **Kirbytags:** In some edge-cases with nested parenthesis or nested Kirbytags, the highlighting can differ from how Kirby parses the markup. This shouldn’t not be an issue for most daily use-cases. You can also not have multiple consecutive line breaks within Kirbytags, or the highlighter will fail. This is because of the way of how Markdown makes a clear separation between block and inline elements.
+- **Kirbytags:** In some edge cases with nested parenthesis or nested Kirbytags, the highlighting can differ from how Kirby parses the markup. This shouldn’t be an issue for most daily use cases. You can also not have multiple consecutive line breaks within Kirbytags, or the highlighter will fail. This is because of the way Markdown makes a clear separation between block and inline elements.
 - **Kirbytags in HTML blocks** are not highlighted, because CodeMirror uses its own HTML Parser for that, which deactivates all Markdown highlighting within these. Parsedown Extra supports the `markdown="1"` attribute on HTML block-level elements, which is not supported by CodeMirror’s Markdown parser.
-- **Inline Format toggling:** The selection will sometimes in unexpected ways, when dealing with very complex re-formatting. Solving this would need a more sophisticated selection/caret-tracking during all transformations. IMHO, it still works better than in most other Markdown editors and does not lead to data-loss, so ¯\\\_(ツ)\_/¯.
+- **Inline Format toggling:** The selection will sometimes behave in unexpected ways when dealing with very complex re-formatting. Solving this would need a more sophisticated selection/caret-tracking during all transformations. IMHO, it still works better than in most other Markdown editors and does not lead to data loss, so ¯\\\_(ツ)\_/¯.
 
 ## 9. What’s not supported (and never will be)
 
-They way how Markdown is used nowadays has changed since its inception, especially since GFM ("GitHub-Flavored Markdown") became popular and added some elements to the language.
+The way Markdown is used nowadays has changed since its inception, especially since GFM ("GitHub-Flavored Markdown") became popular and added some elements to the language.
 
-- **Setext-style headings:** If you don’t know what these are, just forget about them. There is basic highlighting, but they are neither recognized as headings by the toolbar, nor respected when changing formats. Use ATX-style headings instead (e.g. `## Heading Level 2`).
+- **Setext-style headings:** If you don’t know what these are, just forget about them. There is basic highlighting, but they are neither recognized as headings by the toolbar nor respected when changing formats. Use ATX-style headings instead (e.g. `## Heading Level 2`).
 - **Indended code blocks:** Use fenced code blocks instead.
 
 ## 10. License
 
-MIT (but you are highly encouraged to **[❤️ sponsor me](https://github.com/sponsors/fabianmichael)**, if this piece of software helps you to pay your bills).
+MIT (but you are highly encouraged to **[❤️ sponsor me](https://github.com/sponsors/fabianmichael)** if this piece of software helps you to pay your bills).
 
 ## 11. Credits
 
