@@ -1,5 +1,5 @@
 .k-markdown-input-wrap {
-  --cm-content-padding-y: .25rem;
+  --cm-content-padding-y: 0.25rem;
   --cm-line-padding-x: var(--field-input-padding);
   --cm-font-size: var(--input-font-size);
   --cm-font-family: var(--font-mono);
@@ -8,53 +8,59 @@
   --cm-color-meta: var(--color-gray-500);
   --cm-color-light-gray: rgba(0, 0, 0, 0.1);
   --cm-selection-background: hsla(195, 80%, 40%, 0.16);
-  --cm-color-special-char: #df5f5f;
+  --cm-color-special-char: light-dark(
+    #df5f5f,
+    hsl(from #df5f5f h s calc(l + 10))
+  );
   --cm-color-cursor: #5588ca;
   --cm-color-highlight-background: rgba(255, 230, 0, 0.4); /* #fdc500; */
-  --cm-kirbytag-background: rgba(66, 113, 174, 0.1);
-  --cm-kirbytag-underline: rgba(66, 113, 174, 0.3);
+  --cm-kirbytag-background: light-dark(
+    rgba(66, 113, 174, 0.1),
+    hsl(from var(--color-blue-400) h s l / 0.25)
+  );
+  --cm-kirbytag-underline: light-dark(var(--color-blue-600), var(--color-text));
   --cm-min-lines: 2;
 }
 
 /* Font settings */
 
-.k-markdown-input-wrap[data-font-family="sans-serif"] {
+.k-markdown-input-wrap[data-font-family='sans-serif'] {
   --cm-font-family: var(--font-sans);
 }
 
 /* Handle disabled state like core textarea */
 
-.k-input[data-type="markdown"][data-disabled="true"] {
+.k-input[data-type='markdown'][data-disabled='true'] {
   border: var(--field-input-border) !important;
   box-shadow: none !important;
 }
 
-.k-input[data-type="markdown"][data-disabled="true"] .cm-cursor {
+.k-input[data-type='markdown'][data-disabled='true'] .cm-cursor {
   display: none !important;
 }
 
 /* Editor min-height */
 
-.k-markdown-input-wrap[data-size="one-line"] {
+.k-markdown-input-wrap[data-size='one-line'] {
   --cm-min-lines: 1;
 }
 
-.k-markdown-input-wrap[data-size="two-lines"] {
+.k-markdown-input-wrap[data-size='two-lines'] {
   --cm-min-lines: 2;
 }
 
-.k-markdown-input-wrap[data-size="small"] {
+.k-markdown-input-wrap[data-size='small'] {
   --cm-min-lines: 4;
 }
 
-.k-markdown-input-wrap[data-size="medium"] {
+.k-markdown-input-wrap[data-size='medium'] {
   --cm-min-lines: 8;
 }
 
-.k-markdown-input-wrap[data-size="large"] {
+.k-markdown-input-wrap[data-size='large'] {
   --cm-min-lines: 16;
 }
 
-.k-markdown-input-wrap[data-size="huge"] {
+.k-markdown-input-wrap[data-size='huge'] {
   --cm-min-lines: 24;
 }
