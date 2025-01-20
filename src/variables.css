@@ -4,16 +4,26 @@
   --cm-font-size: var(--input-font-size);
   --cm-font-family: var(--font-mono);
   --cm-line-height: 1.5;
-  --cm-code-background: rgba(0, 0, 0, 0.05);
-  --cm-color-meta: var(--color-gray-500);
-  --cm-color-light-gray: rgba(0, 0, 0, 0.1);
-  --cm-selection-background: hsla(195, 80%, 40%, 0.16);
+  --cm-code-background: light-dark(
+    rgb(from black r g b / 0.05),
+    rgb(from white r g b / 0.1)
+  );
+  --cm-color-meta: light-dark(var(--color-gray-500), var(--color-gray-600));
+  --cm-color-light-gray: light-dark(
+    rgb(from black r g b / 0.1),
+    rgb(from white r g b / 0.1)
+  );
+  --cm-selection-background: Highlight;
+  --cm-selection-text: HighlightText;
   --cm-color-special-char: light-dark(
     #df5f5f,
-    hsl(from #df5f5f h s calc(l + 10))
+    hsl(from #df5f5f h s calc(l + 15) / 0.7)
   );
-  --cm-color-cursor: #5588ca;
-  --cm-color-highlight-background: rgba(255, 230, 0, 0.4); /* #fdc500; */
+  --cm-color-cursor: var(--color-focus);
+  --cm-color-highlight-background: light-dark(
+    rgb(from #fdc500 r g b / 0.4),
+    rgb(from #fdc500 r g b / 0.2)
+  );
   --cm-kirbytag-background: light-dark(
     rgba(66, 113, 174, 0.1),
     hsl(from var(--color-blue-400) h s l / 0.25)

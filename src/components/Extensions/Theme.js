@@ -12,7 +12,8 @@ function theme () {
       },
 
       '&.focused ::selection': {
-        background: 'var(--cm-selection-background)'
+        background: 'var(--cm-selection-background)',
+        color: 'var(--cm-selection-text)'
       },
 
       '.cm-scroller': {
