@@ -20,9 +20,8 @@
     <div
       ref="input"
       class="k-markdown-input"
-      @dragenter="onDragEnter"
-      @dragover="onDragOver"
-      @dragleave="onDragLeave"
+      @dragover="onOver"
+      @dragleave="onOut"
       @drop="onDrop"
       @keydown.meta.enter="onSubmit"
       @keydown.ctrl.enter="onSubmit"
@@ -72,6 +71,7 @@ export default {
       default: "normal"
     }
   },
+  emits: ["input"],
   data() {
     return {
       editor: Object,
@@ -132,14 +132,13 @@ export default {
           this.active = active;
         },
         update: async (value) => {
-          if (this.$refs.toolbar) {
-            this.$refs.toolbar.closeDropdowns();
-          }
+          this.$refs.toolbar?.closeDropdowns();
 
           if (this.skipNextInputEvent) {
             this.skipNextInputEvent = false;
             return;
           }
+
           this.$emit("input", value);
         },
         invisibles: (value) => {
@@ -337,16 +336,12 @@ export default {
       }
     },
 
-    onDragLeave() {
+    onOut() {
       this.$refs.input.blur();
       this.isDragOver = false;
     },
 
-    onDragOver() {
-      this.isDragOver = true;
-    },
-
-    onDragEnter($event) {
+    onOver($event) {
       // drag & drop for files
       if (this.uploads && this.$helper.isUploadEvent($event)) {
         $event.dataTransfer.dropEffect = "copy";
@@ -355,8 +350,7 @@ export default {
         return;
       }
       // drag & drop for text
-      const drag = this.$store.state.drag;
-      if (drag && drag.type === "text") {
+      if (this.$panel.drag?.type === "text") {
         $event.dataTransfer.dropEffect = "copy";
         this.focus();
         this.isDragOver = true;

@@ -86,9 +86,8 @@ function highlightURLs (extension, view) {
               // external image/file
               attributes = { 'data-url': url }
             } else if (!url.includes('/')) {
-              // on same page
-              const api = extension.input.$store.getters['content/model']().api
-              attributes = { 'data-panel-url': `${api}/files/${url}` }
+              const base = extension.input.$panel.view.url()
+              attributes = { 'data-panel-url': `${base}/files/${url}` }
             } else {
               // other page
               const lastIndex = url.lastIndexOf('/')
