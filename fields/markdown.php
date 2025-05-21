@@ -39,7 +39,7 @@ return [
 		/**
 		 * Sets the font family (sans or monospace)
 		 */
-		'font' => function (string $font = null) {
+		'font' => function (?string $font = null) {
 			return $font === 'sans-serif' ? 'sans-serif' : 'monospace';
 		},
 
@@ -67,11 +67,11 @@ return [
 		 * Sets the custom query for the page selector dialog.
 		 * @deprecated Use `pages` instead
 		 */
-		'query' => function ($query = null) {
+		'query' => function (?string $query = null) {
 			return $query;
 		},
 
-		'info' => function ($info = null) {
+		'info' => function (?string $info = null) {
 			return $info;
 		},
 
@@ -117,7 +117,7 @@ return [
 			[
 				'pattern' => ['files', '(:any)/files'],
 				'method' => 'GET',
-				'action' => function ($button = null) {
+				'action' => function (?string $button = null) {
 					$field = $this->field();
 
 					$params = $field->files();
@@ -141,7 +141,7 @@ return [
 			[
 				'pattern' => ['upload', '(:any)/upload'],
 				'method' => 'POST',
-				'action' => function ($button = null) {
+				'action' => function (?string $button = null) {
 					$field   = $this->field();
 					$uploads = $field->uploads();
 
