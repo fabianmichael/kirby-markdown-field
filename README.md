@@ -29,33 +29,35 @@ Enhanced, extensible Markdown field for Kirby CMS. Now available in version 2!
 - [Markdown Field for Kirby](#markdown-field-for-kirby)
   - [Overview](#overview)
   - [Table of Contents](#table-of-contents)
-  - [1. Installation](#1-installation)
-  - [2. Setup](#2-setup)
-  - [3. Options](#3-options)
-    - [3.1. Available options](#31-available-options)
+  - [1 Installation](#1-installation)
+  - [2 Setup](#2-setup)
+  - [3 Options](#3-options)
+    - [2.1 Available options](#21-available-options)
     - [3.2. Font settings](#32-font-settings)
-    - [3.3. Buttons](#33-buttons)
-    - [3.4. Keyboard Shortcuts](#34-keyboard-shortcuts)
+    - [3.3 Buttons](#33-buttons)
+    - [3.4 Keyboard Shortcuts](#34-keyboard-shortcuts)
       - [Block Formats](#block-formats)
       - [Inline Formats](#inline-formats)
       - [Other](#other)
     - [URLs](#urls)
-    - [3.5. Pages](#35-pages)
-    - [3.6. Size](#36-size)
-  - [4. Extension API](#4-extension-api)
-    - [4.1 Custom options for pages, files, and uploads](#41-custom-options-for-pages-files-and-uploads)
-  - [5. Development](#5-development)
-  - [7. Migrating from Version 1](#7-migrating-from-version-1)
-  - [8. Known Issues](#8-known-issues)
-  - [9. What’s not supported (and never will be)](#9-whats-not-supported-and-never-will-be)
-  - [10. License](#10-license)
-  - [11. Credits](#11-credits)
+    - [3.5 Size](#35-size)
+  - [4 Extension API](#4-extension-api)
+    - [4.1 Custom options for files, and uploads](#41-custom-options-for-files-and-uploads)
+  - [5 Development](#5-development)
+  - [Migration Guide](#migration-guide)
+  - [From version 2 to 3](#from-version-2-to-3)
+  - [From version 1 to 2](#from-version-1-to-2)
+  - [8 Known Issues](#8-known-issues)
+  - [9 What’s not supported (and never will be)](#9-whats-not-supported-and-never-will-be)
+  - [10 License](#10-license)
+  - [11 Credits](#11-credits)
+
 
 ****
 
-## 1. Installation
+## 1 Installation
 
-This version of the plugin requires PHP 8.1 and Kirby 4.0.0 or higher. The recommended way of installing is by using Composer:
+This version of the plugin requires PHP 8.3 and Kirby 5.0.0 or higher. The recommended way of installing is by using Composer:
 
 ```
 $ composer require fabianmichael/kirby-markdown-field
@@ -63,7 +65,7 @@ $ composer require fabianmichael/kirby-markdown-field
 
 Alternatively, download and copy this repository to `/site/plugins/markdown-field`
 
-## 2. Setup
+## 2 Setup
 
 This field can replace any `textarea` field you have set up and works out of the box with as little config as:
 
@@ -73,16 +75,15 @@ editor:
   type: markdown
 ```
 
-## 3. Options
+## 3 Options
 
-### 3.1. Available options
+### 2.1 Available options
 
 You have access to the very same options as [the textarea field](https://getkirby.com/docs/reference/panel/fields/textarea), and a few more:
 
 | Option | Type   | Required | Default                | Description                                        |
 |:-------|:-------|:---------|:-----------------------|:---------------------------------------------------|
 | font   | string | `false`  | `monospace`            | Sets the font family (`sans-serif` or `monospace`) |
-| pages  | Object | `false`  | [see below](#35-pages) | Sets a custom query for the page selector dialog   |
 | size   | String | `false`  | `small`                | Sets the empty height of the Markdown field        |
 
 ### 3.2. Font settings
@@ -91,7 +92,7 @@ You can choose between monospace (`monospace`) and sans-serif (`sans`) font. The
 
 While the sans-serif might be more appealing to non-technical writers at first, the monospace should be the preferred version in most cases.
 
-### 3.3. Buttons
+### 3.3 Buttons
 
 This field is packing the usual [textarea](https://getkirby.com/docs/reference/panel/fields/textarea) buttons and many more.
 
@@ -115,7 +116,6 @@ buttons:
   - blockquote
   - hr
   - strikethrough
-  - pagelink
   - footnote
 ```
 
@@ -132,7 +132,7 @@ syntaxes for bold text, i.e. `__bold__` and `**bold**`. The editor’s syntax hi
 will always recognize both, but you can adjust, what the editor will use when
 you click the toolbar button or by hitting the respective keyboard shortcut.
 
-For the `link` and `pagelink` buttons, you can specify whether these should insert
+For the `link` button, you can specify whether these should insert
 `markdown` or `kirbytext` markup. By default, this will be determined by the
 [`kirbytext`](https://getkirby.com/docs/reference/system/options/kirbytext) option by
 default but can be overridden on a per-button basis.
@@ -151,7 +151,6 @@ buttons:
     - h6
   bold: ** # or `__`
   link: null # or `markdown` or `kirbytext`
-  pagelink: null # or `markdown` or `kirbytext`
   italic: * # or `_`
   - strikethrough
   - code
@@ -163,14 +162,13 @@ buttons:
   hr: *** # or `---`/`___`
   - strikethrough
   - highlight # textmarker (not supported by Kirby’s default markdown parser.)
-  - pagelink
   - file
   - footnote
   - invisibles
   - divider # can be used multiple times
 ```
 
-### 3.4. Keyboard Shortcuts
+### 3.4 Keyboard Shortcuts
 
 ℹ️ Keyboard shortcuts are only available for those buttons/heading levels enabled in the toolbar.
 
@@ -210,24 +208,7 @@ buttons:
 
 - When you select some text and paste a URL, it will automatically create a link tag and use the current selection as link text.
 
-### 3.5. Pages
-
-You can limit the options shown in the Pagelink dialog, by setting the `pages` option with a query (if unset, you'll be able to browse the entire website tree)
-
-```yaml
-pages: kirby.page('my-page').children
-```
-
-You can also set the `pages` option to an object with other properties from [the pages field](https://getkirby.com/docs/reference/panel/fields/pages) such as info and text
-
-```yaml
-pages:
-  query: kirby.page('my-page').children
-  info: "{{ page.tags }}"
-  text: "{{ page.title.upper }}"
-```
-
-### 3.6. Size
+### 3.5 Size
 
 You can define the height of the field when empty. The default is `two-lines`, which mimics the textarea's default empty height.
 
@@ -258,7 +239,7 @@ Then in your `panel.css`:
 }
 ```
 
-## 4. Extension API
+## 4 Extension API
 
 The API has changed from version 1, old plugins are not compatible anymore and require a few adjustments. See `extension-examples` folder.
 
@@ -268,14 +249,13 @@ There are two types of extensions, which allow you to extend the editor to adjus
 - **Custom extensions:** You can define your own editor extensions. An example can be found in the `extension-examples/indent-with-tab` folder.
 - **Custom highlights:** You can define regex-based custom highlights, which allow you to highlight any text, such as markup for custom syntax (e.g. global text snippets or Wiki-style links)
 
-### 4.1 Custom options for pages, files, and uploads
+### 4.1 Custom options for files, and uploads
 
 Your extension can use a special endpoint to extend the base options for pages, files, and uploads with parameters set in the button configuration. See an example in the `extension-examples/custom-pagelink` folder.
 
 
 ```js
 // special routes to read options from the button configuration
-this.input.endpoints.field + "/myextension/pages"
 this.input.endpoints.field + "/myextension/uploads"
 this.input.endpoints.field + "/myextension/files"
 ```
@@ -287,8 +267,6 @@ text:
   type: markdown
   files:
     […]
-  pages:
-    […]
   buttons:
     myextension:
       pages:
@@ -296,7 +274,7 @@ text:
         info: "{{ page.tags }}"
 ```
 
-## 5. Development
+## 5 Development
 
 - Clone the repo
 - `cd` to your newly created folder (named `kirby-markdown-field`, or whatever you have chosen)
@@ -313,9 +291,15 @@ npm run build
 
 > You **must** run the build process before pushing the repo, or else the hot-reload code will prevent it from working in any install.
 
-## 7. Migrating from Version 1
+## Migration Guide
 
-- Setting available **headline levels** now works a bit differently, see [3.3. Buttons](#33-buttons). This was necessary to allow for multiple, configurable dropdowns in the future/extensions.
+## From version 2 to 3
+
+- The `pagelink` button was removed in favor of a generic `link` button that supports all link types
+
+## From version 1 to 2
+
+- Setting available **headline levels** now works a bit differently, see [3.3 Buttons](#33-buttons). This was necessary to allow for multiple, configurable dropdowns in the future/extensions.
 - The `horizontal-rule` button was renamed to `hr`.
 - The `modals` option has been removed. Clicking the link button will always display a modal.
 - The `link` and `email` buttons have been merged into a single popup.
@@ -326,24 +310,24 @@ npm run build
 - The global field options have been removed. Use field presets instead. (see <https://getkirby.com/docs/guide/blueprints/extending-blueprints#reusing-and-extending-single-fields>).
 - The `direction` option has been removed. CodeMirror 6 automatically determines the current text direction of the panel.
 
-## 8. Known Issues
+## 8 Known Issues
 
 - **Kirbytags:** In some edge cases with nested parenthesis or nested Kirbytags, the highlighting can differ from how Kirby parses the markup. This shouldn’t be an issue for most daily use cases. You can also not have multiple consecutive line breaks within Kirbytags, or the highlighter will fail. This is because of the way Markdown makes a clear separation between block and inline elements.
 - **Kirbytags in HTML blocks** are not highlighted, because CodeMirror uses its own HTML Parser for that, which deactivates all Markdown highlighting within these. Parsedown Extra supports the `markdown="1"` attribute on HTML block-level elements, which is not supported by CodeMirror’s Markdown parser.
 - **Inline Format toggling:** The selection will sometimes behave in unexpected ways when dealing with very complex re-formatting. Solving this would need a more sophisticated selection/caret-tracking during all transformations. IMHO, it still works better than in most other Markdown editors and does not lead to data loss, so ¯\\\_(ツ)\_/¯.
 
-## 9. What’s not supported (and never will be)
+## 9 What’s not supported (and never will be)
 
 The way Markdown is used nowadays has changed since its inception, especially since GFM ("GitHub-Flavored Markdown") became popular and added some elements to the language.
 
 - **Setext-style headings:** If you don’t know what these are, just forget about them. There is basic highlighting, but they are neither recognized as headings by the toolbar nor respected when changing formats. Use ATX-style headings instead (e.g. `## Heading Level 2`).
 - **Indended code blocks:** Use fenced code blocks instead.
 
-## 10. License
+## 10 License
 
 MIT (but you are highly encouraged to **[❤️ sponsor me](https://github.com/sponsors/fabianmichael)** if this piece of software helps you to pay your bills).
 
-## 11. Credits
+## 11 Credits
 
 **Text editor:**
 
