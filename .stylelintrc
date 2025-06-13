@@ -1,0 +1,66 @@
+{
+	"extends": "stylelint-config-standard",
+	"plugins": ["stylelint-order"],
+	"rules": {
+		"property-no-vendor-prefix": null,
+		"declaration-block-no-redundant-longhand-properties": null,
+		"custom-property-pattern": null,
+		"number-max-precision": null,
+		"value-keyword-case": null,
+		"no-invalid-position-at-import-rule": null,
+		"custom-property-empty-line-before": null,
+		"import-notation": "string",
+		"length-zero-no-unit": null,
+		"comment-empty-line-before": [
+			"always",
+			{
+				"except": ["first-nested"],
+				"ignore": ["after-comment", "stylelint-commands"]
+			}
+		],
+		"at-rule-no-unknown": [
+			true,
+			{
+				"ignoreAtRules": [
+					"theme"
+				]
+			}
+		],
+		"no-descending-specificity": null,
+		"selector-attribute-quotes": "always",
+		"selector-class-pattern": "[a-z][a-z0-9-]*(__[a-z][a-z0-9]*)?",
+		"declaration-empty-line-before": [
+			"always",
+			{
+				"except": ["after-comment", "after-declaration", "first-nested"]
+			}
+		],
+		"function-url-quotes": "always",
+		"function-no-unknown": [
+			true,
+			{
+				"ignoreFunctions": ["theme"]
+			}
+		],
+		"at-rule-empty-line-before": [
+			"always",
+			{
+				"except": [
+					"first-nested",
+					"blockless-after-same-name-blockless",
+					"blockless-after-blockless"
+				]
+			}
+		],
+		"media-query-no-invalid": [
+			true,
+			{
+				"ignoreFunctions": ["theme"]
+			}
+		],
+		"declaration-block-single-line-max-declarations": 2,
+		"order/order": ["custom-properties", "declarations"],
+		"order/properties-alphabetical-order": true,
+		"font-family-name-quotes": "always-unless-keyword"
+	}
+}
