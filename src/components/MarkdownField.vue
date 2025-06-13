@@ -85,6 +85,10 @@ export default {
       type: [Boolean, Object, Array],
       default: true
     },
+    formData: {
+      type: Object,
+      default: () => ({}),
+    },
     value: String
   }
 };

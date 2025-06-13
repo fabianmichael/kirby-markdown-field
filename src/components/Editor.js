@@ -161,6 +161,10 @@ export default class Editor extends Emitter {
       parent: this.options.element,
       readOnly: this.options.readOnly,
       dispatch: (...transaction) => {
+        if (transaction.selection) {
+          this.emit('selectionchange', transaction.selection.main)
+        }
+
         this.view.update(transaction)
 
         const value = this.view.state.doc.toString()
@@ -227,21 +231,8 @@ export default class Editor extends Emitter {
     return false
   }
 
-  restoreSelectionCallback () {
-    // store selection
-    const { anchor, head } = this.state.selection.main
-
-    // restore selection as `insert` method
-    // depends on it
-    return (fn) => {
-      setTimeout(() => {
-        this.view.dispatch({ selection: { anchor, head } })
-
-        if (fn) {
-          fn()
-        }
-      })
-    }
+  setSelection (selection) {
+    this.view.dispatch({ selection })
   }
 
   get state () {

@@ -30,19 +30,20 @@
 /* Blockquote */
 .k-markdown-input .cm-blockquote {
   --cm-line-indent: var(--cm-indent, 0);
+
+  margin-left: calc(var(--cm-line-padding-x));
   position: relative;
   text-indent: 0;
-  margin-left: calc(var(--cm-line-padding-x));
 }
 
 .k-markdown-input .cm-blockquote::before {
   background: var(--cm-color-light-gray);
   content: '';
   height: 100%;
+  left: 0;
   position: absolute;
   right: calc(100% + var(--cm-mark, 0) - 1.5ch);
   top: 0;
-  left: 0;
   width: 2px;
 }
 
@@ -105,8 +106,8 @@
 
 .k-markdown-input [class*=' cm-token-'],
 .k-markdown-input [class^='cm-token-'] {
-  background: var(--token-background, rgba(0, 0, 0, 0.05));
-  border: 0.0625em solid var(--token-border, rgba(0, 0, 0, 0.1));
+  background: var(--token-background, rgb(0 0 0 / 5%));
+  border: 0.0625em solid var(--token-border, rgb(0 0 0 / 10%));
   border-radius: 0.125em;
   color: var(--color-text, #000);
   margin: -0.125em -0.0625em;
@@ -120,13 +121,13 @@
 
 /* https://github.com/getkirby/getkirby.com/blob/master/src/scss/variables.scss */
 .k-markdown-input .cm-token-red {
-  --token-background: rgba(255, 0, 0, 0.12);
-  --token-border: rgba(255, 0, 0, 0.25);
+  --token-background: rgb(255 0 0 / 12%);
+  --token-border: rgb(255 0 0 / 25%);
 }
 
 .k-markdown-input .cm-token-purple {
-  --token-background: hsla(285, 44%, 50%, 0.17);
-  --token-border: hsla(285, 44%, 50%, 0.4);
+  --token-background: hsl(285deg 44% 50% / 17%);
+  --token-border: hsl(285deg 44% 50% / 40%);
 }
 
 /**
@@ -144,9 +145,9 @@
  **/
 .k-markdown-input .cm-invisible-char[data-code='32'] {
   background-image: url("data:image/svg+xml,%3Csvg width='9' height='9' viewBox='0 0 9 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='4.5' cy='4.5' r='1.25' fill='%23DF5F5F'/%3E%3C/svg%3E");
-  background-size: 1ch 1ch;
   background-position: left center;
   background-repeat: repeat-x;
+  background-size: 1ch 1ch;
 
   /* background:
     radial-gradient(
@@ -157,6 +158,7 @@
     left calc(50% + .0625em) / 1ch 1ch repeat-x; */
   word-break: break-all; /* 1 */
 }
+
 /*
 .k-markdown-input .cm-invisible-char[data-code="32"]::after {
   content: "\200C";
@@ -276,6 +278,7 @@
 .k-block-container-type-markdown {
   padding: 0;
 }
+
 .k-block-type-markdown-input {
   background: none;
   border-radius: 0;
@@ -286,9 +289,10 @@
   height: auto;
   min-height: 38px;
 }
+
 .k-markdown-toolbar .k-toolbar-divider {
-  border: none;
   background-color: var(--toolbar-border);
+  border: none;
 }
 
 /* disabled state of toolbar buttons */
@@ -299,8 +303,8 @@
 
 /* Editor has focus */
 .k-markdown-input-wrap:focus-within .k-markdown-toolbar {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgb(0 0 0 / 10%);
+  box-shadow: 0 2px 5px rgb(0 0 0 / 5%);
   color: var(--color-text);
   left: 0;
   position: sticky;
@@ -308,15 +312,17 @@
   top: 0;
   z-index: 4;
 }
+
 .k-markdown-input-wrap:focus-within
   .k-markdown-toolbar
   .k-markdown-button.is-active {
   color: #3872be;
 }
+
 .k-markdown-input-wrap:focus-within
   .k-toolbar
   .k-markdown-button.is-active:hover {
-  background: rgba(66, 113, 174, 0.075);
+  background: rgb(66 113 174 / 7.5%);
 }
 
 /* Align invisibles button to the right of the toolbar */
@@ -329,11 +335,13 @@
 .k-markdown-toolbar .k-button.k-dropdown-item[aria-current='true'] {
   color: #8fbfff;
 }
+
 .k-markdown-toolbar .k-button-text {
   align-items: baseline;
   display: flex;
   justify-content: space-between;
 }
+
 .k-markdown-toolbar .k-button-text kbd {
   font-variant-numeric: tabular-nums;
   margin-left: 2.5rem;

@@ -75,10 +75,10 @@ export default {
   data() {
     return {
       editor: Object,
-      skipNextInputEvent: false,
       activeMarks: [],
       isDragOver: false,
       invisibles: false,
+      selection: null,
       toolbarButtons: [],
       active: []
     };
@@ -88,15 +88,14 @@ export default {
       return this.$language;
     },
     uploadOptions() {
-      const restoreSelection = this.editor.restoreSelectionCallback();
-
       return {
         url: this.$panel.urls.api + "/" + this.endpoints.field + "/upload",
         multiple: false,
         on: {
-          cancel: restoreSelection,
-          done: (files) => {
-            restoreSelection(() => this.insertUpload(files));
+          cancel: async () => await this.restoreSelection(),
+          done: async (files) => {
+            await this.restoreSelection()
+            await this.insertUpload(files);
           }
         }
       };
@@ -131,14 +130,11 @@ export default {
         active: (active) => {
           this.active = active;
         },
+        selectionchange: (selection) => {
+          this.selection = selection
+        },
         update: async (value) => {
           this.$refs.toolbar?.closeDropdowns();
-
-          if (this.skipNextInputEvent) {
-            this.skipNextInputEvent = false;
-            return;
-          }
-
           this.$emit("input", value);
         },
         invisibles: (value) => {
@@ -276,25 +272,33 @@ export default {
       return highlights.map((definition) => new Highlight(definition));
     },
 
+    async insert(text, scrollIntoView) {
+			this.focus();
+      console.log("insert", text, this.selection)
+      if (this.selection) {
+        this.editor.setSelection(this.selection)
+      }
+
+      this.editor.insert(text, scrollIntoView)
+
+      this.$emit("input", this.editor.value);
+    },
+
     /**
      * File handling
      */
     async insertFile(files) {
       if (files?.length > 0) {
-        const text = files.map((file) => file.dragText).join("\n\n");
-        this.editor.focus();
-        this.editor.insert(text);
+        await this.insert(files.map((file) => file.dragText).join("\n\n"));
       }
     },
 
-    insertUpload(files) {
-      this.insertFile(files);
-      this.$events.emit("model.update");
-      this.skipNextInputEvent = true;
+    async insertUpload(files) {
+      await this.insertFile(files);
+      await this.$panel.content.update();
     },
 
     file() {
-      const restoreSelection = this.editor.restoreSelectionCallback();
       this.$panel.dialog.open({
         component: "k-files-dialog",
         props: {
@@ -302,10 +306,12 @@ export default {
           multiple: false
         },
         on: {
-          cancel: restoreSelection,
-          submit: (file) => {
-            restoreSelection(() => this.insertFile(file));
+          cancel: async () => await this.restoreSelection(),
+          submit: async (file) => {
             this.$panel.dialog.close();
+            await this.restoreSelection();
+
+            await this.insertFile(file);
           }
         }
       });
@@ -355,7 +361,14 @@ export default {
         this.focus();
         this.isDragOver = true;
       }
-    }
+    },
+    async restoreSelection() {
+			if (this.selection) {
+				this.editor.setSelection(this.selection);
+			}
+
+			await this.$nextTick();
+		},
   }
 };
 </script>
