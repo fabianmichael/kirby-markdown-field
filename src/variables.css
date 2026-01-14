@@ -4,21 +4,13 @@
   --cm-font-size: var(--input-font-size);
   --cm-font-family: var(--font-mono);
   --cm-line-height: 1.5;
-  --cm-code-background: light-dark(
-    rgb(from black r g b / 0.05),
-    rgb(from white r g b / 0.1)
-  );
+  --cm-code-background: light-dark(rgb(from black r g b / 0.05), rgb(from white r g b / 0.1));
   --cm-color-meta: light-dark(var(--color-gray-500), var(--color-gray-600));
-  --cm-color-light-gray: light-dark(
-    rgb(from black r g b / 0.1),
-    rgb(from white r g b / 0.1)
-  );
+  --cm-color-link: light-dark(var(--color-gray-700), var(--color-gray-600));
+  --cm-color-light-gray: light-dark(rgb(from black r g b / 0.1), rgb(from white r g b / 0.1));
   --cm-selection-background: Highlight;
   --cm-selection-text: HighlightText;
-  --cm-color-special-char: light-dark(
-    #df5f5f,
-    hsl(from #df5f5f h s calc(l + 15) / 0.7)
-  );
+  --cm-color-special-char: light-dark(#df5f5f, hsl(from #df5f5f h s calc(l + 15) / 0.7));
   --cm-color-cursor: var(--color-focus);
   --cm-color-highlight-background: light-dark(
     rgb(from #fdc500 r g b / 0.4),

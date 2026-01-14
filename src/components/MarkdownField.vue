@@ -1,17 +1,7 @@
 <template>
-  <k-field
-    :input="_uid"
-    v-bind="$props"
-    :counter="counterOptions"
-    class="k-markdown-field"
-  >
+  <k-field :input="_uid" v-bind="$props" :counter="counterOptions" class="k-markdown-field">
     <template #label>
-      <k-label
-        :input="_uid"
-        :required="required"
-        :title="label"
-        type="field"
-      >
+      <k-label :input="_uid" :required="required" :title="label" type="field">
         <span @click="focus">
           {{ label }}
         </span>
@@ -30,66 +20,66 @@
 
 <script>
 export default {
-  extends: "k-textarea-field",
+  extends: 'k-textarea-field',
   props: {
     autofocus: {
       type: Boolean,
-      default: false
+      default: false,
     },
     blank: {
       type: Boolean,
-      default: false
+      default: false,
     },
     buttons: {
       type: [Boolean, Array],
-      default: true
+      default: true,
     },
     customHighlights: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     disabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
     endpoints: Object,
     font: {
       type: String,
-      default: "monospace"
+      default: 'monospace',
     },
     highlights: {
       type: [Boolean, Array],
-      default: true
+      default: true,
     },
     kirbytext: {
       type: Boolean,
-      default: true
+      default: true,
     },
     knownKirbytags: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     placeholder: {
       type: String,
-      default: ""
+      default: '',
     },
     size: {
       type: String,
-      default: null
+      default: null,
     },
     spellcheck: {
       type: Boolean,
-      default: true
+      default: true,
     },
     uploads: {
       type: [Boolean, Object, Array],
-      default: true
+      default: true,
     },
     formData: {
       type: Object,
       default: () => ({}),
     },
-    value: String
-  }
+    value: String,
+  },
 };
 </script>

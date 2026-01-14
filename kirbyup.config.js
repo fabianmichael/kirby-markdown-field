@@ -1,3 +1,3 @@
-import { defineConfig } from 'kirbyup/config'
+import { defineConfig } from 'kirbyup/config';
 
-export default defineConfig()
+export default defineConfig();

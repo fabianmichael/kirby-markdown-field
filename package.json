@@ -9,43 +9,35 @@
     "url": "git@github.com:sylvainjule/kirby-markdown-field.git"
   },
   "scripts": {
-    "dev": "kirbyup src/index.js --watch",
-    "build": "kirbyup src/index.js",
-    "lint": "eslint \"src/**/*.{js,vue}\"",
+    "dev": "kirbyup src/index.ts --watch",
+    "build": "kirbyup src/index.ts",
+    "lint": "eslint \"src/**/*.{ts,vue}\"",
     "lint:fix": "npm run lint -- --fix",
-    "format": "prettier --write \"src/**/*.{js,vue}\""
+    "format": "prettier --write \"src/**/*.{ts,vue}\""
   },
   "devDependencies": {
-    "eslint": "^8.52.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-vue": "^9.18.1",
-    "kirbyup": "^2.0.1",
-    "prettier": "^3.1.0",
-    "standard": "^17.1.2"
+    "@types/node": "^25.0.10",
+    "@types/underscore": "^1.13.0",
+    "@typescript-eslint/eslint-plugin": "^8.53.1",
+    "@typescript-eslint/parser": "^8.53.1",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-vue": "^10.7.0",
+    "kirby-types": "^1.4.7",
+    "kirbyup": "^3.4.1",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.53.1"
   },
   "dependencies": {
-    "@codemirror/commands": "^6.1.1",
-    "@codemirror/lang-markdown": "^6.0.1",
-    "@codemirror/language": "^6.2.1",
-    "@codemirror/search": "^6.2.1",
-    "@codemirror/state": "^6.1.2",
-    "@codemirror/view": "^6.3.0",
-    "@lezer/highlight": "^1.1.1",
-    "underscore": "^1.13.6"
-  },
-  "browserslist": [
-    "last 2 Android versions",
-    "last 2 Chrome versions",
-    "last 2 ChromeAndroid versions",
-    "last 2 Edge versions",
-    "last 2 Firefox versions",
-    "last 2 FirefoxAndroid versions",
-    "last 2 iOS versions",
-    "last 2 KaiOS versions",
-    "last 2 Safari versions",
-    "last 2 Samsung versions",
-    "last 2 Opera versions",
-    "last 2 OperaMobile versions",
-    "last 2 UCAndroid versions"
-  ]
+    "@codemirror/commands": "^6.10.1",
+    "@codemirror/lang-markdown": "^6.5.0",
+    "@codemirror/language": "^6.12.1",
+    "@codemirror/search": "^6.6.0",
+    "@codemirror/state": "^6.5.4",
+    "@codemirror/view": "^6.39.11",
+    "@lezer/highlight": "^1.2.3",
+    "underscore": "^1.13.7"
+  }
 }

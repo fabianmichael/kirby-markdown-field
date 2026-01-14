@@ -24,50 +24,50 @@
 export default {
   computed: {
     blank() {
-      return this.field("text", {}).blank;
+      return this.field('text', {}).blank;
     },
     buttons() {
-      return this.field("text", {}).buttons;
+      return this.field('text', {}).buttons;
     },
     customHighlights() {
-      return this.field("text", {}).customHighlights;
+      return this.field('text', {}).customHighlights;
     },
     disabled() {
-      return this.field("text", {}).disabled;
+      return this.field('text', {}).disabled;
     },
     endpoints() {
-      return this.field("text", {}).endpoints;
+      return this.field('text', {}).endpoints;
     },
     font() {
-      return this.field("text", {}).font;
+      return this.field('text', {}).font;
     },
     highlights() {
-      return this.field("text", {}).highlights;
+      return this.field('text', {}).highlights;
     },
     kirbytext() {
-      return this.field("text", {}).kirbytext;
+      return this.field('text', {}).kirbytext;
     },
     knownKirbytags() {
-      return this.field("text", {}).knownKirbytags;
+      return this.field('text', {}).knownKirbytags;
     },
     placeholder() {
-      return this.field("text", {}).placeholder;
+      return this.field('text', {}).placeholder;
     },
     size() {
-      return this.field("text", {}).size;
+      return this.field('text', {}).size;
     },
     spellcheck() {
-      return this.field("text", {}).spellcheck;
+      return this.field('text', {}).spellcheck;
     },
     uploads() {
-      return this.field("text", {}).uploads;
-    }
+      return this.field('text', {}).uploads;
+    },
   },
   methods: {
     focus() {
       this.$refs.input.focus();
-    }
-  }
+    },
+  },
 };
 </script>
 

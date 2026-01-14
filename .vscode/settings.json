@@ -16,5 +16,6 @@
   "css.validate": false,
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit"
-  }
+  },
+  "editor.formatOnSave": true
 }

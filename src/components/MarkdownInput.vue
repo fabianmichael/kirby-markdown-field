@@ -30,29 +30,31 @@
 </template>
 
 <script>
-import Field from "./MarkdownField.vue";
+/* global window */
 
-import Editor from "./Editor.js";
-import Highlight from "./Extensions/Highlight.js";
+import Field from './MarkdownField.vue';
 
-import Blockquote from "./Buttons/Blockquote.js";
-import BulletList from "./Buttons/BulletList.js";
-import Button from "./Buttons/Button.js";
-import Divider from "./Buttons/Divider.js";
-import Emphasis from "./Buttons/Emphasis.js";
-import File from "./Buttons/File.js";
-import Footnote from "./Buttons/Footnote.js";
-import Headlines from "./Buttons/Headlines.js";
-import HighlightButton from "./Buttons/Highlight.js";
-import HorizontalRule from "./Buttons/HorizontalRule.js";
-import InlineCode from "./Buttons/InlineCode.js";
-import Invisibles from "./Buttons/Invisibles.js";
-import Link from "./Buttons/Link.js";
-import OrderedList from "./Buttons/OrderedList.js";
-import SpecialChars from "./Buttons/SpecialChars.js";
-import Strikethrough from "./Buttons/Strikethrough.js";
-import StrongEmphasis from "./Buttons/StrongEmphasis.js";
-import Extension from "./Extension.js";
+import Editor from './Editor';
+import Highlight from './Extensions/Highlight';
+
+import Blockquote from './Buttons/Blockquote';
+import BulletList from './Buttons/BulletList';
+import Button from './Buttons/Button';
+import Divider from './Buttons/Divider';
+import Emphasis from './Buttons/Emphasis';
+import File from './Buttons/File';
+import Footnote from './Buttons/Footnote';
+import Headlines from './Buttons/Headlines';
+import HighlightButton from './Buttons/Highlight';
+import HorizontalRule from './Buttons/HorizontalRule';
+import InlineCode from './Buttons/InlineCode';
+import Invisibles from './Buttons/Invisibles';
+import Link from './Buttons/Link';
+import OrderedList from './Buttons/OrderedList';
+import SpecialChars from './Buttons/SpecialChars';
+import Strikethrough from './Buttons/Strikethrough';
+import StrongEmphasis from './Buttons/StrongEmphasis';
+import Extension from './Extension';
 
 export default {
   props: {
@@ -60,18 +62,18 @@ export default {
     hideToolbar: {
       // allows for hiding the toolbar, but keeping button definitions
       type: Boolean,
-      default: false
+      default: false,
     },
     forceLayout: {
       type: [String, Boolean],
-      default: false
+      default: false,
     },
     fontSize: {
       type: String,
-      default: "normal"
-    }
+      default: 'normal',
+    },
   },
-  emits: ["input"],
+  emits: ['input'],
   data() {
     return {
       editor: Object,
@@ -80,7 +82,7 @@ export default {
       invisibles: false,
       selection: null,
       toolbarButtons: [],
-      active: []
+      active: [],
     };
   },
   computed: {
@@ -89,17 +91,17 @@ export default {
     },
     uploadOptions() {
       return {
-        url: this.$panel.urls.api + "/" + this.endpoints.field + "/upload",
+        url: this.$panel.urls.api + '/' + this.endpoints.field + '/upload',
         multiple: false,
         on: {
           cancel: async () => await this.restoreSelection(),
           done: async (files) => {
-            await this.restoreSelection()
+            await this.restoreSelection();
             await this.insertUpload(files);
-          }
-        }
+          },
+        },
       };
-    }
+    },
   },
   watch: {
     value(newVal) {
@@ -111,7 +113,7 @@ export default {
         // this.editor.scrollTo(scrollInfo.left, scrollInfo.top)
         this.editor.setValue(newVal);
       }
-    }
+    },
   },
   mounted() {
     this.editor = new Editor(this.value, {
@@ -124,23 +126,23 @@ export default {
       extensions: [
         ...this.createHighlights(),
         ...this.createToolbarButtons(),
-        ...this.createCustomExtensions()
+        ...this.createCustomExtensions(),
       ],
       events: {
         active: (active) => {
           this.active = active;
         },
         selectionchange: (selection) => {
-          this.selection = selection
+          this.selection = selection;
         },
         update: async (value) => {
           this.$refs.toolbar?.closeDropdowns();
-          this.$emit("input", value);
+          this.$emit('input', value);
         },
         invisibles: (value) => {
           this.invisibles = value;
-        }
-      }
+        },
+      },
     });
 
     this.toolbarButtons = this.editor.buttons;
@@ -151,8 +153,8 @@ export default {
           scrollIntoView: true,
           selection: {
             head: this.editor.state.doc.length,
-            anchor: this.editor.state.doc.length
-          }
+            anchor: this.editor.state.doc.length,
+          },
         });
       });
     }
@@ -167,7 +169,7 @@ export default {
       this.editor.focus();
     },
     onSubmit($event) {
-      return this.$emit("submit", $event);
+      return this.$emit('submit', $event);
     },
     /**
      * Extensions
@@ -178,11 +180,8 @@ export default {
       }
 
       return window.markdownEditorButtons.reduce(
-        (accumulator, definition) => [
-          ...accumulator,
-          Button.factory(definition)
-        ],
-        []
+        (accumulator, definition) => [...accumulator, Button.factory(definition)],
+        [],
       );
     },
 
@@ -192,11 +191,8 @@ export default {
       }
 
       return window.markdownEditorExtensions.reduce(
-        (accumulator, definition) => [
-          ...accumulator,
-          Extension.factory(definition)
-        ],
-        []
+        (accumulator, definition) => [...accumulator, Extension.factory(definition)],
+        [],
       );
     },
 
@@ -218,21 +214,21 @@ export default {
         new SpecialChars(),
         new Strikethrough(),
         new StrongEmphasis(),
-        ...this.createButtons()
+        ...this.createButtons(),
       ];
 
       const mapped = available.reduce(
         (accumulator, extension) => ({
           ...accumulator,
-          [extension.name]: extension
+          [extension.name]: extension,
         }),
-        {}
+        {},
       );
 
       if (this.buttons === true) {
         // default layout
         this.buttons = {
-          headlines: ["h1", "h2", "h3"],
+          headlines: ['h1', 'h2', 'h3'],
           bold: {},
           italic: {},
           divider__0: {},
@@ -243,14 +239,14 @@ export default {
           divider__1: {},
           ul: {},
           ol: {},
-          invisibles: {}
+          invisibles: {},
         };
       }
 
       const layout = [];
 
       for (let item of Object.keys(this.buttons)) {
-        item = item.replace(/__.*$/, ""); // remove divider suffix
+        item = item.replace(/__.*$/, ''); // remove divider suffix
 
         if (mapped[item]) {
           mapped[item].configure(this.buttons[item]);
@@ -266,22 +262,21 @@ export default {
       let highlights = this.customHighlights.filter(
         (definition) =>
           this.highlights === true ||
-          (Array.isArray(this.highlights) &&
-            this.highlights.includes(definition.name))
+          (Array.isArray(this.highlights) && this.highlights.includes(definition.name)),
       );
       return highlights.map((definition) => new Highlight(definition));
     },
 
     async insert(text, scrollIntoView) {
-			this.focus();
-      console.log("insert", text, this.selection)
+      this.focus();
+
       if (this.selection) {
-        this.editor.setSelection(this.selection)
+        this.editor.setSelection(this.selection);
       }
 
-      this.editor.insert(text, scrollIntoView)
+      this.editor.insert(text, scrollIntoView);
 
-      this.$emit("input", this.editor.value);
+      this.$emit('input', this.editor.value);
     },
 
     /**
@@ -289,7 +284,7 @@ export default {
      */
     async insertFile(files) {
       if (files?.length > 0) {
-        await this.insert(files.map((file) => file.dragText).join("\n\n"));
+        await this.insert(files.map((file) => file.dragText).join('\n\n'));
       }
     },
 
@@ -300,10 +295,10 @@ export default {
 
     file() {
       this.$panel.dialog.open({
-        component: "k-files-dialog",
+        component: 'k-files-dialog',
         props: {
-          endpoint: this.endpoints.field + "/files",
-          multiple: false
+          endpoint: this.endpoints.field + '/files',
+          multiple: false,
         },
         on: {
           cancel: async () => await this.restoreSelection(),
@@ -312,8 +307,8 @@ export default {
             await this.restoreSelection();
 
             await this.insertFile(file);
-          }
-        }
+          },
+        },
       });
     },
 
@@ -329,14 +324,11 @@ export default {
 
       // dropping files
       if (this.uploads && this.$helper.isUploadEvent($event)) {
-        return this.$panel.upload.open(
-          $event.dataTransfer.files,
-          this.uploadOptions
-        );
+        return this.$panel.upload.open($event.dataTransfer.files, this.uploadOptions);
       }
 
       // dropping text
-      if (this.$panel.drag.type === "text") {
+      if (this.$panel.drag.type === 'text') {
         this.focus();
         this.editor.insert(this.$panel.drag.data);
       }
@@ -350,26 +342,26 @@ export default {
     onOver($event) {
       // drag & drop for files
       if (this.uploads && this.$helper.isUploadEvent($event)) {
-        $event.dataTransfer.dropEffect = "copy";
+        $event.dataTransfer.dropEffect = 'copy';
         this.focus();
         this.isDragOver = true;
         return;
       }
       // drag & drop for text
-      if (this.$panel.drag?.type === "text") {
-        $event.dataTransfer.dropEffect = "copy";
+      if (this.$panel.drag?.type === 'text') {
+        $event.dataTransfer.dropEffect = 'copy';
         this.focus();
         this.isDragOver = true;
       }
     },
     async restoreSelection() {
-			if (this.selection) {
-				this.editor.setSelection(this.selection);
-			}
+      if (this.selection) {
+        this.editor.setSelection(this.selection);
+      }
 
-			await this.$nextTick();
-		},
-  }
+      await this.$nextTick();
+    },
+  },
 };
 </script>
 
@@ -378,7 +370,7 @@ export default {
  * General field setup
  */
 
-.k-markdown-input-wrap[data-font-family="sans-serif"] .cm-line {
+.k-markdown-input-wrap[data-font-family='sans-serif'] .cm-line {
   --cm-mark: 0 !important;
   --cm-indent: 0 !important;
 }
@@ -386,7 +378,7 @@ export default {
 /**
  * 1. Make sure there's no overflow
  */
-.k-input[data-type="markdown"] .k-input-element {
+.k-input[data-type='markdown'] .k-input-element {
   max-width: 100%; /* 1 */
 }
 </style>
