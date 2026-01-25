@@ -296,6 +296,10 @@ npm run build
 ## From version 2 to 3
 
 - The `pagelink` button was removed in favor of a generic `link` button that supports all link types
+- The API for plugins may have some minor changes, please report issues if your plugins don’t work any longer and you don't know how to fix it
+- Removed support for clickable panel URLs for now, because UUID page and file links would require more magic than what I am able to handle at the moment
+- URLs are now clickable without pressing down the meta key, because that key is already used by Kirby for selecting blocks.
+- URLs are now real native HTML links that support right clicks
 
 ## From version 1 to 2
 
