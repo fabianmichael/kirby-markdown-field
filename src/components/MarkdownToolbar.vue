@@ -212,4 +212,12 @@ export default {
 	margin-left: 2.5rem;
 	padding-block: 2px;
 }
+
+/* Dark mode background */
+.k-panel[data-theme="dark"] .k-markdown-toolbar {
+	background: var(--color-gray-850);
+}
+.k-panel[data-theme="dark"] .k-markdown-input-wrap:focus-within .k-markdown-toolbar {
+	border-bottom-color: var(--color-gray-900);
+}
 </style>
