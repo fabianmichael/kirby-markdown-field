@@ -15,8 +15,9 @@ Enhanced, extensible Markdown field for Kirby CMS. Now available in version ~~2~
 - Configurable Markdown syntax (e.g. choose from `_italic_` or `*italic*`)
 - Replaces Kirby’s default [Markdown block](https://getkirby.com/docs/reference/panel/blocks/markdown) with one, that also supports syntax-highlighting.
 - Support for touch-based devices and great performance (thanks to [CodeMirror 6](https://codemirror.net/))
+- Optionally convert all permalinks to regular URLs for all Kirbytext (opt-in)
 
-💡 **TL;DR:** The Markdown field, you all have been waiting for!
+💡 **TL;DR:** The Markdown field/editor/suite, you all have been waiting for!
 
 ![Screenshot of the editor field](https://github.com/fabianmichael/kirby-markdown-field/assets/395617/590ebc77-fe2e-46ae-98f4-e565f86fc82f)
 
@@ -32,7 +33,8 @@ Enhanced, extensible Markdown field for Kirby CMS. Now available in version ~~2~
   - [1 Installation](#1-installation)
   - [2 Setup](#2-setup)
   - [3 Options](#3-options)
-    - [2.1 Available options](#21-available-options)
+    - [3.1 Global options](#31-global-options)
+    - [3.2 Field options](#32-field-options)
     - [3.2. Font settings](#32-font-settings)
     - [3.3 Buttons](#33-buttons)
       - [Simple configuration](#simple-configuration)
@@ -78,7 +80,12 @@ editor:
 
 ## 3 Options
 
-### 2.1 Available options
+### 3.1 Global options
+
+| Option | Type | Default | Description |
+| `fabianmichael.markdown-field.convertPermalinks` | `bool` | `false` | Replaces all permalinks in href/src attributes in Kirbytext with the regular URL, similar to what `https://getkirby.com/docs/reference/templates/field-methods/permalinks-to-urls` does but also works for absolute URLs. |
+
+### 3.2 Field options
 
 You have access to the very same options as [the textarea field](https://getkirby.com/docs/reference/panel/fields/textarea), and a few more:
 
