@@ -1,14 +1,11 @@
 import type { KeyBinding } from '@codemirror/view';
 import type { ExtensionOptions } from '../Extension';
-import completeAssign from '../Utils/complete-assign';
 import Button, { type ButtonDefinition } from './Button';
 
 export type LinkType = 'url' | 'page' | 'file' | 'email' | 'tel' | 'anchor' | 'custom';
 
-export type LinkStyle = 'markdown' | 'kirbytext' | null;
-
 interface LinkOptions extends ExtensionOptions {
-  style: LinkStyle;
+  kirbytext: boolean | null;
   options: LinkType[];
   blank: boolean;
 }
@@ -149,36 +146,24 @@ export default class Link extends Button {
     return 'custom';
   }
 
-  configure(options: LinkOptions): void {
-    if (typeof options === 'string') {
-      options = completeAssign(this.defaults, { style: options as LinkStyle }) as LinkOptions;
-    }
-
-    Button.prototype.configure.call(this, options);
-
-    if (!['markdown', 'kirbytext', null].includes(this.options.style as string | null)) {
-      throw new Error('Link style must be either `markdown`, `kirbytext` or `null`.');
-    }
-  }
-
   get defaults(): LinkOptions {
     return {
+      kirbytext: null,
       blank: true,
       options: ['url', 'page', 'file', 'email', 'tel', 'anchor', 'custom'],
-      style: null,
     };
   }
 
   get useKirbytext(): boolean {
-    if (this.options.style !== null && this.options.style !== 'kirbytext') {
+    if (this.options.kirbytext === false) {
       return false;
     }
 
-    if (this.input!.kirbytext) {
-      return true;
+    if (!this.input!.kirbytext) {
+      return false;
     }
 
-    return false;
+    return true;
   }
 
   keys(): KeyBinding[] {

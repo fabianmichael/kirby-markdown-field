@@ -35,11 +35,13 @@ Enhanced, extensible Markdown field for Kirby CMS. Now available in version 2!
     - [2.1 Available options](#21-available-options)
     - [3.2. Font settings](#32-font-settings)
     - [3.3 Buttons](#33-buttons)
+      - [Simple configuration](#simple-configuration)
+      - [Advanced configuration](#advanced-configuration)
     - [3.4 Keyboard Shortcuts](#34-keyboard-shortcuts)
       - [Block Formats](#block-formats)
       - [Inline Formats](#inline-formats)
       - [Other](#other)
-    - [URLs](#urls)
+      - [URLs](#urls)
     - [3.5 Size](#35-size)
   - [4 Extension API](#4-extension-api)
     - [4.1 Custom options for files, and uploads](#41-custom-options-for-files-and-uploads)
@@ -96,69 +98,62 @@ While the sans-serif might be more appealing to non-technical writers at first, 
 
 This field is packing the usual [textarea](https://getkirby.com/docs/reference/panel/fields/textarea) buttons and many more.
 
-`headlines` can contain the whole range of headings from `h1` to `h6`, and therefore accepts an array of allowed levels (default is `h1, h2, h3`). Use `headlines` as key in this case:
-
-```yaml
-buttons:
-  headlines: # no dash before the key name
-    - h1
-    - h2
-    - h3
-    - h4
-    - h5
-    - h6
-```
-
-You also have access to additional buttons:
-
-```yaml
-buttons:
-  - blockquote
-  - hr
-  - strikethrough
-  - footnote
-```
-
-If you don't need it, you can hide the toolbar. This will also disable
+If you don't want to show any buttons, you can hide the toolbar. This will also disable
 the keyboard shortcuts for all formats.
 
 ```yaml
 buttons: false
 ```
 
-The full list of available buttons. As you can see, some buttons can also have
-configuration options. Take the `bold` button for example. Markdown allows different
-syntaxes for bold text, i.e. `__bold__` and `**bold**`. The editor’s syntax highlighter
-will always recognize both, but you can adjust, what the editor will use when
-you click the toolbar button or by hitting the respective keyboard shortcut.
+#### Simple configuration
 
-For the `link` button, you can specify whether these should insert
-`markdown` or `kirbytext` markup. By default, this will be determined by the
-[`kirbytext`](https://getkirby.com/docs/reference/system/options/kirbytext) option by
-default but can be overridden on a per-button basis.
+If you just want to add the buttons without further configuration, just provide a YAML array, e.g.:
 
-All button configuration is optional, you can always use `- ul` instead of `ul: -`,
-if you want to stick to the default settings.
+```yaml
+buttons:
+  - headlines
+  - divider
+  - bold
+  - italic
+  - strikethrough
+  - code
+  - highlight # not supported by Kirby’s markdown parser by default
+  - divider
+  - link
+  - file
+  - divider
+  - blockquote
+  - hr
+  - footnote # Markdown extra only
+  - ul
+  - ol
+  - divider
+  - invisibles
+```
+
+#### Advanced configuration
+
+Some buttons may be configures with advanced options. To ensure compatibility with the Symfony YAML parser, you should only use named buttons in this case:
 
 ```yaml
 buttons:
   headlines:
-    - h1
-    - h2
-    - h3
+    - h1 # enabled by default
+    - h2 # enabled by default
+    - h3 # enabled by default
     - h4
     - h5
     - h6
-  bold: ** # or `__`
-  italic: * # or `_`
-  - strikethrough
-  - code
-  ul: - # or `*`/`+`
-  - ol
-  link: null # or `markdown` or `kirbytext`
+  divider__0: true # start at 0 and count up
+  bold: true # or `**` or `__` to configure syntax
+  italic: true # or `*` or `_` to configure syntax
+  strikethrough: true
+  code: true
+  highlight: true # not supported by Kirby’s markdown parser by default
+  divider__1: true
   link:
-    style: null # or `markdown` or `kirbytext`
-    blank: true # Show option for opening link in a new tab (only for Kirbytext-style links)
+    kirbytext: null # `null` = use field’s default, `false` = markdown link, `true´ = force Kirbxtext syntax
+    blank: true # add toggle for new tab (only for Kirbytext syntax)
     options:
       - url
       - page
@@ -166,15 +161,16 @@ buttons:
       - email
       - tel
       - anchor
-      - custom
-  - blockquote
-  hr: *** # or `---`/`___`
-  - strikethrough
-  - highlight # textmarker (not supported by Kirby’s default markdown parser.)
-  - file
-  - footnote
-  - invisibles
-  - divider # can be used multiple times
+      - custom # same as `options` property for the link field
+  file: true
+  divider__2: true
+  blockquote: true
+  hr: true # `***`, or `---`/`___` to configure syntax
+  footnote: true # Markdown extra only
+  ul: true # `-`, `*` or`+` to configure syntax
+  ol: true
+  divicer__3: true
+  invisibles: true
 ```
 
 ### 3.4 Keyboard Shortcuts
@@ -213,7 +209,7 @@ buttons:
 | Show Whitespace             | `⌥⌃I`     | `Alt+Shift+i` |
 | Open clicked URL in new tab | `⌘+Click` | `Ctrl+Click`  |
 
-### URLs
+#### URLs
 
 - When you select some text and paste a URL, it will automatically create a link tag and use the current selection as link text.
 
@@ -307,6 +303,8 @@ npm run build
 - Removed support for clickable panel URLs for now, because UUID page and file links would require more magic than what I am able to handle at the moment
 - URLs are now clickable without pressing down the meta key, because that key is already used by Kirby for selecting blocks.
 - URLs are now real native HTML links that support right clicks
+- Since Kirby will switch from the Spyc to the Symfony YAML parser in a future release, you should review your `buttons` configuration if you want everything to stay compatible.
+- `link` button option `style` has been renamed to `kirbytext` and no accepts a boolean
 
 ## From version 1 to 2
 
