@@ -3,12 +3,13 @@ import type { ExtensionOptions } from '../Extension';
 import completeAssign from '../Utils/complete-assign';
 import Button, { type ButtonDefinition } from './Button';
 
-export type LinkType = 'url' | 'page' | 'file' | 'tel' | 'email' | '#' | 'custom';
+export type LinkType = 'url' | 'page' | 'file' | 'email' | 'tel' | 'anchor' | 'custom';
 
 export type LinkStyle = 'markdown' | 'kirbytext' | null;
 
 interface LinkOptions extends ExtensionOptions {
   style: LinkStyle;
+  options: LinkType[];
   blank: boolean;
 }
 
@@ -33,8 +34,6 @@ export default class Link extends Button {
       return false;
     }
 
-    console.log(this.editor.view);
-
     const selection = this.editor.view.state.selection.main;
     const contents = this.editor.view.state.sliceDoc(selection.from, selection.to);
 
@@ -42,6 +41,7 @@ export default class Link extends Button {
       href: {
         label: window.panel.t('link'),
         type: 'link',
+        options: this.options.options,
         placeholder: window.panel.t('url.placeholder'),
         icon: 'url',
       },
@@ -143,7 +143,7 @@ export default class Link extends Button {
     }
 
     if (value.startsWith('#')) {
-      return '#';
+      return 'anchor';
     }
 
     return 'custom';
@@ -164,6 +164,7 @@ export default class Link extends Button {
   get defaults(): LinkOptions {
     return {
       blank: true,
+      options: ['url', 'page', 'file', 'email', 'tel', 'anchor', 'custom'],
       style: null,
     };
   }

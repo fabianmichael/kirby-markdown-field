@@ -150,14 +150,23 @@ buttons:
     - h5
     - h6
   bold: ** # or `__`
-  link: null # or `markdown` or `kirbytext`
   italic: * # or `_`
   - strikethrough
   - code
   ul: - # or `*`/`+`
   - ol
+  link: null # or `markdown` or `kirbytext`
   link:
-    blank: true # Show option for opening link in a new tab.
+    style: null # or `markdown` or `kirbytext`
+    blank: true # Show option for opening link in a new tab (only for Kirbytext-style links)
+    options:
+      - url
+      - page
+      - file
+      - email
+      - tel
+      - anchor
+      - custom
   - blockquote
   hr: *** # or `---`/`___`
   - strikethrough
