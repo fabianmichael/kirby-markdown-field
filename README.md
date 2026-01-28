@@ -52,12 +52,11 @@ Enhanced, extensible Markdown field for Kirby CMS. Now available in version 2!
   - [10 License](#10-license)
   - [11 Credits](#11-credits)
 
-
-****
+---
 
 ## 1 Installation
 
-This version of the plugin requires PHP 8.3 and Kirby 5.0.0 or higher. The recommended way of installing is by using Composer:
+This version of the plugin requires PHP 8.4+, Kirby 5 and your Kirby installation must have UUIDs enabled. The recommended way of installing is by using Composer:
 
 ```
 $ composer require fabianmichael/kirby-markdown-field
@@ -81,11 +80,11 @@ editor:
 
 You have access to the very same options as [the textarea field](https://getkirby.com/docs/reference/panel/fields/textarea), and a few more:
 
-| Option | Type   | Required | Default                | Description                                        |
-|:-------|:-------|:---------|:-----------------------|:---------------------------------------------------|
-| font   | string | `false`  | `monospace`            | Sets the font family (`sans-serif` or `monospace`) |
-| size   | String | `false`  | `small`                | Sets the empty height of the Markdown field        |
-| kirbytext | bool | `false` | `true`                 | Use Kirbytext syntax for links, images etc. |
+| Option    | Type   | Required | Default     | Description                                        |
+| :-------- | :----- | :------- | :---------- | :------------------------------------------------- |
+| font      | string | `false`  | `monospace` | Sets the font family (`sans-serif` or `monospace`) |
+| size      | String | `false`  | `small`     | Sets the empty height of the Markdown field        |
+| kirbytext | bool   | `false`  | `true`      | Use Kirbytext syntax for links, images etc.        |
 
 ### 3.2. Font settings
 
@@ -184,35 +183,35 @@ buttons:
 
 #### Block Formats
 
-| Format         | Mac/iOS        | Linux/Windows  |
-|:---------------|:---------------|:---------------|
-| Heading 1      | `⌥⌃1`          | `Alt+Shift+1`  |
-| Heading 2      | `⌥⌃2`          | `Alt+Shift+2`  |
-| Heading 3      | `⌥⌃3`          | `Alt+Shift+3`  |
-| Heading 4      | `⌥⌃4`          | `Alt+Shift+4`  |
-| Heading 5      | `⌥⌃5`          | `Alt+Shift+5`  |
-| Heading 6      | `⌥⌃6`          | `Alt+Shift+6`  |
-| Quote          | `⌥⌃q`          | `Alt+Shift+q`  |
-| Bullet List    | `⌥⌃U`          | `Alt+Shift+u`  |
-| Ordered List   | `⌥⌃O`          | `Alt+Shift+o`  |
+| Format       | Mac/iOS | Linux/Windows |
+| :----------- | :------ | :------------ |
+| Heading 1    | `⌥⌃1`   | `Alt+Shift+1` |
+| Heading 2    | `⌥⌃2`   | `Alt+Shift+2` |
+| Heading 3    | `⌥⌃3`   | `Alt+Shift+3` |
+| Heading 4    | `⌥⌃4`   | `Alt+Shift+4` |
+| Heading 5    | `⌥⌃5`   | `Alt+Shift+5` |
+| Heading 6    | `⌥⌃6`   | `Alt+Shift+6` |
+| Quote        | `⌥⌃q`   | `Alt+Shift+q` |
+| Bullet List  | `⌥⌃U`   | `Alt+Shift+u` |
+| Ordered List | `⌥⌃O`   | `Alt+Shift+o` |
 
 #### Inline Formats
 
-| Format                  | Mac/iOS        | Linux/Windows  |
-|:------------------------|:---------------|:---------------|
-| Bold                    | `⌘B`           | `Ctrl+b`       |
-| Italic                  | `⌘I`           | `Ctrl+i`       |
-| Link                    | `⌘K`           | `Ctrl+k`       |
-| Strikethrough           | `⌥⌃D`          | `Alt+Shift+d`  |
-| Code                    | `⌥⌃X`          | `Alt+Shift+x`  |
-| Footnote                | `⌥⌃F`          | `Alt+Shift+f`  |
+| Format        | Mac/iOS | Linux/Windows |
+| :------------ | :------ | :------------ |
+| Bold          | `⌘B`    | `Ctrl+b`      |
+| Italic        | `⌘I`    | `Ctrl+i`      |
+| Link          | `⌘K`    | `Ctrl+k`      |
+| Strikethrough | `⌥⌃D`   | `Alt+Shift+d` |
+| Code          | `⌥⌃X`   | `Alt+Shift+x` |
+| Footnote      | `⌥⌃F`   | `Alt+Shift+f` |
 
 #### Other
 
-| Format                        | Mac/iOS        | Linux/Windows  |
-|:------------------------------|:---------------|:---------------|
-| Show Whitespace               | `⌥⌃I`          | `Alt+Shift+i`  |
-| Open clicked URL in new tab   | `⌘+Click`      | `Ctrl+Click`   |
+| Format                      | Mac/iOS   | Linux/Windows |
+| :-------------------------- | :-------- | :------------ |
+| Show Whitespace             | `⌥⌃I`     | `Alt+Shift+i` |
+| Open clicked URL in new tab | `⌘+Click` | `Ctrl+Click`  |
 
 ### URLs
 
@@ -244,7 +243,7 @@ size: custom-size
 Then in your `panel.css`:
 
 ```css
-.k-markdown-input-wrap[data-size="custom-size"] {
+.k-markdown-input-wrap[data-size='custom-size'] {
   --cm-min-lines: 20;
 }
 ```
@@ -263,11 +262,10 @@ There are two types of extensions, which allow you to extend the editor to adjus
 
 Your extension can use a special endpoint to extend the base options for pages, files, and uploads with parameters set in the button configuration. See an example in the `extension-examples/custom-pagelink` folder.
 
-
 ```js
 // special routes to read options from the button configuration
-this.input.endpoints.field + "/myextension/uploads"
-this.input.endpoints.field + "/myextension/files"
+this.input.endpoints.field + '/myextension/uploads';
+this.input.endpoints.field + '/myextension/files';
 ```
 
 The end user can configure options for your extension as part of the button configuration:
@@ -275,13 +273,12 @@ The end user can configure options for your extension as part of the button conf
 ```yaml
 text:
   type: markdown
-  files:
-    […]
+  files: […]
   buttons:
     myextension:
       pages:
         query: site.index
-        info: "{{ page.tags }}"
+        info: '{{ page.tags }}'
 ```
 
 ## 5 Development

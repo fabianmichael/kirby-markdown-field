@@ -283,9 +283,29 @@ export default {
      * File handling
      */
     async insertFile(files) {
-      if (files?.length > 0) {
-        await this.insert(files.map((file) => file.dragText).join('\n\n'));
+      if (files?.length === 0) {
+        return;
       }
+
+      const insert = [];
+
+      for (const file of files) {
+        if (this.kirbytext) {
+          insert.push(file.dragText);
+        } else {
+          const url = '/@/file/' + file.uuid.split('://')[1];
+
+          if (file.type === 'image') {
+            insert.push(`![${file.filename}](${url})`);
+          } else {
+            insert.push(`[${file.filename}](${url})`);
+          }
+        }
+
+        insert.push(file.dragText);
+      }
+
+      await this.insert(insert.join('\n\n'));
     },
 
     async insertUpload(files) {
@@ -319,7 +339,7 @@ export default {
     /**
      * Drag and Drop and Uploads
      */
-    onDrop($event) {
+    async onDrop($event) {
       this.isDragOver = false;
 
       // dropping files
@@ -330,7 +350,27 @@ export default {
       // dropping text
       if (this.$panel.drag.type === 'text') {
         this.focus();
-        this.editor.insert(this.$panel.drag.data);
+
+        if (this.kirbytext) {
+          this.editor.insert(this.$panel.drag.data);
+        } else {
+          const match = this.$panel.drag.data.match(/^\((image|file): ([^\s\)]+)/);
+
+          if (match) {
+            const [, type, uuid] = match;
+            const uuidValue = uuid.split('://')[1];
+
+            const preview = await this.$helper.link.preview({ type: 'file', link: uuid }, [
+              'filename',
+            ]);
+
+            if (type === 'image') {
+              this.editor.insert(`![${preview.label}](/@/file/${uuidValue})`);
+            } else {
+              this.editor.insert(`[${preview.label}](/@/file/${uuidValue})`);
+            }
+          }
+        }
       }
     },
 
