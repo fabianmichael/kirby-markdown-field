@@ -78,7 +78,7 @@ export default class Link extends Button {
     return true;
   }
 
-  insertLink({ href, text, target }: { href: string; text: string | null; target?: boolean }) {
+  async insertLink({ href, text, target }: { href: string; text: string | null; target?: boolean }) {
     if (this.isDisabled()) {
       return;
     }
@@ -107,6 +107,24 @@ export default class Link extends Button {
         const targetAttr = target ? ' target: _blank' : '';
         this.editor?.insert(`(link: ${href}${textAttr}${targetAttr})`);
       } else if (hasText) {
+        this.editor?.insert(`[${text}](${href})`);
+      } else if (!window.panel.app.$helper.url.isAbsolute(href)) {
+        text = href;
+
+        console.log("not absolute", href, linkType);
+
+        if (linkType === 'file') {
+          const preview = await window.panel.app.$helper.link.preview({ type: 'file', link: window.panel.app.$helper.link.getFileUUID(href) }, [
+            'filename',
+          ]);
+          text = preview?.label ?? text;
+        } else if (linkType === 'page') {
+          const preview = await window.panel.app.$helper.link.preview({ type: 'page', link: window.panel.app.$helper.link.getPageUUID(href) }, [
+            'title',
+          ]);
+          text = preview?.label ?? text;
+        }
+
         this.editor?.insert(`[${text}](${href})`);
       } else {
         this.editor?.insert(`<${href}>`);
