@@ -1,6 +1,6 @@
 # Markdown Field for Kirby
 
-Enhanced, extensible Markdown field for Kirby CMS. Now available in version 2!
+Enhanced, extensible Markdown field for Kirby CMS. Now available in version ~~2~~ 3️⃣!
 
 **Features:**
 
