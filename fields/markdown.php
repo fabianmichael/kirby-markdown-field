@@ -79,7 +79,7 @@ return [
 			return $highlights;
 		},
 
-		'kirbytext' => function (bool $kirbytext = true) {
+		'kirbytext' => function (bool $kirbytext = true): bool {
 			return $kirbytext;
 		},
 	],

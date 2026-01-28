@@ -85,6 +85,7 @@ You have access to the very same options as [the textarea field](https://getkirb
 |:-------|:-------|:---------|:-----------------------|:---------------------------------------------------|
 | font   | string | `false`  | `monospace`            | Sets the font family (`sans-serif` or `monospace`) |
 | size   | String | `false`  | `small`                | Sets the empty height of the Markdown field        |
+| kirbytext | bool | `false` | `true`                 | Use Kirbytext syntax for links, images etc. |
 
 ### 3.2. Font settings
 
