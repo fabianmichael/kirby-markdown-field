@@ -59,11 +59,8 @@
 
 .k-markdown-input .cm-hr::before,
 .k-markdown-input .cm-hr::after {
-  background: linear-gradient(
-      var(--cm-color-light-gray),
-      var(--cm-color-light-gray)
-    )
-    50% calc(var(--cm-line-height) * 1em / 2) / 100% 0.0625rem no-repeat;
+  background: linear-gradient(var(--cm-color-light-gray), var(--cm-color-light-gray)) 50%
+    calc(var(--cm-line-height) * 1em / 2) / 100% 0.0625rem no-repeat;
   content: '';
   flex: 1 0 2ch;
 }
@@ -169,8 +166,7 @@
  *    are much narrower, than in monospace mode. Otherwise, the "dot"
  *    would not render correctly.
  */
-.k-markdown-input-wrap[data-font-family='sans-serif']
-  .cm-invisible-char[data-code='32'] {
+.k-markdown-input-wrap[data-font-family='sans-serif'] .cm-invisible-char[data-code='32'] {
   margin-left: -0.25ch; /* 1 */
   margin-right: -0.25ch; /* 1 */
   padding-left: 0.25ch; /* 1 */
@@ -180,10 +176,10 @@
 /* No-Break Space */
 .k-markdown-input .cm-invisible-char[data-code='160'] {
   background:
-    linear-gradient(var(--cm-color-special-char), var(--cm-color-special-char))
-      0.0625em 100% / 0.0625em 0.125em no-repeat,
-    linear-gradient(var(--cm-color-special-char), var(--cm-color-special-char))
-      0.0625em 100% / calc(100% - 0.125em) 0.0625em no-repeat,
+    linear-gradient(var(--cm-color-special-char), var(--cm-color-special-char)) 0.0625em 100% /
+      0.0625em 0.125em no-repeat,
+    linear-gradient(var(--cm-color-special-char), var(--cm-color-special-char)) 0.0625em 100% /
+      calc(100% - 0.125em) 0.0625em no-repeat,
     linear-gradient(var(--cm-color-special-char), var(--cm-color-special-char))
       calc(100% - 0.0625em) 100% / 0.0625em 0.125em no-repeat;
   color: transparent;
@@ -263,6 +259,11 @@
   text-decoration: underline;
   text-decoration-thickness: 0.1em;
   text-underline-offset: 0.14em;
+  cursor: pointer;
+}
+
+.k-markdown-input .cm-url:hover {
+  background-color: oklch(from currentcolor l c h / 0.15);
 }
 
 .k-markdown-input .cm-kirbytag-url {
@@ -270,9 +271,8 @@
   text-decoration-color: var(--cm-kirbytag-underline);
 }
 
-:root[data-markdown-modkey='true'] .k-markdown-input .cm-url,
-:root[data-markdown-modkey='true'] .k-markdown-input .cm-url * {
-  cursor: pointer;
+.k-markdown-input .cm-kirbytag-url:hover {
+  background-color: oklch(from var(--cm-kirbytag-background) l c h / 0.1);
 }
 
 .k-block-container-type-markdown {
@@ -313,15 +313,11 @@
   z-index: 4;
 }
 
-.k-markdown-input-wrap:focus-within
-  .k-markdown-toolbar
-  .k-markdown-button.is-active {
+.k-markdown-input-wrap:focus-within .k-markdown-toolbar .k-markdown-button.is-active {
   color: #3872be;
 }
 
-.k-markdown-input-wrap:focus-within
-  .k-toolbar
-  .k-markdown-button.is-active:hover {
+.k-markdown-input-wrap:focus-within .k-toolbar .k-markdown-button.is-active:hover {
   background: rgb(66 113 174 / 7.5%);
 }
 

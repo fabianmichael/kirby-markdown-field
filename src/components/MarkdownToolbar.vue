@@ -2,16 +2,10 @@
 <template>
   <nav class="k-markdown-toolbar">
     <!-- <div class="k-markdown-toolbar-wrapper"> -->
-    <template
-      v-for="({ button, name, isActive, isDisabled }, buttonIndex) in layout"
-    >
+    <template v-for="({ button, name, isActive, isDisabled }, buttonIndex) in layout">
       <!-- divider -->
       <template v-if="button.divider">
-        <hr
-          :key="buttonIndex"
-          aria-orientation="vertical"
-          class="k-markdown-toolbar-divider"
-        />
+        <hr :key="buttonIndex" aria-orientation="vertical" class="k-markdown-toolbar-divider" />
       </template>
 
       <!-- dropdown -->
@@ -22,9 +16,7 @@
             :icon="button.icon"
             :title="button.label"
             tabindex="-1"
-            :class="
-              (isDisabled() ? 'is-disabled ' : '') + 'k-markdown-toolbar-button'
-            "
+            :class="(isDisabled() ? 'is-disabled ' : '') + 'k-markdown-toolbar-button'"
             @click="$refs[buttonIndex + '-dropdown'][0].toggle()"
           />
           <k-dropdown-content
@@ -38,7 +30,8 @@
               :icon="dropdownItem.icon"
               :current="active.includes(dropdownItem.token)"
               @click="dropdownItem.command"
-              ><span v-html="dropdownItem.label" /></k-dropdown-item>
+              ><span v-html="dropdownItem.label"
+            /></k-dropdown-item>
           </k-dropdown-content>
         </div>
       </template>
@@ -51,9 +44,7 @@
           :title="button.label"
           :class="
             (isDisabled() ? 'is-disabled ' : '') +
-            (isActive() || (name === 'invisibles' && invisibles)
-              ? 'is-active '
-              : '') +
+            (isActive() || (name === 'invisibles' && invisibles) ? 'is-active ' : '') +
             'k-markdown-toolbar-button' +
             (button.align === 'right' ? ' k-markdown-toolbar-button-right' : '')
           "
@@ -75,19 +66,19 @@ export default {
     modals: Boolean,
     invisibles: Boolean,
     uploads: [Boolean, Object, Array],
-    active: Array
+    active: Array,
   },
   data() {
     return {
-      open: null
+      open: null,
     };
   },
   computed: {
     layout() {
       // ensure, that invisibles item always comes last
       let layout = this.buttons.toSorted((a, b) => {
-        if (a.name === "invisibles") return 1;
-        if (b.name === "invisibles") return -1;
+        if (a.name === 'invisibles') return 1;
+        if (b.name === 'invisibles') return -1;
         return 0;
       });
 
@@ -98,12 +89,12 @@ export default {
           button: item.button,
           name: item.name,
           isActive: item.isActive,
-          isDisabled: item.isDisabled
+          isDisabled: item.isDisabled,
         };
       });
 
       return layout;
-    }
+    },
   },
   methods: {
     setOpen(dropdown = null) {
@@ -113,8 +104,8 @@ export default {
       if (this.open) {
         this.open.close();
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -184,15 +175,11 @@ export default {
   background: var(--markdown-toolbar-hover);
 }
 
-.k-markdown-input-wrap:focus-within
-  .k-markdown-toolbar
-  .k-markdown-toolbar-button.is-active {
+.k-markdown-input-wrap:focus-within .k-markdown-toolbar .k-markdown-toolbar-button.is-active {
   color: var(--markdown-toolbar-current);
 }
 
-.k-markdown-input-wrap:focus-within
-  .k-markdown-toolbar
-  .k-markdown-toolbar-button.is-active:hover {
+.k-markdown-input-wrap:focus-within .k-markdown-toolbar .k-markdown-toolbar-button.is-active:hover {
   background: rgba(66, 113, 174, 0.075);
 }
 
@@ -203,7 +190,7 @@ export default {
 }
 
 /** Active state for dropdown items */
-.k-markdown-toolbar .k-button.k-dropdown-item[aria-current="true"] {
+.k-markdown-toolbar .k-button.k-dropdown-item[aria-current='true'] {
   color: #8fbfff;
 }
 
