@@ -9,11 +9,11 @@
     "url": "git@github.com:sylvainjule/kirby-markdown-field.git"
   },
   "scripts": {
-    "dev": "kirbyup src/index.ts --watch",
-    "build": "kirbyup src/index.ts",
-    "lint": "eslint \"src/**/*.{ts,vue}\"",
+    "dev": "kirbyup panel/index.ts --watch",
+    "build": "kirbyup panel/index.ts",
+    "lint": "eslint \"panel/**/*.{ts,vue}\"",
     "lint:fix": "npm run lint -- --fix",
-    "format": "prettier --write \"src/**/*.{ts,vue}\""
+    "format": "prettier --write \"panel/**/*.{ts,vue}\""
   },
   "devDependencies": {
     "@types/node": "^25.1.0",

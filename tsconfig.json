@@ -16,6 +16,6 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["src/**/*"],
+  "include": ["panel/**/*"],
   "exclude": ["node_modules"]
 }
