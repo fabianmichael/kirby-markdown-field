@@ -16,7 +16,7 @@
     "format": "prettier --write \"panel/**/*.{ts,vue}\""
   },
   "devDependencies": {
-    "@types/node": "^25.1.0",
+    "@types/node": "^25.2.0",
     "@types/underscore": "^1.13.0",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.54.0",
@@ -36,7 +36,7 @@
     "@codemirror/language": "^6.12.1",
     "@codemirror/search": "^6.6.0",
     "@codemirror/state": "^6.5.4",
-    "@codemirror/view": "^6.39.11",
+    "@codemirror/view": "^6.39.12",
     "@lezer/highlight": "^1.2.3",
     "underscore": "^1.13.7"
   }
