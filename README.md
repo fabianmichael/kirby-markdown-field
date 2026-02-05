@@ -303,7 +303,7 @@ npm run build
 
 ## Migration Guide
 
-## From version 2 to 3
+## From version 2/3 to 4
 
 - The `pagelink` button was removed in favor of a generic `link` button that supports all link types
 - The API for plugins may have some minor changes, please report issues if your plugins don’t work any longer and you don't know how to fix it
