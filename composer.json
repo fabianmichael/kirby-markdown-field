@@ -3,7 +3,7 @@
   "description": "Super-sophisticated markdown editor for Kirby 4",
   "homepage": "https://github.com/fabianmichael/kirby-markdown-field",
   "type": "kirby-plugin",
-  "version": "4.0.0-rc.1",
+  "version": "4.0.0",
   "license": "MIT",
   "authors": [
     {
