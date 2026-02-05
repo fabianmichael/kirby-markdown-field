@@ -1,0 +1,68 @@
+.k-markdown-input-wrap {
+  --cm-content-padding-y: 0.25rem;
+  --cm-line-padding-x: var(--field-input-padding);
+  --cm-font-size: var(--input-font-size);
+  --cm-font-family: var(--font-mono);
+  --cm-line-height: 1.5;
+  --cm-code-background: light-dark(rgb(from black r g b / 0.05), rgb(from white r g b / 0.1));
+  --cm-color-meta: light-dark(var(--color-gray-500), var(--color-gray-600));
+  --cm-color-link: light-dark(var(--color-gray-700), var(--color-gray-600));
+  --cm-color-light-gray: light-dark(rgb(from black r g b / 0.1), rgb(from white r g b / 0.1));
+  --cm-selection-background: Highlight;
+  --cm-selection-text: HighlightText;
+  --cm-color-special-char: light-dark(#df5f5f, hsl(from #df5f5f h s calc(l + 15) / 0.7));
+  --cm-color-cursor: var(--color-focus);
+  --cm-color-highlight-background: light-dark(
+    rgb(from #fdc500 r g b / 0.4),
+    rgb(from #fdc500 r g b / 0.2)
+  );
+  --cm-kirbytag-background: light-dark(
+    rgba(66, 113, 174, 0.1),
+    hsl(from var(--color-blue-400) h s l / 0.25)
+  );
+  --cm-kirbytag-underline: light-dark(var(--color-blue-600), var(--color-text));
+  --cm-min-lines: 2;
+}
+
+/* Font settings */
+
+.k-markdown-input-wrap[data-font-family='sans-serif'] {
+  --cm-font-family: var(--font-sans);
+}
+
+/* Handle disabled state like core textarea */
+
+.k-input[data-type='markdown'][data-disabled='true'] {
+  border: var(--field-input-border) !important;
+  box-shadow: none !important;
+}
+
+.k-input[data-type='markdown'][data-disabled='true'] .cm-cursor {
+  display: none !important;
+}
+
+/* Editor min-height */
+
+.k-markdown-input-wrap[data-size='one-line'] {
+  --cm-min-lines: 1;
+}
+
+.k-markdown-input-wrap[data-size='two-lines'] {
+  --cm-min-lines: 2;
+}
+
+.k-markdown-input-wrap[data-size='small'] {
+  --cm-min-lines: 4;
+}
+
+.k-markdown-input-wrap[data-size='medium'] {
+  --cm-min-lines: 8;
+}
+
+.k-markdown-input-wrap[data-size='large'] {
+  --cm-min-lines: 16;
+}
+
+.k-markdown-input-wrap[data-size='huge'] {
+  --cm-min-lines: 24;
+}
