@@ -301,8 +301,6 @@ export default {
             insert.push(`[${file.filename}](${url})`);
           }
         }
-
-        insert.push(file.dragText);
       }
 
       await this.insert(insert.join('\n\n'));
