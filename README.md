@@ -21,14 +21,12 @@ Enhanced, extensible Markdown field for Kirby CMS. Now available in version ~~2~
 
 ![Screenshot of the editor field](https://github.com/fabianmichael/kirby-markdown-field/assets/395617/590ebc77-fe2e-46ae-98f4-e565f86fc82f)
 
-## Overview
-
-> This plugin is completely free and published under the MIT license. However, if you are using it in a commercial project and want to help me keep up with maintenance, please consider **[❤️ sponsoring me](https://github.com/sponsors/fabianmichael)** for securing the continued development of the plugin.
+> [!NOTE]
+> This plugin is completely free and published under the MIT license. However, if you are using it in a commercial project and want to help me keep up with maintenance, please consider to **[❤️ sponsor me](https://github.com/sponsors/fabianmichael)** for securing the continued development of the plugin.
 
 ## Table of Contents
 
 - [Markdown Field for Kirby](#markdown-field-for-kirby)
-  - [Overview](#overview)
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
   - [Setup](#setup)
