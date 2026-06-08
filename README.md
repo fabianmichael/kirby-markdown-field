@@ -81,6 +81,7 @@ editor:
 ### Global options
 
 | Option | Type | Default | Description |
+| :----- | :--- | :------ | :---------- |
 | `fabianmichael.markdown-field.convertPermalinks` | `bool` | `false` | Replaces all permalinks in href/src attributes in Kirbytext with the regular URL, similar to what `https://getkirby.com/docs/reference/templates/field-methods/permalinks-to-urls` does but also works for absolute URLs. |
 
 ### Field options
