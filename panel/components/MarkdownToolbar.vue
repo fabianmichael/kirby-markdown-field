@@ -1,59 +1,53 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
   <nav class="k-markdown-toolbar">
-    <!-- <div class="k-markdown-toolbar-wrapper"> -->
-    <template v-for="({ button, name, isActive, isDisabled }, buttonIndex) in layout">
+    <template
+      v-for="({ button, name, isActive, isDisabled }, buttonIndex) in layout"
+      :key="buttonIndex"
+    >
       <!-- divider -->
-      <template v-if="button.divider">
-        <hr :key="buttonIndex" aria-orientation="vertical" class="k-markdown-toolbar-divider" />
-      </template>
+      <hr v-if="button.divider" aria-orientation="vertical" class="k-markdown-toolbar-divider" />
 
       <!-- dropdown -->
-      <template v-else-if="button.dropdown">
-        <div :key="buttonIndex">
-          <k-button
-            :key="buttonIndex"
-            :icon="button.icon"
-            :title="button.label"
-            tabindex="-1"
-            :class="(isDisabled() ? 'is-disabled ' : '') + 'k-markdown-toolbar-button'"
-            @click="$refs[buttonIndex + '-dropdown'][0].toggle()"
-          />
-          <k-dropdown-content
-            :ref="buttonIndex + '-dropdown'"
-            @open="setOpen($refs[buttonIndex + '-dropdown'][0])"
-            @close="setOpen(null)"
-          >
-            <k-dropdown-item
-              v-for="(dropdownItem, dropdownItemIndex) in button.dropdown"
-              :key="dropdownItemIndex"
-              :icon="dropdownItem.icon"
-              :current="active.includes(dropdownItem.token)"
-              @click="dropdownItem.command"
-              ><span v-html="dropdownItem.label"
-            /></k-dropdown-item>
-          </k-dropdown-content>
-        </div>
-      </template>
-
-      <!-- single button -->
-      <template v-else>
+      <div v-else-if="button.dropdown">
         <k-button
-          :key="buttonIndex"
           :icon="button.icon"
           :title="button.label"
-          :class="
-            (isDisabled() ? 'is-disabled ' : '') +
-            (isActive() || (name === 'invisibles' && invisibles) ? 'is-active ' : '') +
-            'k-markdown-toolbar-button' +
-            (button.align === 'right' ? ' k-markdown-toolbar-button-right' : '')
-          "
           tabindex="-1"
-          @click="button.command"
+          :class="(isDisabled() ? 'is-disabled ' : '') + 'k-markdown-toolbar-button'"
+          @click="$refs[buttonIndex + '-dropdown'][0].toggle()"
         />
-      </template>
+        <k-dropdown
+          :ref="buttonIndex + '-dropdown'"
+          @open="setOpen($refs[buttonIndex + '-dropdown'][0])"
+          @close="setOpen(null)"
+        >
+          <k-dropdown-item
+            v-for="(dropdownItem, dropdownItemIndex) in button.dropdown"
+            :key="dropdownItemIndex"
+            :icon="dropdownItem.icon"
+            :current="active.includes(dropdownItem.token)"
+            @click="dropdownItem.command"
+            ><span v-html="dropdownItem.label"
+          /></k-dropdown-item>
+        </k-dropdown>
+      </div>
+
+      <!-- single button -->
+      <k-button
+        v-else
+        :icon="button.icon"
+        :title="button.label"
+        :class="
+          (isDisabled() ? 'is-disabled ' : '') +
+          (isActive() || (name === 'invisibles' && invisibles) ? 'is-active ' : '') +
+          'k-markdown-toolbar-button' +
+          (button.align === 'right' ? ' k-markdown-toolbar-button-right' : '')
+        "
+        tabindex="-1"
+        @click="button.command"
+      />
     </template>
-    <!-- </div> -->
   </nav>
 </template>
 
@@ -185,7 +179,7 @@ export default {
 
 /* Align invisibles button to the right of the toolbar */
 .k-markdown-toolbar-button-right {
-  border-left: 1px solid var(--color-background);
+  border-left: 1px solid var(--panel-color-back);
   margin-left: auto;
 }
 

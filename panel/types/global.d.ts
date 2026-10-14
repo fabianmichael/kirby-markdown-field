@@ -1,6 +1,6 @@
 // Global type definitions for Kirby CMS panel
 
-import { Panel } from 'kirby-types';
+import { Panel, PanelHelpers } from 'kirby-types';
 import { ButtonDefinition } from '../components/Buttons/Button';
 import Extension from '../components/Extension';
 
@@ -12,24 +12,10 @@ declare global {
   }
 }
 
-declare module '*.vue' {
-  import { DefineComponent } from 'vue';
-  // Types for Vue 3 and Vue 2 SFC modules
-  import type { ComponentOptions, Component as Vue2Component } from 'vue';
-
-  // For Vue 3
-  const component: DefineComponent<object, object, unknown>;
-  // For Vue 2
-  // The default export is a Vue2 component options object or a constructor
-  // This makes TS happy for both Vue 2 and Vue 3
-  export type Vue2SFCComponent = Vue2Component<object, object, unknown> | ComponentOptions<object>;
-
-  export default component;
-}
-
 export interface InputComponent {
   $t: (key: string) => string | null;
   $go: (url: string) => void;
+  $helper: PanelHelpers;
   kirbytext?: boolean;
   knownKirbytags?: string[];
   uploads?: boolean;

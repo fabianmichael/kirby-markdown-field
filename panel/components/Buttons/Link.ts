@@ -108,22 +108,8 @@ export default class Link extends Button {
         this.editor?.insert(`(link: ${href}${textAttr}${targetAttr})`);
       } else if (hasText) {
         this.editor?.insert(`[${text}](${href})`);
-      } else if (!window.panel.app.$helper.url.isAbsolute(href)) {
-        text = href;
-
-        console.log("not absolute", href, linkType);
-
-        if (linkType === 'file') {
-          const preview = await window.panel.app.$helper.link.preview({ type: 'file', link: window.panel.app.$helper.link.getFileUUID(href) }, [
-            'filename',
-          ]);
-          text = preview?.label ?? text;
-        } else if (linkType === 'page') {
-          const preview = await window.panel.app.$helper.link.preview({ type: 'page', link: window.panel.app.$helper.link.getPageUUID(href) }, [
-            'title',
-          ]);
-          text = preview?.label ?? text;
-        }
+      } else if (!this.input!.$helper.url.isAbsolute(href)) {
+        text = (await this.modelTitle(href, linkType)) ?? href;
 
         this.editor?.insert(`[${text}](${href})`);
       } else {
@@ -162,6 +148,31 @@ export default class Link extends Button {
     }
 
     return 'custom';
+  }
+
+  /**
+   * Fetches the filename of a file or
+   * the title of a page to use it as link text
+   */
+  async modelTitle(href: string, linkType: LinkType): Promise<string | null> {
+    const helper = this.input!.$helper;
+    let item;
+
+    if (linkType === 'file') {
+      item = await helper.items('items/files', helper.link.getFileUUID(href));
+      return (item?.filename as string) ?? null;
+    }
+
+    if (linkType === 'page') {
+      // the table layout returns the text as plain string
+      item = await helper.items('items/pages', helper.link.getPageUUID(href), {
+        layout: 'table',
+        text: '{{ page.title }}',
+      });
+      return (item?.text as string) ?? null;
+    }
+
+    return null;
   }
 
   get defaults(): LinkOptions {

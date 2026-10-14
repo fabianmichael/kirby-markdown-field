@@ -24,8 +24,8 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-vue": "^10.7.0",
-    "kirby-types": "^1.4.7",
-    "kirbyup": "^3.4.1",
+    "kirby-types": "^2.0.0-beta.2",
+    "kirbyup": "^4.0.0-alpha.9",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.54.0"
@@ -39,5 +39,9 @@
     "@codemirror/view": "^6.39.12",
     "@lezer/highlight": "^1.2.3",
     "underscore": "^1.13.7"
-  }
+  },
+  "overrides": {
+    "rolldown": "1.2.12"
+  },
+  "type": "module"
 }

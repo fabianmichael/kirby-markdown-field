@@ -47,6 +47,7 @@ Enhanced, extensible Markdown field for Kirby CMS. Now available in version ~~2~
     - [Custom options for files, and uploads](#custom-options-for-files-and-uploads)
   - [Development](#development)
   - [Migration Guide](#migration-guide)
+    - [From Kirby 5 to Kirby 6](#from-kirby-5-to-kirby-6)
     - [From version 2/3 to 4](#from-version-23-to-4)
     - [From version 1 to 2](#from-version-1-to-2)
   - [Known Issues](#known-issues)
@@ -58,7 +59,16 @@ Enhanced, extensible Markdown field for Kirby CMS. Now available in version ~~2~
 
 ## Installation
 
-This version of the plugin requires PHP 8.4+, Kirby 5 and your Kirby installation must have UUIDs enabled. The recommended way of installing is by using Composer:
+This version of the plugin requires PHP 8.3+, Kirby 6 and your Kirby installation must have UUIDs enabled.
+
+| Plugin version | Kirby version |
+| :------------- | :------------ |
+| 5.x            | 6             |
+| 4.x            | 5             |
+| 3.x            | 4             |
+| 2.x            | 3.6+          |
+
+The recommended way of installing is by using Composer:
 
 ```
 $ composer require fabianmichael/kirby-markdown-field
@@ -266,8 +276,17 @@ Your extension can use a special endpoint to extend the base options for pages, 
 
 ```js
 // special routes to read options from the button configuration
-this.input.endpoints.field + '/myextension/uploads';
-this.input.endpoints.field + '/myextension/files';
+this.input.endpoints.field + '/myextension/upload'; // API route for uploads
+this.input.endpoints.field + '/myextension/files'; // dialog route for the file picker
+
+// open the file picker with the button options
+this.input.$panel.dialog.open(this.input.endpoints.field + '/myextension/files', {
+  on: {
+    submit: ({ items }) => {
+      // …
+    },
+  },
+});
 ```
 
 The end user can configure options for your extension as part of the button configuration:
@@ -301,6 +320,13 @@ npm run build
 > You **must** run the build process before pushing the repo, or else the hot-reload code will prevent it from working in any install.
 
 ## Migration Guide
+
+### From Kirby 5 to Kirby 6
+
+- The plugin requires Kirby 6 and has been rebuilt for Vue 3. Custom buttons and extensions that rely on Vue 2 APIs need to be updated.
+- The field is now implemented as a PHP class (`FabianMichael\MarkdownField\MarkdownField`), which extends Kirby’s `TextareaField`.
+- The file picker is no longer an API route but a Panel dialog. Open it with `this.input.$panel.dialog.open(this.input.endpoints.field + '/files')`. The `submit` event receives `{ ids, items }`.
+- The upload response now also contains the `mime` type and `uuid` of the uploaded file.
 
 ### From version 2/3 to 4
 

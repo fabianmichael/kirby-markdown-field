@@ -1,20 +1,20 @@
 <template>
   <k-markdown-input
     ref="input"
-    :blank="blank"
-    :buttons="buttons"
-    :custom-highlights="customHighlights"
-    :disabled="disabled"
-    :font="font"
-    :highlights="highlights"
-    :kirbytext="kirbytext"
-    :known-kirbytags="knownKirbytags"
-    :placeholder="placeholder"
-    :size="size"
+    :blank="textField.blank"
+    :buttons="textField.buttons"
+    :custom-highlights="textField.customHighlights"
+    :disabled="disabled || textField.disabled"
+    :endpoints="textField.endpoints ?? endpoints"
+    :font="textField.font"
+    :highlights="textField.highlights"
+    :kirbytext="textField.kirbytext"
+    :known-kirbytags="textField.knownKirbytags"
+    :placeholder="textField.placeholder"
+    :size="textField.size"
+    :spellcheck="textField.spellcheck"
+    :uploads="textField.uploads"
     :value="content.text"
-    :endpoints="endpoints"
-    :spellcheck="spellcheck"
-    :uploads="uploads"
     class="k-block-type-markdown-input"
     @input="update({ text: $event })"
   />
@@ -23,44 +23,12 @@
 <script>
 export default {
   computed: {
-    blank() {
-      return this.field('text', {}).blank;
-    },
-    buttons() {
-      return this.field('text', {}).buttons;
-    },
-    customHighlights() {
-      return this.field('text', {}).customHighlights;
-    },
-    disabled() {
-      return this.field('text', {}).disabled;
-    },
-    endpoints() {
-      return this.field('text', {}).endpoints;
-    },
-    font() {
-      return this.field('text', {}).font;
-    },
-    highlights() {
-      return this.field('text', {}).highlights;
-    },
-    kirbytext() {
-      return this.field('text', {}).kirbytext;
-    },
-    knownKirbytags() {
-      return this.field('text', {}).knownKirbytags;
-    },
-    placeholder() {
-      return this.field('text', {}).placeholder;
-    },
-    size() {
-      return this.field('text', {}).size;
-    },
-    spellcheck() {
-      return this.field('text', {}).spellcheck;
-    },
-    uploads() {
-      return this.field('text', {}).uploads;
+    /**
+     * Props of the `text` field from the fieldset,
+     * incl. the field's own API endpoints
+     */
+    textField() {
+      return this.field('text', {});
     },
   },
   methods: {

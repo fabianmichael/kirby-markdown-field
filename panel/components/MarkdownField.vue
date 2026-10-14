@@ -1,19 +1,24 @@
 <template>
-  <k-field :input="_uid" v-bind="$props" :counter="counterOptions" class="k-markdown-field">
+  <k-field
+    v-bind="$props"
+    :class="['k-markdown-field', $attrs.class]"
+    :counter="counterOptions"
+    :input="id"
+    :style="$attrs.style"
+  >
     <template #label>
-      <k-label :input="_uid" :required="required" :title="label" type="field">
+      <k-label :input="id" :required="required" :title="label" type="field">
         <span @click="focus">
           {{ label }}
         </span>
       </k-label>
     </template>
     <k-input
-      :id="_uid"
-      ref="input"
       v-bind="$props"
+      ref="input"
       type="markdown"
       theme="field"
-      v-on="$listeners"
+      @input="$emit('input', $event)"
     />
   </k-field>
 </template>
@@ -31,7 +36,7 @@ export default {
       default: false,
     },
     buttons: {
-      type: [Boolean, Array],
+      type: [Boolean, Array, Object],
       default: true,
     },
     customHighlights: {
@@ -81,5 +86,6 @@ export default {
     },
     value: String,
   },
+  emits: ['input'],
 };
 </script>
